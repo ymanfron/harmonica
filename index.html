@@ -199,7 +199,9 @@ button.tk:hover{box-shadow:inset 0 0 0 1px currentColor}
 .tk.miss{background:var(--bad-bg);color:var(--bad)}
 .tk.cur{box-shadow:0 0 0 2px var(--brass-fill)} .tk.done{opacity:.45}
 .tx{color:var(--ink-dim);padding:4px 0;font-size:13px}
-.songs{display:flex;gap:6px;flex-wrap:wrap}
+.songs{display:flex;gap:6px;flex-wrap:wrap;min-width:0}
+.songs .chip,.row>.chip{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+#songPick{max-width:min(100%,340px)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:0 28px}
 .card{border:0;border-top:1px solid var(--line);background:none;padding:12px 0 13px;text-align:left;display:flex;flex-direction:column;gap:3px;min-width:0;transition:border-color .15s}
@@ -2094,6 +2096,17 @@ function importCaderno(text){
   }
   push(); return notes;
 }
+/* lê um arquivo de dados (.json do app) ou de texto (.txt) e junta com o que já existe */
+function fileImportInput(id, msgId){
+  var inp=el('input',{type:'file',id:id,accept:'.json,.txt,application/json,text/plain',hidden:true,onchange:function(){ var f=inp.files && inp.files[0]; if(!f) return; var rd=new FileReader();
+    rd.onload=function(){ var txt=String(rd.result||''), d=null, n0=S.notes.length, m0=S.songs.length, text='', ok=true; try{ d=JSON.parse(txt); }catch(e){}
+      if(d && typeof d==='object' && SYNC_LISTS.some(function(k){ return Array.isArray(d[k]); })){ var ch=mergeDoc(d), parts=[]; if(S.songs.length>m0) parts.push((S.songs.length-m0)+' músicas'); if(S.notes.length>n0) parts.push((S.notes.length-n0)+' anotações');
+        text = parts.length ? 'Arquivo importado: '+parts.join(' e ')+' novas.' : ch ? 'Arquivo importado: itens atualizados.' : 'Nada de novo: este aparelho já tinha tudo desse arquivo.'; }
+      else { var ns=importCaderno(txt); if(ns.length){ S.notes=S.notes.concat(ns); text='Texto importado: '+ns.length+' anotações novas.'; } else { text='Não encontrei músicas nem anotações nesse arquivo.'; ok=false; } }
+      saveData(); render(); var m=document.getElementById(msgId); if(m){ m.textContent=text; m.className='mtxt '+(ok?'ok':'bad'); } };
+    rd.readAsText(f); }});
+  return inp;
+}
 function curNote(){ for(var i=0;i<S.notes.length;i++) if(S.notes[i].id===S.note) return S.notes[i]; return null; }
 function viewCaderno(){
   var out=[], n=curNote();
@@ -2141,11 +2154,7 @@ function viewCaderno(){
         el('span',{class:'ext'},[el('b',{text:x.title||'Sem título'}),el('small',{text:prev.slice(0,120)})]),
         el('span',{class:'dim small',text:x.u?fmtDate(x.u).slice(0,5):''}) ]); }))]));
   });
-  var fileIn=el('input',{type:'file',id:'noteFile',accept:'.json,.txt,application/json,text/plain',hidden:true,onchange:function(){ var f=fileIn.files && fileIn.files[0]; if(!f) return; var rd=new FileReader();
-    rd.onload=function(){ var txt=String(rd.result||''), d=null; try{ d=JSON.parse(txt); }catch(e){}
-      if(d && typeof d==='object' && SYNC_LISTS.some(function(k){ return Array.isArray(d[k]); })){ var n0=S.notes.length, ch=mergeDoc(d); saveData(); render(); var m=document.getElementById('noteMsg'); if(m){ m.textContent=ch?'Arquivo importado: '+(S.notes.length-n0)+' anotações novas.':'Nada de novo: este aparelho já tinha tudo desse arquivo.'; m.className='mtxt ok'; } }
-      else { var ns=importCaderno(txt); if(ns.length){ S.notes=S.notes.concat(ns); saveData(); render(); } else { msg.textContent='Não encontrei anotações nesse arquivo.'; msg.className='mtxt bad'; } } };
-    rd.readAsText(f); }});
+  var fileIn=fileImportInput('noteFile','noteMsg');
   var io=el('textarea',{id:'noteImport',rows:5,spellcheck:'false',placeholder:'Cole aqui um texto para virar anotações. O TXT do Caderno de Música é separado sozinho em seções e músicas.'}), msg=el('div',{class:'mtxt dim',id:'noteMsg'});
   out.push(el('details',{},[el('summary',{text:'Importar e copiar tudo'}),
     el('div',{class:'row'},[el('label',{class:'btn pri filebtn'},['Importar arquivo',fileIn])]),
@@ -2352,7 +2361,7 @@ function viewAjustes(){
     el('p',{class:'dim small',text:'As marcadas aparecem como atalho no topo e são destacadas nas sugestões de qual gaita usar.'}),
     el('div',{class:'row'},all.map(function(h){ var on=S.mine.some(function(m){ return sameHarp(m,h); });
       return chip(h.type==='crom'?'Cromática':NN(HARP_KEYS[h.key]), on, function(){ if(on){ if(S.mine.length>1) S.mine=S.mine.filter(function(m){ return !sameHarp(m,h); }); } else S.mine.push(h); S.mineAt=Date.now(); saveData(); render(); }); })) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 6 (03/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 7 (03/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -2395,10 +2404,14 @@ function tabElement(lines, ctx, opts){
 }
 function viewMusicas(){
   var song=curSong(), out=[];
-  var list=el('div',{class:'songs'}, S.songs.map(function(s){ return chip(s.title||'Sem título', song&&s.id===song.id, function(){ S.cur=s.id; save(); render(); }); }).concat([
-    el('button',{class:'chip',type:'button',text:'+ Nova música',onclick:function(){ var id='m'+Date.now(); S.songs.push({id:id,u:Date.now(),title:'',key:null,harp:S.harp,bpm:80,text:''}); S.cur=id; saveData(); render(); var t=document.getElementById('songTitle'); t&&t.focus(); }})]));
+  var fileIn=fileImportInput('songFile','songMsg');
+  var newBtn=el('button',{class:'chip',type:'button',text:'+ Nova música',onclick:function(){ var id='m'+Date.now(); S.songs.push({id:id,u:Date.now(),title:'',key:null,harp:S.harp,bpm:80,text:''}); S.cur=id; saveData(); render(); var t=document.getElementById('songTitle'); t&&t.focus(); }});
+  var sorted=S.songs.slice().sort(function(a,b){ return (a.title||'').localeCompare(b.title||'','pt'); });
+  var list = S.songs.length>8
+    ? el('div',{class:'row'},[field('Música ('+S.songs.length+')', select(sorted.map(function(s){ return [s.id,(s.title||'Sem título')]; }), song?song.id:'', function(v){ S.cur=v; save(); render(); },'songPick')), newBtn, el('label',{class:'chip filebtn'},['Importar arquivo',fileIn])])
+    : el('div',{class:'songs'}, S.songs.map(function(s){ return chip(s.title||'Sem título', song&&s.id===song.id, function(){ S.cur=s.id; save(); render(); }); }).concat([newBtn, el('label',{class:'chip filebtn'},['Importar arquivo',fileIn])]));
   out.push(el('section',{class:'sec'},[el('h2',{text:'Músicas'}),
-    el('p',{class:'dim small',text:'Cole a tablatura (e a cifra, se tiver). O app lê os furos, mostra as notas e acompanha você pelo microfone. '+(Sync.on()?'As músicas são sincronizadas com os seus outros aparelhos.':'As músicas ficam neste aparelho; para vê-las em outros, ligue a sincronização em Ajustes.')}), list]));
+    el('p',{class:'dim small',text:'Cole a tablatura (e a cifra, se tiver). O app lê os furos, mostra as notas e acompanha você pelo microfone. '+(Sync.on()?'As músicas são sincronizadas com os seus outros aparelhos.':'As músicas ficam neste aparelho; para vê-las em outros, ligue a sincronização em Ajustes.')}), list, el('div',{class:'mtxt dim',id:'songMsg'})]));
   if(!song){ out.push(el('div',{class:'note',text:'Nenhuma música ainda. Toque em "+ Nova música" e cole uma tablatura.'})); return out; }
 
   var host=el('div',{class:'sec'}), playing=false;
