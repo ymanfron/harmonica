@@ -513,6 +513,24 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .rp-foot{margin-top:8px}
 @media (min-width:560px){ .rp-inst{grid-template-columns:64px minmax(0,340px) auto} .rp-inst .btn{grid-column:auto} }
 @media (orientation:landscape) and (max-height:540px) and (max-width:759px){ :root[data-skin="rep"] .app{margin-left:0} }
+.gc.G.B{color:var(--s1);font-size:10px;font-weight:700;line-height:1}
+.grade.dense .gr-row{gap:1px}
+.grade.dense .gc{border-radius:2px}
+.grade.dense .gr-row.cnt .gc{font-size:9px;padding-left:0}
+.cj-pat{display:flex;flex-direction:column;gap:10px;min-width:0}
+.gx-page{gap:16px}
+.gx{display:flex;flex-direction:column;gap:10px;min-width:0;border-top:1px solid var(--olv);padding-top:14px}
+.gx-h{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.gx-h b{font-weight:500;font-size:16px;line-height:1.3;overflow-wrap:anywhere}
+.gx-k{font-family:var(--f-mono);font-size:12.5px;color:var(--on-pc);background:var(--pc);border-radius:6px;padding:2px 7px}
+.gx-sec .cj-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:0 20px}
+.gx-imp{gap:12px}
+.gx-imp textarea{font-family:var(--f-mono);font-size:14px}
+.gx-log{display:flex;flex-direction:column;gap:2px}
+.gx-extra{margin-top:8px;padding-top:14px;border-top:1px solid var(--ol)}
+.gx-extra+.gx{border-top:0;padding-top:0}
+.gx-read{display:flex;flex-direction:column;gap:14px}
+.gx-rt{font-family:var(--f-body);font-size:.7em;font-weight:500;color:var(--on-sv);margin:0 0 4px;max-width:none}
 @media (min-width:760px){ .snack{bottom:24px} }
 
 /* exercícios */
@@ -772,12 +790,29 @@ function parseToken(s, maxHole){
   var dir=sign||dirLetter||1;
   return holes.map(function(h){ return { hole:h, dir:dir, bend:bend, slide:slide, ob:ob }; });
 }
+/* notação de curso: "/" bend de passagem no ataque, "\" na saída, "…" glissando, -(45) notas juntas, -(4=5) trinado */
+var CQ="'’′´`‘\"”“";
+function courseToken(ch, maxHole){
+  var m=/^(\.{2,}|…+)?(\/)?([+\-−–])?(\/)?(?:\(([^()]+)\)|(\d[\d'’′´`‘"”“]*))(\\)?(\.{2,}|…+)?[,;]?$/.exec(ch); if(!m) return null;
+  var lead=m[1]||'', dip=!!(m[2]||m[4]), sign=m[3]||'', inner=m[5], single=m[6], fall=!!m[7], sus=m[8]||'';
+  if(!lead && !dip && !fall && !sus && !(sign && inner!=null)) return null;
+  var parts;
+  if(inner!=null){ inner=inner.replace(/\s+/g,''); if(!/^[\d=]/.test(inner)) return null;
+    parts = inner.indexOf('=')>=0 ? inner.split('=') : (new RegExp('['+CQ+']').test(inner) ? inner.match(new RegExp('\\d['+CQ+']*','g')) : [inner]); }
+  else parts=[single];
+  var specs=[]; for(var i=0;i<parts.length;i++){ var sp=parseToken(sign+parts[i], maxHole); if(!sp) return null; specs=specs.concat(sp); }
+  return { specs:specs, pre:lead+(dip?'/':''), post:(fall?'\\':'')+sus, dip:dip, fall:fall, gliss:!!(lead||sus), trill:inner!=null && inner.indexOf('=')>=0 };
+}
 var DECOR=/^(?:[-–—_~|\/\\.,;:=>]+|x\d+|\d+x|\(x\d+\)|\[.*\]|\d+:\d+.*)$/i;
 function parseTab(text, harp){
   var maxHole=harp.holes, lines=String(text||'').replace(/\r/g,'').split('\n'), out=[];
   lines.forEach(function(line){
     var chunks=line.split(/\s+/).filter(Boolean), items=[], nNotes=0, nWords=0;
     chunks.forEach(function(ch){
+      var ct=courseToken(ch, maxHole);
+      if(ct){ var cns=ct.specs.map(function(sp){ return findNote(harp, sp); });
+        items.push({ type:'note', raw:ch, pre:ct.pre, post:ct.post, specs:ct.specs, notes:cns, midis:cns.map(function(n){ return n?n.midi:null; }), valid:cns.every(Boolean), dip:ct.dip, fall:ct.fall, gliss:ct.gliss, trill:ct.trill });
+        nNotes++; return; }
       var m=/^(\(*)(.*?)([)\],;.]*)$/.exec(ch), pre=m[1], body=m[2], post=m[3];
       /* "1)" ou "2." no começo de uma linha é numeração, não o furo 1 soprado */
       var isLabel = !pre && /^\d{1,2}$/.test(body) && /^[).]/.test(post);
@@ -796,7 +831,7 @@ function parseTab(text, harp){
       if(ok) for(var i=0;i<parts.length;i++){ var sp=parseToken(parts[i], maxHole); if(!sp){ ok=false; break; } specs=specs.concat(sp); }
       if(ok){
         var notes=specs.map(function(sp){ return findNote(harp, sp); });
-        items.push({ type:'note', raw:ch, pre:pre, post:post, specs:specs, notes:notes, midis:notes.map(function(n){ return n?n.midi:null; }), valid:notes.every(Boolean) });
+        items.push({ type:'note', raw:ch, pre:pre, post:post, specs:specs, notes:notes, midis:notes.map(function(n){ return n?n.midi:null; }), valid:notes.every(Boolean), trill:!!pre && body.indexOf('=')>=0 });
         nNotes++;
       } else {
         items.push({ type:'text', raw:ch });
@@ -804,6 +839,8 @@ function parseTab(text, harp){
       }
     });
     var isTab = nNotes>0 && nWords<=nNotes;
+    /* "Frase 1", "1 compasso": um número solto ao lado de palavras é rótulo, não o furo soprado */
+    if(isTab && nNotes===1 && nWords>=1){ var only=null; items.forEach(function(it){ if(it.type==='note') only=it; }); if(only && /^\d{1,2}$/.test(only.raw)) isTab=false; }
     if(!isTab){ var flat=[]; items.forEach(function(it){ if(it.join && flat.length) flat[flat.length-1].raw+=it.raw; else flat.push({ type:'text', raw:it.raw }); }); items=flat; }
     out.push({ raw:line, items:items, isTab:isTab });
   });
@@ -949,7 +986,7 @@ var S={
            text:'Beethoven, domínio público\n+5 +5 -5 +6 +6 -5 +5 -4\n+4 +4 -4 +5 +5 -4 -4\n+5 +5 -5 +6 +6 -5 +5 -4\n+4 +4 -4 +5 -4 +4 +4' }],
   notes:[{ id:'nx1', u:0, sec:'Em foco', title:'Como usar o caderno (exemplo)', harp:{type:'diat',key:0},
            text:'Este é um exemplo. Pode apagar.\n\nAnote aqui o que está estudando, o que o professor pediu e o que precisa conferir na próxima aula.\n• Uma linha que começa com “•” vira item de lista.\n• Links ficam clicáveis: https://github.com/ymanfron/harmonica\n\nLinhas de tablatura ganham o nome das notas, porque esta anotação está marcada como diatônica em C:\n+4 -4 +5 -5 +6' }],
-  note:null, noteEdit:false, nq:'', songEdit:null, rz:1, cjSongs:null, cjEx:null, cjGroup:'Todas', cjEdit:null, cjTab:'musicas', cjView:'foco', cjQ:'', cjAdd:false, cjSel:null, cjLevel:2, cjLesson:null, cjClick:true, reps:[], gRep:null, cjRep:null, repView:'prox', repSel:null, repRow:null, repAddIns:'g', repNewId:null, imp:{text:'',def:'',harp:null,done:null},
+  note:null, noteEdit:false, nq:'', songEdit:null, rz:1, cjSongs:null, cjEx:null, cjGroup:'Todas', cjEdit:null, cjTab:'musicas', cjView:'foco', cjQ:'', cjAdd:false, cjSel:null, cjLevel:2, cjLesson:null, cjClick:true, reps:[], gRep:null, cjRep:null, repView:'prox', repSel:null, repRow:null, repAddIns:'g', repNewId:null, gEx:[], gExSel:null, gExOpen:null, gExEdit:null, gExImp:false, gExLog:[], cjRhEdit:null, imp:{text:'',def:'',harp:null,done:null},
   cur:'ex1', q:'', del:{}, exDone:{}, course:{}, sync:{token:'',gist:'',last:0}, mineAt:0, thTab:'curso', lesson:null, ex:null, exLevel:2, back:'gaita',
   tr:{ text:"-6 -6 -6 -7 +7\n-7 -8 +7 -7 -6", from:{type:'diat',key:7}, to:{type:'crom'}, semis:0, oct:'auto', chords:'Em C G D', cFrom:null, cSemis:2, songKey:4, songMode:'menor' }
 };
@@ -1944,7 +1981,7 @@ var WID={
       var g=mk('ellipse',{cx:x,cy:y,rx:8.5,ry:6,class:'pt-n',transform:'rotate(-18 '+x+' '+y+')',tabindex:0}); g.addEventListener('click',function(){ tone([60+[0,2,4,5,7,9,11,12,14,16,17,19,21][i]],AC().currentTime+0.01,0.6); });
       mk('text',{x:x,y:140,class:'pt-t'},NN(n)); });
     return el('div',{class:'ex scroll'},[svg, el('p',{class:'small dim',text:'Do Dó central (C4) ao Lá (A5). Toque numa nota para ouvir.'})]); },
-  tabLegenda:function(){ return tbl(['Escrita','Significa'], [['+4  ou  4','soprar o furo 4'],['-4','aspirar o furo 4'],["-4'",'aspirar com bend de meio tom'],["-3''",'bend de um tom'],["-3'''",'bend de um tom e meio'],["+8'",'bend soprado (furos 8 a 10)'],['+6o','overblow'],["(-4' -4)",'notas ligadas, sem interromper o ar'],['-123  ou  -34','vários furos juntos (acorde)'],['+5<','cromática: soprar o furo 5 com o botão apertado'],['4s 4a  ou  4b 4d','soprar e aspirar, em outras notações']].map(function(r){ return [el('td',{class:'mono',text:r[0]}), r[1]]; })); },
+  tabLegenda:function(){ return tbl(['Escrita','Significa'], [['+4  ou  4','soprar o furo 4'],['-4','aspirar o furo 4'],["-4'",'aspirar com bend de meio tom'],["-3''",'bend de um tom'],["-3'''",'bend de um tom e meio'],["+8'",'bend soprado (furos 8 a 10)'],['+6o','overblow'],["(-4' -4)",'notas ligadas, sem interromper o ar'],['-123  ou  -34','vários furos juntos (acorde)'],['-(45)  ou  (123)','notas dentro dos parênteses tocadas juntas'],['/-4','bend de passagem: a nota é atacada já com um bend'],['-4\\','a nota termina com um bend de passagem'],['-(4=5)','trinado: alterna rápido entre as duas casas'],['…6  ou  -8…','glissando: desliza por algumas casas antes ou depois da nota'],['+5<','cromática: soprar o furo 5 com o botão apertado'],['4s 4a  ou  4b 4d','soprar e aspirar, em outras notações']].map(function(r){ return [el('td',{class:'mono',text:r[0]}), r[1]]; })); },
   figuras:function(){ return el('div',{class:'ex figs'},[['Semibreve',4],['Mínima',2],['Semínima',1],['Colcheia',0.5],['Semicolcheia',0.25]].map(function(f){
     var bar=el('div',{class:'fig-bar'}); for(var i=0;i<4/f[1];i++) bar.appendChild(el('i'));
     return el('div',{class:'fig'},[el('div',{class:'fig-n'},[el('b',{text:f[0]}),el('small',{text:f[1]>=1?f[1]+(f[1]>1?' tempos':' tempo'):(f[1]===0.5?'meio tempo':'um quarto de tempo')})]),bar]); })); },
@@ -2192,6 +2229,7 @@ function exCard(e){
     el('span',{class:'exm'},[exDoneToday(e.id)?el('span',{class:'tag ok',text:'feito hoje'}):el('span',{class:'dim small',text:e.min+' min'}), times?el('small',{class:'dim',text:times+'×'}):null]) ]);
 }
 function viewExercicios(){
+  var gx=S.gExSel&&S.harp.type==='diat'?gExById(S.gExSel):null; if(gx) return gExDetail(gx);
   var harp=harpObj(S.harp), out=[], cur=null; EXS.forEach(function(e){ if(e.id===S.ex && e.h===S.harp.type) cur=e; });
   if(cur){
     var ctx=harpCtx(S.harp), parsed=C.parseTab(exTab(cur,harp),harp), seq=C.tabSequence(parsed), te=tabElement(parsed,ctx), playing=false;
@@ -2219,10 +2257,190 @@ function viewExercicios(){
     el('div',{class:'row between'},[el('h3',{text:'Rotina de hoje'}),el('span',{class:'dim small',text:feitos+' de '+rot.length+' feitos, cerca de '+mins+' min'})]),
     el('div',{class:'exgrid'},rot.map(exCard)),
     el('p',{class:'dim small',text:'A rotina muda todo dia: um aquecimento, uma técnica, uma escala e uma parte musical, dentro do nível escolhido.'}) ]));
+  out.push(gExSection());
   var cats=[]; list.forEach(function(e){ if(cats.indexOf(e.cat)<0) cats.push(e.cat); });
   cats.forEach(function(cat){ out.push(el('section',{class:'sec'},[el('h3',{text:cat}), el('div',{class:'exgrid'},list.filter(function(e){ return e.cat===cat; }).map(exCard))])); });
   out.push(el('p',{class:'dim small',text:S.harp.type==='diat'?'Os furos valem para qualquer diatônica: troque a gaita no topo e os nomes das notas acompanham. Para ver os exercícios de cromática, escolha a cromática.':'Para ver os exercícios de diatônica, escolha uma diatônica no topo.'}));
   return out;
+}
+
+/* ---------- gaita: aulas do curso (conteúdo importado de arquivo privado; nada do curso fica no app) ---------- */
+function gExById(id){ var r=null; (S.gEx||[]).forEach(function(x){ if(x.id===id) r=x; }); return r; }
+function gExKey(it, ex){ return it.id+':'+ex.k; }
+function gExTouch(it){ it.u=Date.now(); saveData(); }
+function gExDoneCount(it){ return (it.exs||[]).filter(function(ex){ return (S.exDone[gExKey(it,ex)]||[]).length; }).length; }
+function gExRow(it){
+  var si=Math.max(0,CJ_ST_EX.indexOf(it.st)), n=(it.exs||[]).length, tema=''; (it.exs||[]).forEach(function(ex){ if(!tema && /^tema/i.test(ex.t)) tema=ex.t.replace(/^tema\s*\d*\s*[-–:]\s*/i,''); });
+  return el('div',{class:'cj-row'+(si===2?' ok':'')},[
+    el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':(it.star?'Tirar das prioridades: ':'Marcar como prioridade: ')+it.t,text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; gExTouch(it); render(true); }}),
+    el('button',{class:'cj-main',type:'button',title:'Abrir a aula',onclick:function(){ S.gExSel=it.id; S.gExOpen=null; S.gExEdit=null; save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[n+(n===1?' exercício':' exercícios'), tema].filter(Boolean).join(' · ')})]),
+    el('span',{class:'tag st'+si,text:CJ_ST_LABEL[CJ_ST_EX[si]]}) ]);
+}
+function gExOrd(x){ var rom={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8}, m=/m[óo]dulo\s+([ivx]+|\d+)/i.exec(x.m||''), n=/(\d+)/.exec(x.t||''), mi=m?(rom[m[1].toUpperCase()]||parseInt(m[1],10)||50):90; return mi*1000+(n?parseInt(n[1],10):999); }
+function gExSorted(){ return (S.gEx||[]).slice().sort(function(a,b){ return gExOrd(a)-gExOrd(b) || String(a.t).localeCompare(String(b.t),'pt',{numeric:true}); }); }
+/* ----- leitura das folhas do curso no próprio aparelho (PDF com texto ou texto colado) ----- */
+var PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', PDFJS_WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js', pdfjsP=null;
+function loadPdfJs(){
+  if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib); if(pdfjsP) return pdfjsP;
+  pdfjsP=new Promise(function(res,rej){ var sc=document.createElement('script'); sc.src=PDFJS_URL;
+    sc.onload=function(){ if(window.pdfjsLib){ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_WORKER; }catch(e){} res(window.pdfjsLib); } else { pdfjsP=null; rej(new Error('pdfjs')); } };
+    sc.onerror=function(){ pdfjsP=null; rej(new Error('rede')); }; document.head.appendChild(sc); });
+  return pdfjsP;
+}
+function pdfLines(items){
+  var rows=[];
+  items.forEach(function(it){ if(!it.str) return; var y=it.transform[5], x=it.transform[4], h=Math.abs(it.transform[3])||it.height||10, r=null;
+    for(var i=0;i<rows.length;i++){ if(Math.abs(rows[i].y-y)<Math.max(2,h*0.35)){ r=rows[i]; break; } }
+    if(!r){ r={ y:y, h:h, its:[] }; rows.push(r); } r.its.push({ x:x, w:it.width||0, s:it.str, h:h }); });
+  rows.sort(function(a,b){ return b.y-a.y; });
+  var out=[], prev=null;
+  rows.forEach(function(r){ r.its.sort(function(a,b){ return a.x-b.x; }); var t='', end=null;
+    r.its.forEach(function(k){ if(end!==null){ var gap=k.x-end; if(gap>k.h*0.18 && !/\s$/.test(t) && !/^\s/.test(k.s)) t+=' '; } t+=k.s; end=k.x+k.w; });
+    if(prev && (prev.y-r.y)>1.7*Math.max(prev.h,r.h)) out.push('');
+    out.push(t); prev=r; });
+  return out;
+}
+function pdfText(file){
+  var buf = file.arrayBuffer ? file.arrayBuffer() : new Promise(function(res,rej){ var rd=new FileReader(); rd.onload=function(){ res(rd.result); }; rd.onerror=rej; rd.readAsArrayBuffer(file); });
+  return Promise.all([buf, loadPdfJs()]).then(function(r){ return r[1].getDocument({ data:new Uint8Array(r[0]) }).promise; }).then(function(doc){
+    var out=[], chain=Promise.resolve();
+    for(var p=1;p<=doc.numPages;p++){ (function(p){ chain=chain.then(function(){ return doc.getPage(p); }).then(function(pg){ return pg.getTextContent(); }).then(function(tc){ out=out.concat(pdfLines(tc.items)); out.push(''); }); })(p); }
+    return chain.then(function(){ return out.join('\n'); }); });
+}
+function gNormLine(l){ return String(l).replace(/[’‘′´`]/g,"'").replace(/[”“"]/g,"''").replace(/−/g,'-').replace(/(^|\s)([xX])\s+(\d{1,2})(?=\s|$)/g,'$1$2$3').replace(/[ \t]+/g,' ').trim(); }
+/* separa uma folha em exercícios numerados ("01. Exercício 1"), com os grupos ("Exercício 2", "Extra 1") e a parte de extras */
+function gParseSheet(text, fname){
+  var lines=String(text||'').replace(/\r/g,'').replace(/\f/g,'\n').split('\n').map(gNormLine), mod='', aula=0, exs=[], cur=null, group='', gdesc='', extras=false;
+  lines.forEach(function(l){
+    var h=/^M[ÓO]DULO\s+([IVX]+)\s*[-–]\s*AULA\s*(\d+)/i.exec(l); if(h){ if(!aula){ mod=h[1].toUpperCase(); aula=parseInt(h[2],10); } return; }
+    if(!l){ if(cur && cur.lines.length && cur.lines[cur.lines.length-1]!=='') cur.lines.push(''); return; }
+    if(/^www\./i.test(l) || /^Licensed to/i.test(l)) return;
+    if(/^EXERC[ÍI]CIOS? EXTRAS?$/i.test(l)){ extras=true; group=''; gdesc=''; cur=null; return; }
+    var m=/^(\d{2})\.\s*(.+)$/.exec(l);
+    if(m){ var t=m[2].trim().replace(/\*+$/,'').replace(/\s*[–]\s*/,' - '), own=/^(Tema|Exerc[íi]cio|Extra|Estudo)(?![a-zà-ÿ])/i.test(t);
+      if(own){ group=''; gdesc=''; }
+      cur={ k:m[1], t:group?(group+' · '+t):t, lines:[] }; if(group && gdesc) cur.d=gdesc; if(extras) cur.x=1; exs.push(cur); return; }
+    var gm=/^((?:Exerc[íi]cio|Extra)\s*\d+[a-z]?)\s*(?:[-–]\s*(.*))?$/i.exec(l);
+    if(gm && !/\d/.test(gm[2]||'')){ group=gm[1]; gdesc=(gm[2]||'').trim(); cur=null; return; }
+    var cm=/^(\d) Compassos?$/i.exec(l); if(cm && cur){ cur.d=(cur.d?cur.d+' · ':'')+cm[1]+(cm[1]==='1'?' compasso':' compassos'); return; }
+    if(!cur) return;
+    cur.lines.push(l);
+  });
+  exs.forEach(function(e){ while(e.lines.length && e.lines[e.lines.length-1]==='') e.lines.pop(); e.text=e.lines.join('\n'); delete e.lines; });
+  var rom={I:1,II:2,III:3,IV:4,V:5,VI:6}, mi=rom[mod]||0, base=String(fname||'folha').replace(/\.[a-z0-9]+$/i,'');
+  return { id: aula ? 'hc-'+mi+'-'+('0'+aula).slice(-2) : 'hc-x-'+cjNorm(base).replace(/[^a-z0-9]+/g,'-'), m: mod?'Módulo '+mod:'Sem módulo', t: aula?'Aula '+('0'+aula).slice(-2):base, o: aula?mi*100+aula:9000, exs:exs };
+}
+function gExStore(sh){
+  var cur=gExById(sh.id), now=Date.now();
+  if(cur){ cur.exs=sh.exs; if(sh.o<9000){ cur.m=sh.m; cur.t=sh.t; cur.o=sh.o; } cur.u=now; return 'atualizada'; }
+  delete S.del[sh.id]; S.gEx.push({ id:sh.id, u:now, m:sh.m, t:sh.t, o:sh.o, st:'a fazer', star:false, n:'', exs:sh.exs }); return 'nova';
+}
+function gExImportFiles(files, report){
+  var list=Array.prototype.slice.call(files||[]), log=[], chain=Promise.resolve();
+  if(!Array.isArray(S.gEx)) S.gEx=[];
+  list.forEach(function(f){ chain=chain.then(function(){
+    var isPdf=/\.pdf$/i.test(f.name) || f.type==='application/pdf';
+    var getText = isPdf ? pdfText(f) : new Promise(function(res,rej){ var rd=new FileReader(); rd.onload=function(){ res(String(rd.result||'')); }; rd.onerror=rej; rd.readAsText(f); });
+    report('Lendo '+f.name+'…');
+    return getText.then(function(txt){ var sh=gParseSheet(txt,f.name);
+      if(!sh.exs.length){ log.push({ f:f.name, ok:false, msg:String(txt).trim()?'não achei exercícios numerados':'sem texto (a folha é uma imagem)' }); return; }
+      log.push({ f:f.name, ok:true, msg:sh.m+' · '+sh.t+': '+sh.exs.length+(sh.exs.length===1?' exercício':' exercícios')+' ('+gExStore(sh)+')'+(sh.o>=9000?'. A folha não traz módulo e aula: abra e ajuste o nome':'') }); },
+      function(e){ log.push({ f:f.name, ok:false, msg:(e&&e.message==='rede')?'não consegui carregar o leitor de PDF (sem internet?)':'não consegui ler o arquivo' }); }); }); });
+  return chain.then(function(){ saveData(); return log; });
+}
+function gExMarkUpTo(id){ var l=gExSorted(), k=-1; l.forEach(function(x,i){ if(x.id===id) k=i; }); if(k<0) return; var now=Date.now();
+  l.forEach(function(x,i){ var st=i<k?'dominado':i===k?'praticando':x.st==='dominado'||x.st==='praticando'?'a fazer':x.st; if(st!==x.st){ x.st=st; x.u=now; } }); saveData(); }
+function gExImportPanel(){
+  var msg=el('div',{class:'gx-log',id:'gxLog'}), last=S.gExLog||[];
+  var paintLog=function(log){ msg.textContent=''; log.forEach(function(r){ msg.appendChild(el('div',{class:'mtxt '+(r.ok?'ok':'bad'),text:(r.ok?'✓ ':'• ')+r.f+': '+r.msg})); }); };
+  var files=el('input',{type:'file',id:'gxFiles',multiple:true,accept:'.pdf,.txt,application/pdf,text/plain',hidden:true,onchange:function(e){
+    var fl=e.target.files; if(!fl || !fl.length) return; msg.textContent=''; var st=el('div',{class:'mtxt dim',text:'Lendo…'}); msg.appendChild(st);
+    gExImportFiles(fl,function(t){ st.textContent=t; }).then(function(log){ S.gExLog=log; S.gExImp=true; save(); render(true); }); e.target.value=''; }});
+  var ta=el('textarea',{id:'gxPaste',rows:'4',spellcheck:'false',placeholder:'Ou cole aqui o texto de uma folha (abra o PDF, selecione tudo, copie e cole).'}); growArea(ta);
+  var paste=function(){ var sh=gParseSheet(ta.value,'texto colado'); if(!sh.exs.length){ paintLog([{ f:'texto colado', ok:false, msg:'não achei exercícios numerados (linhas como “01. Exercício 1”)' }]); return; }
+    var how=gExStore(sh); saveData(); S.gExLog=[{ f:'texto colado', ok:true, msg:sh.m+' · '+sh.t+': '+sh.exs.length+' exercícios ('+how+')' }]; S.gExImp=true; save(); render(true); };
+  if(last.length) paintLog(last);
+  return el('div',{class:'panel gx-imp'},[
+    el('p',{class:'small dim',text:'Escolha os PDFs das aulas (pode marcar todos de uma vez). A leitura é feita neste aparelho; o conteúdo fica só nos seus dados, como as músicas. Importar de novo a mesma aula atualiza a tablatura e mantém situação e observações.'}),
+    el('div',{class:'row'},[el('label',{class:'btn pri filebtn'},['Escolher PDFs das aulas',files])]),
+    ta, el('div',{class:'row'},[el('button',{class:'btn sm',type:'button',text:'Ler o texto colado',onclick:paste})]),
+    msg ]);
+}
+function gExSection(){
+  if(S.harp.type!=='diat') return null;
+  var list=gExSorted(), mods=[]; list.forEach(function(x){ if(mods.indexOf(x.m||'Curso')<0) mods.push(x.m||'Curso'); });
+  var dom=list.filter(function(x){ return x.st==='dominado'; }).length, open=!!S.gExImp || !list.length, curId=''; list.forEach(function(x){ if(x.st==='praticando' && !curId) curId=x.id; });
+  return el('section',{class:'sec gx-sec'},[
+    el('div',{class:'row between'},[el('h3',{text:'Aulas do curso'}),
+      el('div',{class:'row'},[ list.length?el('span',{class:'dim small',text:dom+' de '+list.length+' concluídas'}):null,
+        el('button',{class:'btn sm'+(open?' tonal':''),type:'button',id:'gxImpBtn',text:open&&list.length?'Fechar importação':'Importar folhas',onclick:function(){ S.gExImp=!open; if(!S.gExImp) S.gExLog=[]; save(); render(true); }}) ])]),
+    list.length ? el('div',{class:'prog'},[el('i',{style:'width:'+(100*dom/list.length)+'%'})]) : el('p',{class:'dim small',text:'Traga para cá as folhas de exercícios do seu curso de gaita. Cada PDF vira uma aula, com os exercícios numerados, tablatura tocável e prática com microfone.'}),
+    open ? gExImportPanel() : null,
+    list.length ? el('div',{class:'row'},[field('Estou na aula', select([['','escolha para marcar as anteriores como concluídas']].concat(list.map(function(x){ return [x.id,(x.m||'')+' · '+x.t]; })), curId, function(v){ if(v){ gExMarkUpTo(v); render(true); } },'gxWhere'))]) : null ]
+    .concat(mods.map(function(m){ var its=list.filter(function(x){ return (x.m||'Curso')===m; }), d=its.filter(function(x){ return x.st==='dominado'; }).length;
+      return el('div',{class:'cj-group'},[el('div',{class:'cj-gh'},[el('b',{text:m}),el('span',{class:'dim small',text:d===its.length?'concluído':d+' de '+its.length+' concluídas'})]), el('div',{class:'cj-list'},its.map(gExRow))]); })));
+}
+function gExDetail(it){
+  var harp=harpObj(S.harp), ctx=harpCtx(S.harp), out=[];
+  var del=el('button',{class:'btn danger sm',type:'button',text:'Excluir aula',onclick:function(){ if(del.dataset.sure){ S.del[it.id]=Date.now(); S.gEx=S.gEx.filter(function(x){ return x.id!==it.id; }); S.gExSel=null; saveData(); render(); } else { del.dataset.sure='1'; del.textContent='Excluir mesmo?'; } }});
+  var note=el('textarea',{id:'gxNote',rows:'3',placeholder:'o que travou, andamento alvo, o que rever',oninput:function(e){ it.n=e.target.value; gExTouch(it); }}); note.value=it.n||''; growArea(note);
+  var firstX=null; (it.exs||[]).forEach(function(ex){ if(firstX===null && ex.x) firstX=ex.k; });
+  var blocks=[]; (it.exs||[]).forEach(function(ex){ if(ex.k===firstX) blocks.push(el('h3',{class:'gx-extra',text:'Exercícios extras'})); blocks.push(gExBlock(ex)); });
+  function gExBlock(ex){
+    var key=gExKey(it,ex), done=exDoneToday(key), times=(S.exDone[key]||[]).length;
+    var head=el('div',{class:'gx-h'},[el('span',{class:'gx-k',text:ex.k}), el('b',{text:ex.t}),
+      el('button',{class:'btn sm'+(done?' live':''),type:'button',text:done?'Feito hoje':'Marcar feito',onclick:function(){ var a=S.exDone[key]||(S.exDone[key]=[]), t=today(), i=a.indexOf(t); if(i>=0) a.splice(i,1); else { a.push(t); if(a.length>120) a.shift(); } saveData(); render(true); }}) ]);
+    if(S.gExEdit===ex.k){
+      var ta=el('textarea',{id:'gxText',rows:'5',spellcheck:'false',autocapitalize:'off',oninput:function(){ ex.text=ta.value; gExTouch(it); }}); ta.value=ex.text||''; growArea(ta);
+      return el('div',{class:'gx'},[head, field('Tablatura', ta), el('div',{class:'row'},[el('button',{class:'btn pri sm',type:'button',text:'Concluir',onclick:function(){ S.gExEdit=null; save(); render(true); }})])]);
+    }
+    var parsed=C.parseTab(ex.text||'',harp), seq=C.tabSequence(parsed), te=tabElement(parsed,ctx), playing=false, bad=0;
+    parsed.forEach(function(l){ l.items.forEach(function(x){ if(x.type==='note' && !x.valid) bad++; }); });
+    var hl=function(i){ Object.keys(te.els).forEach(function(k){ te.els[k].classList.remove('cur'); }); if(i>=0 && seq[i]){ var b=te.els[seq[i].line+':'+seq[i].item]; if(b) b.classList.add('cur'); } };
+    var bPlay=el('button',{class:'btn sm',type:'button',text:'▶ Ouvir',onclick:function(){ if(playing){ stopPlay(); playing=false; bPlay.textContent='▶ Ouvir'; hl(-1); return; } playing=true; bPlay.textContent='■ Parar'; playSeq(seq, it.bpm||80, hl, function(){ playing=false; bPlay.textContent='▶ Ouvir'; }); }});
+    var open=S.gExOpen===ex.k;
+    return el('div',{class:'gx'},[head,
+      ex.d?el('p',{class:'dim small',text:ex.d}):null,
+      el('div',{class:'sheet'},[te]),
+      bad?el('div',{class:'note bad small',text:bad+' marcação(ões) não existem nesta gaita (sublinhadas). Pode ser erro da apostila: confira e corrija em Editar.'}):null,
+      el('div',{class:'row'},[ seq.length?bPlay:null,
+        seq.length?el('button',{class:'btn sm'+(open?' tonal':''),type:'button',text:open?'Fechar o microfone':'Praticar com microfone',onclick:function(){ S.gExOpen=open?null:ex.k; save(); render(true); }}):null,
+        el('button',{class:'btn sm ghost',type:'button',text:'Editar',onclick:function(){ S.gExEdit=ex.k; S.gExOpen=null; save(); stopPlay(); render(true); }}),
+        times?el('span',{class:'dim small',text:times+'×'}):null ]),
+      open && seq.length ? practiceBox(seq, ctx, harp, hl) : null ]);
+  }
+  out.push(el('section',{class:'sec gx-page'},[
+    el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Todos os exercícios',onclick:function(){ S.gExSel=null; S.gExOpen=null; S.gExEdit=null; save(); stopPlay(); render(); }})]),
+    el('p',{class:'dim small',text:'Aulas do curso · '+(it.m||'Curso')+' · '+harpName(S.harp)}),
+    el('div',{class:'row'},[el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':it.star?'Tirar das prioridades':'Marcar como prioridade',text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; gExTouch(it); render(true); }}), el('h2',{text:it.t||'Sem nome'})]),
+    el('div',{class:'segm three',role:'group','aria-label':'Situação'},CJ_ST_EX.map(function(st){ return el('button',{type:'button','aria-pressed':it.st===st?'true':'false',text:st==='dominado'?'Concluída':CJ_ST_LABEL[st],onclick:function(){ it.st=st; gExTouch(it); render(true); }}); })),
+    el('div',{class:'row'},[el('button',{class:'btn',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}), el('button',{class:'btn',type:'button',text:'Metrônomo a '+(it.bpm||80)+' bpm',onclick:function(){ S.metro.bpm=it.bpm||80; save(); if(!Metro.on) Metro.start(); paintMini(); }})]) ]
+    .concat(blocks).concat([
+    el('details',{},[el('summary',{text:'Símbolos da tablatura do curso'}), WID.tabLegenda()]),
+    el('div',{class:'grid2'},[
+      field('Nome da aula', el('input',{type:'text',id:'gxT',value:it.t||'',oninput:function(e){ it.t=e.target.value; gExTouch(it); }})),
+      field('Módulo', el('input',{type:'text',id:'gxM',value:it.m||'',oninput:function(e){ it.m=e.target.value.trim()||'Curso'; gExTouch(it); }})) ]),
+    field('Observações', note),
+    el('div',{class:'row end'},[del]) ])));
+  return out;
+}
+/* importação de arquivo de curso: preenche levadas e aulas sem mexer na situação, na estrela e nas observações */
+function importCurso(d){
+  var now=Date.now(), nc=0, uc=0, ng=0, ug=0;
+  (Array.isArray(d.cjEx)?d.cjEx:[]).forEach(function(x){ if(!x || !x.id) return;
+    var cur=null; S.cjEx.forEach(function(y){ if(!cur && y.id===x.id) cur=y; }); if(!cur) S.cjEx.forEach(function(y){ if(!cur && cjNorm(y.t).trim()===cjNorm(x.t).trim()) cur=y; });
+    if(cur){
+      if(cjPatHas(cur) && cur.p!==x.p && !(Array.isArray(x.vs)&&x.vs.some(function(v){ return v.p===cur.p; }))){ x=JSON.parse(JSON.stringify(x)); x.vs=(x.vs||[]).concat([{ n:'Minha anotação (antes da importação)', p:cur.p, h:cur.h||'', beats:cur.beats||2, div:cur.div||4 }]); }
+      ['p','h','beats','div','vs','pn','src'].forEach(function(k){ if(x[k]!==undefined) cur[k]=JSON.parse(JSON.stringify(x[k])); }); if(x.bpm && !cur.bpm) cur.bpm=x.bpm; cur.u=now; uc++; }
+    else { var n=JSON.parse(JSON.stringify(x)); n.u=now; n.st=n.st||'a fazer'; n.star=!!n.star; n.n=n.n||''; delete S.del[n.id]; S.cjEx.push(n); nc++; } });
+  if(!Array.isArray(S.gEx)) S.gEx=[];
+  (Array.isArray(d.gEx)?d.gEx:[]).forEach(function(x){ if(!x || !x.id) return;
+    var cur=gExById(x.id);
+    if(cur){ ['m','t','exs','bpm'].forEach(function(k){ if(x[k]!==undefined) cur[k]=JSON.parse(JSON.stringify(x[k])); }); cur.u=now; ug++; }
+    else { var n=JSON.parse(JSON.stringify(x)); n.u=now; n.st=n.st||'a fazer'; n.star=!!n.star; n.n=n.n||''; delete S.del[n.id]; S.gEx.push(n); ng++; } });
+  saveData();
+  var parts=[]; if(nc||uc) parts.push('cajon: '+nc+' novos, '+uc+' atualizados'); if(ng||ug) parts.push('gaita: '+ng+' aulas novas, '+ug+' atualizadas');
+  return parts.length ? 'Curso importado ('+parts.join('; ')+'). Situação, estrela e observações que você já tinha foram mantidas.' : 'O arquivo de curso não trouxe nada.';
 }
 
 /* ---------- caderno de estudos ---------- */
@@ -2292,7 +2510,8 @@ function importCaderno(text){
 function fileImportInput(id, msgId){
   var inp=el('input',{type:'file',id:id,accept:'.json,.txt,application/json,text/plain',hidden:true,onchange:function(){ var f=inp.files && inp.files[0]; if(!f) return; var rd=new FileReader();
     rd.onload=function(){ var txt=String(rd.result||''), d=null, n0=S.notes.length, m0=S.songs.length, text='', ok=true; try{ d=JSON.parse(txt); }catch(e){}
-      if(d && typeof d==='object' && SYNC_LISTS.some(function(k){ return Array.isArray(d[k]); })){ var ch=mergeDoc(d), parts=[]; if(S.songs.length>m0) parts.push((S.songs.length-m0)+' músicas'); if(S.notes.length>n0) parts.push((S.notes.length-n0)+' anotações');
+      if(d && typeof d==='object' && d.curso){ text=importCurso(d); }
+      else if(d && typeof d==='object' && SYNC_LISTS.some(function(k){ return Array.isArray(d[k]); })){ var ch=mergeDoc(d), parts=[]; if(S.songs.length>m0) parts.push((S.songs.length-m0)+' músicas'); if(S.notes.length>n0) parts.push((S.notes.length-n0)+' anotações');
         text = parts.length ? 'Arquivo importado: '+parts.join(' e ')+' novas.' : ch ? 'Arquivo importado: itens atualizados.' : 'Nada de novo: este aparelho já tinha tudo desse arquivo.'; }
       else { var ns=importCaderno(txt); if(ns.length){ S.notes=S.notes.concat(ns); text='Texto importado: '+ns.length+' anotações novas.'; } else { text='Não encontrei músicas nem anotações nesse arquivo.'; ok=false; } }
       saveData(); render(); var m=document.getElementById(msgId); if(m){ m.textContent=text; m.className='mtxt '+(ok?'ok':'bad'); } };
@@ -2393,13 +2612,14 @@ function toast(msg, act, fn){
 var cjNoise=null;
 function cjNoiseBuf(){ var a=AC(); if(!cjNoise || cjNoise.sampleRate!==a.sampleRate){ var n=Math.floor(a.sampleRate*0.4), b=a.createBuffer(1,n,a.sampleRate), d=b.getChannelData(0); for(var i=0;i<n;i++) d[i]=Math.random()*2-1; cjNoise=b; } return cjNoise; }
 function cjHit(ch, when, vol){
-  if(ch!=='G' && ch!=='A' && ch!=='f') return;
+  if('GBgAf'.indexOf(ch)<0 || !ch) return;
   var a=AC(), v=(vol==null?1:vol)*0.9;
   function noise(type,freq,q,gain,dur){ var s=a.createBufferSource(), f=a.createBiquadFilter(), g=a.createGain(); s.buffer=cjNoiseBuf(); f.type=type; f.frequency.value=freq; f.Q.value=q;
     g.gain.setValueAtTime(gain*v,when); g.gain.exponentialRampToValueAtTime(0.0008,when+dur); s.connect(f); f.connect(g); g.connect(a.destination); s.start(when); s.stop(when+dur+0.02); }
   function osc(type,f0,f1,gain,dur){ var o=a.createOscillator(), g=a.createGain(); o.type=type; o.frequency.setValueAtTime(f0,when); o.frequency.exponentialRampToValueAtTime(f1,when+dur*0.7);
     g.gain.setValueAtTime(0.0001,when); g.gain.exponentialRampToValueAtTime(gain*v,when+0.004); g.gain.exponentialRampToValueAtTime(0.0008,when+dur); o.connect(g); g.connect(a.destination); o.start(when); o.stop(when+dur+0.02); }
-  if(ch==='G'){ osc('sine',118,56,0.95,0.24); osc('triangle',190,96,0.32,0.13); noise('lowpass',320,0.7,0.3,0.05); }
+  if(ch==='G' || ch==='B'){ var k=ch==='B'?1.3:0.85; osc('sine',118,56,0.95*k,0.24); osc('triangle',190,96,0.32*k,0.13); noise('lowpass',320,0.7,0.3*k,0.05); }
+  else if(ch==='g'){ osc('sine',110,70,0.22,0.07); noise('lowpass',420,0.7,0.1,0.03); }
   else if(ch==='A'){ noise('bandpass',2300,0.9,0.62,0.11); noise('highpass',5200,0.5,0.22,0.07); osc('triangle',330,220,0.26,0.07); }
   else { noise('bandpass',3300,1.2,0.15,0.035); }
 }
@@ -2424,10 +2644,12 @@ var Groove={ on:false, timer:0, cur:null, i:0, next:0,
    G grave, A agudo, f toque fantasma, ponto = silêncio. */
 function cjBars(g){ return String(g.p||'').split('|'); }
 function cjFit(str, n, bars){ var b=String(str||'').split('|'), out=[]; for(var i=0;i<bars;i++){ var s=b[i]||''; while(s.length<n) s+='.'; out.push(s.slice(0,n)); } return out.join('|'); }
-function cjCount(i, div){ var r=i%div; if(r===0) return String(Math.floor(i/div)+1); if((div===4 && r===2) || div===2) return 'e'; return '·'; }
+function cjCount(i, div){ var r=i%div; if(r===0) return String(Math.floor(i/div)+1);
+  if(div%4===0){ return r===div/4?'i':r===div/2?'e':r===3*div/4?'a':'·'; }
+  if(div===2) return 'e'; if(div===3) return 'o'; if(div===6) return r>=3?'o':'·'; return '·'; }
 function gradeEl(g, opt){
   opt=opt||{}; var beats=g.beats||4, div=g.div||4, n=beats*div, bars=cjBars(g), hs=g.h?String(g.h).split('|'):null, cols=[], tag=opt.edit?'button':'i';
-  var wrap=el('div',{class:'grade'+(opt.edit?' edit':'')+(n<=8?' short':'')});
+  var wrap=el('div',{class:'grade'+(opt.edit?' edit':'')+(n<=8?' short':'')+(n>16?' dense':'')});
   bars.forEach(function(bar,bi){
     var box=el('div',{class:'gr-bar'}); box.style.setProperty('--n',n);
     var lane=function(cls,label,title){ var r=el('div',{class:'gr-row '+cls},[el('span',{class:'gr-l',text:label,title:title})]); box.appendChild(r); return r; };
@@ -2437,7 +2659,7 @@ function gradeEl(g, opt){
       var mk=function(row,cls,txt,lane,lab){ var at={class:'gc'+beat+(cls?' '+cls:''),text:txt}; if(opt.edit){ at.type='button'; at['aria-label']=lab+', casa '+(i+1); at.onclick=function(){ opt.edit(bi,i,lane); }; } var c=el(tag,at); row.appendChild(c); col.push(c); };
       var c0=el('i',{class:'gc'+beat,text:cjCount(i,div)}); rc.appendChild(c0); col.push(c0);
       mk(ra, ch==='A'?'A':ch==='f'?'f':'', '', 'hi', ch==='A'?'agudo':ch==='f'?'fantasma':'vazio');
-      mk(rg, ch==='G'?'G':'', '', 'lo', ch==='G'?'grave':'vazio');
+      mk(rg, ch==='G'?'G':ch==='B'?'G B':ch==='g'?'f':'', ch==='B'?'>':'', 'lo', ch==='G'?'grave':ch==='B'?'grave acentuado':ch==='g'?'fantasma grave':'vazio');
       if(rh) mk(rh, (hd==='D'||hd==='E')?'H':'', (hd==='D'||hd==='E')?hd:'', 'hd', hd==='D'?'mão direita':hd==='E'?'mão esquerda':'sem mão');
       cols.push(col); })(i); }
     wrap.appendChild(box); });
@@ -2445,8 +2667,8 @@ function gradeEl(g, opt){
   wrap.setNow=function(k){ if(now>=0 && cols[now]) cols[now].forEach(function(c){ c.classList.remove('now'); }); now=k; if(k>=0 && cols[k]) cols[k].forEach(function(c){ c.classList.add('now'); }); };
   return wrap;
 }
-function cjLegend(hands){ var it=function(cls,txt){ return el('span',{class:'gr-li'},[cls?el('i',{class:'gc '+cls}):null,txt]); };
-  return el('p',{class:'gr-leg small dim'},[it('A','agudo, na borda de cima'),it('G','grave, no meio da tampa'),it('f','toque fantasma, só a ponta dos dedos'),hands?it('','D mão direita, E mão esquerda'):null]); }
+function cjLegend(hands, full){ var it=function(cls,txt){ return el('span',{class:'gr-li'},[cls?el('i',{class:'gc '+cls,text:cls==='G B'?'>':''}):null,txt]); };
+  return el('p',{class:'gr-leg small dim'},[it('A','agudo, na borda de cima'),it('G','grave, no meio da tampa'),it('f','toque fantasma, só a ponta dos dedos'),full?it('G B','grave com acento'):null,hands?it('','D mão direita, E mão esquerda'):null]); }
 /* caixa com a grade, andamento, clique e botão de tocar. opt: title, bpm, get (grade atual), edit, hands, onBpm */
 function grooveBox(g, opt){
   opt=opt||{}; var get=opt.get||function(){ return g; }, bpm=opt.bpm||g.bpm||80, host=el('div',{class:'gr-host'}), grid=null, playing=false;
@@ -2601,46 +2823,68 @@ function cjExDetail(e){
       cjHist(e.id) ]))];
 }
 /* ritmos do curso: o aluno anota a levada como o professor ensinou */
-var CJ_METERS=[['2x4','2/4 em semicolcheias',2,4],['4x4','4/4 em semicolcheias',4,4],['4x2','4/4 em colcheias',4,2],['4x3','4/4 em tercinas (shuffle, 12/8)',4,3],['3x4','3/4 em semicolcheias',3,4],['2x3','6/8',2,3]];
-function cjRhGrid(it){ var beats=it.beats||2, div=it.div||4, bars=Math.max(1,String(it.p||'').split('|').length), n=beats*div;
-  return { p:cjFit(it.p,n,it.p?bars:2), h:cjFit(it.h,n,it.p?bars:2), beats:beats, div:div }; }
-function cjRhHas(it){ return /[GAf]/.test(String(it.p||'')); }
+var CJ_METERS=[['2x4','2/4 em semicolcheias',2,4],['4x4','4/4 em semicolcheias',4,4],['4x2','4/4 em colcheias',4,2],['4x3','4/4 em tercinas (shuffle, 12/8)',4,3],['4x6','4/4 em sextinas',4,6],['3x4','3/4 em semicolcheias',3,4],['2x3','6/8',2,3]];
+/* cada ritmo tem a levada principal (campos do próprio item) e variações em it.vs */
+function cjPatHas(o){ return /[GBgAf]/.test(String((o&&o.p)||'')); }
+function cjRhPats(it){ var vs=Array.isArray(it.vs)?it.vs:[]; return [{ o:it, n:it.pn||(vs.length?'Ritmo base':'Levada'), base:true }].concat(vs.map(function(v){ return { o:v, n:v.n||'Variação' }; })); }
+function cjRhHas(it){ return cjRhPats(it).some(function(x){ return cjPatHas(x.o); }); }
+function cjRhGrid(o){ var beats=o.beats||2, div=o.div||4, has=!!String(o.p||''), bars=has?Math.max(1,String(o.p).split('|').length):2, n=beats*div;
+  return { p:cjFit(o.p,n,bars), h:cjFit(o.h,n,bars), beats:beats, div:div }; }
 function cjRhRow(it){
-  var si=Math.max(0,CJ_ST_EX.indexOf(it.st));
+  var si=Math.max(0,CJ_ST_EX.indexOf(it.st)), np=cjRhPats(it).filter(function(x){ return cjPatHas(x.o); }).length;
+  var info=np ? (np===1?'1 levada':np+' levadas')+(it.bpm?' · '+it.bpm+' bpm':'') : (/^m[óo]dulo/i.test(it.m||'')?'levada por anotar':'');
   return el('div',{class:'cj-row'+(si===2?' ok':'')},[
     el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':(it.star?'Tirar das prioridades: ':'Marcar como prioridade: ')+it.t,text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; cjTouch(it); render(true); }}),
-    el('button',{class:'cj-main',type:'button',title:'Abrir',onclick:function(){ S.cjSel=it.id; save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[cjRhHas(it)?'levada anotada':(/^m[óo]dulo/i.test(it.m||'')?'levada por anotar':''), it.n?String(it.n).split('\n')[0]:''].filter(Boolean).join(' · ')||(it.m||'')})]),
+    el('button',{class:'cj-main',type:'button',title:'Abrir',onclick:function(){ S.cjSel=it.id; S.cjRhEdit=null; save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[info, it.n?String(it.n).split('\n')[0]:''].filter(Boolean).join(' · ')||(it.m||'')})]),
     exDoneToday(it.id) ? el('span',{class:'tag ok',text:'feito hoje'}) : el('span',{class:'tag st'+si,text:CJ_ST_LABEL[CJ_ST_EX[si]]}) ]);
 }
-function cjRhDetail(it){
-  var g=cjRhGrid(it), box;
-  var store=function(){ it.p=g.p; it.h=/[DE]/.test(g.h)?g.h:''; it.beats=g.beats; it.div=g.div; cjTouch(it); };
+/* editor de uma levada (a principal ou uma variação) */
+function cjPatEditor(it, x, idx){
+  var o=x.o, g=cjRhGrid(o), box;
+  var store=function(){ o.p=g.p; o.h=/[DE]/.test(g.h)?g.h:''; o.beats=g.beats; o.div=g.div; cjTouch(it); };
   var edit=function(bi,i,lane){ var key=lane==='hd'?'h':'p', bars=g[key].split('|'), s=bars[bi].split(''), c=s[i];
-    if(lane==='hi') s[i]=(c==='A')?'f':(c==='f')?'.':'A'; else if(lane==='lo') s[i]=(c==='G')?'.':'G'; else s[i]=(c==='D')?'E':(c==='E')?'.':'D';
+    if(lane==='hi') s[i]=(c==='A')?'f':(c==='f')?'.':'A'; else if(lane==='lo') s[i]=(c==='G')?'B':(c==='B')?'g':(c==='g')?'.':'G'; else s[i]=(c==='D')?'E':(c==='E')?'.':'D';
     bars[bi]=s.join(''); g[key]=bars.join('|'); store(); if(lane!=='hd' && s[i]!=='.' && !Groove.on) cjHit(s[i],AC().currentTime+0.01,1); box.repaint(); };
-  var meter=CJ_METERS.filter(function(m){ return m[2]===g.beats && m[3]===g.div; })[0]||CJ_METERS[0], nb=g.p.split('|').length;
+  var meters=CJ_METERS.slice(), meter=meters.filter(function(m){ return m[2]===g.beats && m[3]===g.div; })[0], nb=g.p.split('|').length;
+  if(!meter){ meter=[g.beats+'x'+g.div, g.beats+' tempos, '+g.div+' casas por tempo', g.beats, g.div]; meters.push(meter); }
   var resize=function(beats,div,bars){ g.beats=beats; g.div=div; g.p=cjFit(g.p,beats*div,bars); g.h=cjFit(g.h,beats*div,bars); store(); render(true); };
-  box=grooveBox(g,{ title:'Levada', bpm:it.bpm||80, get:function(){ return { p:g.p, h:g.h, beats:g.beats, div:g.div }; }, edit:edit, hands:true, onBpm:function(v){ it.bpm=v; cjTouch(it); } });
+  box=grooveBox(g,{ title:x.n, bpm:o.bpm||it.bpm||80, get:function(){ return { p:g.p, h:g.h, beats:g.beats, div:g.div }; }, edit:edit, hands:true, onBpm:function(v){ if(x.base) it.bpm=v; else o.bpm=v; cjTouch(it); } });
+  var bopts=[[1,'1'],[2,'2'],[4,'4']]; if(!bopts.some(function(b){ return b[0]===nb; })) bopts.push([nb,String(nb)]);
+  return el('div',{class:'cj-pat'},[
+    el('div',{class:'row cj-meter'},[
+      x.base ? null : field('Nome', el('input',{type:'text',id:'cjV'+idx,value:o.n||'',placeholder:'Variação',oninput:function(e){ o.n=e.target.value; cjTouch(it); }})),
+      field('Compasso', select(meters.map(function(m){ return [m[0],m[1]]; }), meter[0], function(v){ var m=meters.filter(function(z){ return z[0]===v; })[0]; resize(m[2],m[3],nb); },'cjRhMeter'+idx)),
+      field('Compassos', select(bopts, nb, function(v){ resize(g.beats,g.div,parseInt(v,10)); },'cjRhBars'+idx)),
+      el('button',{class:'btn sm',type:'button',text:'Limpar',onclick:function(){ g.p=cjFit('',g.beats*g.div,nb); g.h=cjFit('',g.beats*g.div,nb); store(); box.repaint(); }}),
+      x.base ? null : el('button',{class:'btn sm danger',type:'button',text:'Remover variação',onclick:function(){ it.vs.splice(idx-1,1); cjTouch(it); render(true); }}) ]),
+    box ]);
+}
+function cjRhDetail(it){
+  var pats=cjRhPats(it), has=cjRhHas(it); if(!has) S.cjRhEdit=it.id;
+  var editing=S.cjRhEdit===it.id;
   var del=el('button',{class:'btn danger sm',type:'button',text:'Excluir',onclick:function(){ if(del.dataset.sure){ S.del[it.id]=Date.now(); S.cjEx=S.cjEx.filter(function(x){ return x.id!==it.id; }); S.cjSel=null; saveData(); render(); } else { del.dataset.sure='1'; del.textContent='Excluir mesmo?'; } }});
   var ttl=el('h2',{text:it.t||'Sem nome'}), mods=[]; S.cjEx.forEach(function(x){ if(x.m && mods.indexOf(x.m)<0) mods.push(x.m); });
   var txt=el('textarea',{id:'cjRhN',rows:'3',placeholder:'o que o professor pediu, andamento alvo, variações',oninput:function(e){ it.n=e.target.value; cjTouch(it); }}); txt.value=it.n||''; growArea(txt);
+  var hands=pats.some(function(x){ return /[DE]/.test(String(x.o.h||'')); }), accents=pats.some(function(x){ return /[Bg]/.test(String(x.o.p||'')); });
+  var body = editing
+    ? pats.map(function(x,i){ return cjPatEditor(it,x,i); }).concat([
+        el('div',{class:'row'},[el('button',{class:'btn',type:'button',text:'+ Variação',onclick:function(){ if(!Array.isArray(it.vs)) it.vs=[]; it.vs.push({ n:'Variação '+(it.vs.length+1), p:'', h:'', beats:it.beats||2, div:it.div||4 }); cjTouch(it); render(true); }}),
+          el('button',{class:'btn pri',type:'button',text:'Concluir edição',onclick:function(){ if(!cjRhHas(it)){ toast('Marque pelo menos uma casa da grade antes de concluir.'); return; } S.cjRhEdit=null; save(); render(true); }})]),
+        el('p',{class:'dim small',text:'Toque numa casa da linha A para agudo, de novo para toque fantasma, de novo para apagar. Na linha G: grave, grave com acento, fantasma grave, apagar. Na linha “mão”, D ou E.'}) ])
+    : pats.filter(function(x){ return cjPatHas(x.o); }).map(function(x){ var g=cjRhGrid(x.o); if(!/[DE]/.test(g.h)) g.h=''; return grooveBox(g,{ title:x.n, bpm:x.o.bpm||it.bpm||80, onBpm:function(v){ if(x.base){ it.bpm=v; } else x.o.bpm=v; cjTouch(it); } }); })
+        .concat([el('div',{class:'row'},[el('button',{class:'btn sm',type:'button',id:'cjRhEditBtn',text:'Editar as levadas',onclick:function(){ S.cjRhEdit=it.id; save(); render(true); }})])]);
   return [el('section',{class:'sec'},[ cjBack(),
-    el('p',{class:'dim small',text:'Ritmos do curso · '+(it.m||'Outros')}),
+    el('p',{class:'dim small',text:'Ritmos do curso · '+(it.m||'Outros')+(it.src?' · '+it.src:'')}),
     el('div',{class:'row'},[el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':it.star?'Tirar das prioridades':'Marcar como prioridade',text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; cjTouch(it); render(true); }}), ttl]),
-    el('div',{class:'segm three',role:'group','aria-label':'Situação'},CJ_ST_EX.map(function(st){ return el('button',{type:'button','aria-pressed':it.st===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ it.st=st; cjTouch(it); render(true); }}); })),
-    el('div',{class:'row cj-meter'},[
-      field('Compasso', select(CJ_METERS.map(function(m){ return [m[0],m[1]]; }), meter[0], function(v){ var m=CJ_METERS.filter(function(x){ return x[0]===v; })[0]; resize(m[2],m[3],nb); },'cjRhMeter')),
-      field('Compassos', select([[1,'1'],[2,'2'],[4,'4']], nb, function(v){ resize(g.beats,g.div,parseInt(v,10)); },'cjRhBars')),
-      el('button',{class:'btn sm',type:'button',text:'Limpar a grade',onclick:function(){ g.p=cjFit('',g.beats*g.div,nb); g.h=cjFit('',g.beats*g.div,nb); store(); box.repaint(); }}) ]),
-    box, cjLegend(true),
-    el('p',{class:'dim small',text:'Anote a levada como o curso ensina: toque numa casa da linha A para agudo, de novo para toque fantasma, de novo para apagar. Na linha G, grave. Na linha “mão”, D ou E. A grade toca em loop para você conferir de ouvido.'}),
+    el('div',{class:'segm three',role:'group','aria-label':'Situação'},CJ_ST_EX.map(function(st){ return el('button',{type:'button','aria-pressed':it.st===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ it.st=st; cjTouch(it); render(true); }}); })) ]
+    .concat(body).concat([ cjLegend(hands||editing, accents||editing),
     el('div',{class:'grid2'},[
       field('Nome', el('input',{type:'text',id:'cjRhT',value:it.t||'',oninput:function(e){ it.t=e.target.value; ttl.textContent=it.t||'Sem nome'; cjTouch(it); }})),
       field('Módulo', el('input',{type:'text',id:'cjRhM',list:'cjMods',value:it.m||'',oninput:function(e){ it.m=e.target.value.trim()||'Outros'; cjTouch(it); }})) ]),
     el('datalist',{id:'cjMods'},mods.map(function(m){ return el('option',{value:m}); })),
     field('Observações', txt),
     el('div',{class:'row between'},[el('div',{class:'row'},[el('button',{class:'btn',type:'button',text:'Metrônomo a '+(it.bpm||80)+' bpm',onclick:function(){ Groove.stop(); S.metro.bpm=it.bpm||80; save(); if(!Metro.on) Metro.start(); paintMini(); }}), cjDoneBtn(it.id)]), del]),
-    cjHist(it.id) ])];
+    cjHist(it.id) ]))];
 }
 function viewCajonEx(){
   var sel=S.cjSel, e=sel?cjExById(sel):null, rh=null; if(sel && !e) S.cjEx.forEach(function(x){ if(x.id===sel) rh=x; });
@@ -2667,6 +2911,7 @@ function viewCajonEx(){
     .concat(mods.map(function(m){ var its=exs.filter(function(x){ return (x.m||'Outros')===m; }), dom=its.filter(function(x){ return x.st==='dominado'; }).length;
       return el('div',{class:'cj-group'},[el('div',{class:'cj-gh'},[el('b',{text:m}),el('span',{class:'dim small',text:dom===its.length?'concluído':dom+' de '+its.length+' dominados'})]), el('div',{class:'cj-list'},its.map(cjRhRow))]); }))
     .concat([ el('div',{class:'row cj-add'},[nm,md,el('button',{class:'btn',type:'button',text:'Adicionar ritmo',onclick:add})]),
+      el('div',{class:'row'},[el('label',{class:'btn sm filebtn'},['Importar arquivo do curso',fileImportInput('cjFile','cjFileMsg')]), el('span',{class:'mtxt dim',id:'cjFileMsg'})]),
       el('datalist',{id:'cjModsNew'},mods.map(function(m){ return el('option',{value:m}); })) ])));
   var cats=[]; list.forEach(function(x){ if(cats.indexOf(x.cat)<0) cats.push(x.cat); });
   cats.forEach(function(cat){ out.push(el('section',{class:'sec'},[el('h3',{text:cat}), el('div',{class:'exgrid'},list.filter(function(x){ return x.cat===cat; }).map(cjExCard))])); });
@@ -3360,9 +3605,9 @@ function viewImportar(){
 
 /* ---------- sincronização entre aparelhos (gist secreto na conta do GitHub) ---------- */
 var SYNC_FILE='estudo-de-gaita.json';
-var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps'];
-function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
-function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[]]); }
+var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps','gEx'];
+function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], gEx:S.gEx||[], del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
+function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[],d.gEx||[]]); }
 /* junta os dados de outro aparelho com os daqui; devolve true se algo mudou aqui */
 function mergeDoc(r){
   if(!r || typeof r!=='object') return false;
@@ -3475,7 +3720,7 @@ function viewAjustes(){
     el('p',{class:'dim small',text:'As marcadas aparecem como atalho no topo e são destacadas nas sugestões de qual gaita usar.'}),
     el('div',{class:'row'},all.map(function(h){ var on=S.mine.some(function(m){ return sameHarp(m,h); });
       return chip(h.type==='crom'?'Cromática':NN(HARP_KEYS[h.key]), on, function(){ if(on){ if(S.mine.length>1) S.mine=S.mine.filter(function(m){ return !sameHarp(m,h); }); } else S.mine.push(h); S.mineAt=Date.now(); saveData(); render(); }); })) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 12 (05/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 13 (05/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -3609,6 +3854,8 @@ function readerSource(){
     return { title:s.title||'Sem título', sub:I.meta, body:function(){ return tabElement(I.parsed,I.ctx); }, seq:I.seq, bpm:s.bpm||80 }; }
   if(S.tab==='caderno'){ var n=curNote(); if(!n || S.noteEdit || !String(n.text||'').trim()) return null;
     return { title:n.title||'Sem título', sub:(n.sec||'Outros')+(n.harp?', '+harpLc(n.harp):''), body:function(){ return noteBody(n); } }; }
+  if(S.tab==='exercicios' && S.gExSel && S.harp.type==='diat' && gExById(S.gExSel) && !S.gExEdit){ var gx=gExById(S.gExSel), gh=harpObj(S.harp), gc=harpCtx(S.harp);
+    return { title:gx.t, sub:(gx.m||'Curso')+', '+harpLc(S.harp), body:function(){ return el('div',{class:'gx-read'},(gx.exs||[]).map(function(ex){ return el('div',{},[el('p',{class:'gx-rt',text:ex.k+'. '+ex.t}), tabElement(C.parseTab(ex.text||'',gh),gc)]); })); } }; }
   if(S.tab==='exercicios'){ var e=null; EXS.forEach(function(x){ if(x.id===S.ex && x.h===S.harp.type) e=x; }); if(!e) return null;
     var harp=harpObj(S.harp), ctx=harpCtx(S.harp), parsed=C.parseTab(exTab(e,harp),harp);
     return { title:e.t, sub:harpName(S.harp)+', '+e.bpm+' bpm', body:function(){ return tabElement(parsed,ctx); }, seq:C.tabSequence(parsed), bpm:e.hold>1000?40:e.bpm }; }
@@ -3849,14 +4096,14 @@ function init(){
   if(!S.cjSongs) S.cjSongs=cjSeedSongs(); if(!S.cjEx) S.cjEx=cjSeedEx();
   var cfg=document.getElementById('cfgBtn'); cfg.appendChild(icon('ajustes')); cfg.addEventListener('click',function(){ openAux('ajustes'); });
   var sb=document.getElementById('syncBtn'); sb.appendChild(icon('nuvem')); sb.addEventListener('click',function(){ if(Sync.on()) Sync.run(true); else openAux('ajustes'); });
-  S.songEdit=null; if(!Array.isArray(S.reps)) S.reps=[]; S.repRow=null; S.repNewId=null; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
+  S.songEdit=null; if(!Array.isArray(S.reps)) S.reps=[]; S.repRow=null; S.repNewId=null; if(!Array.isArray(S.gEx)) S.gEx=[]; S.gExOpen=null; S.gExEdit=null; S.cjRhEdit=null; S.gExImp=false; S.gExLog=[]; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
   var onLand=function(){ if(!mqLand.matches) readerDismissed=false; render(true); };
   if(mqLand.addEventListener) mqLand.addEventListener('change',onLand); else if(mqLand.addListener) mqLand.addListener(onLand);
   render();
   if(Sync.on()){ Sync.st='ok'; Sync.run(); }
   document.addEventListener('visibilitychange',function(){ if(!document.hidden && Sync.on() && Date.now()-(S.sync.last||0)>30000) Sync.run(); });
 }
-window.__gaita={ S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno, repParse:repParse, repTag:repTag, repSetIns:repSetIns };
+window.__gaita={ S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno, repParse:repParse, repTag:repTag, repSetIns:repSetIns, importCurso:importCurso, gParseSheet:gParseSheet, pdfLines:pdfLines };
 init();
 })();
 </script>
