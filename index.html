@@ -57,6 +57,28 @@
   --on-s:#EDE1CF; --on-sv:#D2C3AB; --ol:#9A8D79; --olv:#4F4536;
   --bar:#3D2A13; --on-bar:#F6E7CF; --on-bar-dim:#C8B08B }
 
+:root[data-skin="rep"]{
+  --p:#2E3A46; --on-p:#FFFFFF; --pc:#DCE3EA; --on-pc:#111A22;
+  --sc:#E1E5E9; --on-sc:#191D21;
+  --s0:#F4F5F6; --s1:#FFFFFF; --s2:#ECEEF0; --s3:#E3E6E9; --s4:#D9DDE1;
+  --on-s:#1A1C1E; --on-sv:#43474C; --ol:#72777D; --olv:#C4C8CD;
+  --bar:#262C33; --on-bar:#FFFFFF; --on-bar-dim:#B6BDC6 }
+@media (prefers-color-scheme: dark){ :root[data-skin="rep"]:not([data-theme="light"]){
+  --p:#C3CCD6; --on-p:#1B242C; --pc:#3A4651; --on-pc:#DCE3EA;
+  --sc:#3F464D; --on-sc:#E1E5E9;
+  --s0:#111315; --s1:#1A1C1F; --s2:#1F2124; --s3:#292C2F; --s4:#34373B;
+  --on-s:#E3E4E6; --on-sv:#C3C7CC; --ol:#8D9197; --olv:#44484D;
+  --bar:#1A1F25; --on-bar:#E8ECF0; --on-bar-dim:#A4ACB6 } }
+:root[data-skin="rep"][data-theme="dark"]{
+  --p:#C3CCD6; --on-p:#1B242C; --pc:#3A4651; --on-pc:#DCE3EA;
+  --sc:#3F464D; --on-sc:#E1E5E9;
+  --s0:#111315; --s1:#1A1C1F; --s2:#1F2124; --s3:#292C2F; --s4:#34373B;
+  --on-s:#E3E4E6; --on-sv:#C3C7CC; --ol:#8D9197; --olv:#44484D;
+  --bar:#1A1F25; --on-bar:#E8ECF0; --on-bar-dim:#A4ACB6 }
+:root{ --ig:#1F3B6E; --ic:#6B4A26 }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ig:#AFC6FF; --ic:#E6C290 } }
+:root[data-theme="dark"]{ --ig:#AFC6FF; --ic:#E6C290 }
+
 *{box-sizing:border-box}
 body{background:var(--s0);color:var(--on-s);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
 button,select,input,textarea{font:inherit;color:inherit}
@@ -425,6 +447,72 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .gr-li .gc{display:inline-grid;width:14px;height:14px;border-radius:3px;flex:none;box-shadow:none}
 .cj-meter{align-items:flex-end}
 .v-cajon textarea{font-family:var(--f-body)}
+.rep-chips{row-gap:6px}
+.imp-page{max-width:760px;width:100%}
+.imp-page textarea{font-family:var(--f-body);font-size:16px;line-height:1.6}
+.imp-opts{gap:16px;align-items:flex-end}
+.imp-opts .segm{min-width:240px}
+.imp-prev{display:flex;flex-direction:column;gap:10px;min-width:0}
+.imp-block{display:flex;flex-direction:column;min-width:0}
+.imp-block .cj-gh{padding-top:6px}
+.imp-row,.imp-saved{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;border-bottom:1px solid var(--olv);min-height:56px;padding:6px 0;min-width:0}
+.imp-saved{grid-template-columns:minmax(0,1fr) auto}
+.imp-n{font-size:13px;color:var(--on-sv);text-align:right;font-variant-numeric:tabular-nums}
+.imp-t{display:flex;flex-direction:column;gap:2px;min-width:0}
+.imp-t b{font-weight:500;font-size:15.5px;line-height:1.3;overflow-wrap:anywhere}
+.imp-t small{color:var(--on-sv);font-size:12.5px;line-height:1.35}
+.imp-ins{display:flex;border:1px solid var(--ol);border-radius:18px;overflow:hidden;flex:none}
+.imp-ins button{border:0;background:none;min-height:36px;padding:0 12px;font-size:13px;font-weight:500;color:var(--on-sv)}
+.imp-ins button+button{border-left:1px solid var(--ol)}
+.imp-ins button[aria-pressed="true"]{background:var(--p);color:var(--on-p)}
+.imp-ins.auto button[aria-pressed="true"]{background:var(--sc);color:var(--on-sc)}
+.imp-done{display:flex;flex-direction:column;gap:10px;background:var(--okc);color:var(--on-s)}
+.tabs:empty,.tabs-bottom:empty{display:none}
+:root[data-skin="rep"] .harpbar{padding-bottom:12px}
+:root[data-skin="rep"] main{padding-bottom:64px}
+.song-st{max-width:420px}
+.rp-page{max-width:760px;width:100%;gap:14px}
+.segm.stats.two{max-width:360px}
+.rp-list{display:flex;flex-direction:column;gap:10px;min-width:0}
+.rp-card{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px;align-items:start;text-align:left;border:0;background:var(--s1);border-radius:12px;padding:14px;box-shadow:var(--e1);min-width:0;color:var(--on-s);transition:box-shadow .15s}
+.rp-card:hover{box-shadow:var(--e2)}
+.rp-card.next{box-shadow:var(--e2),inset 4px 0 0 var(--p)}
+.rp-card.past{box-shadow:none;background:var(--s2)}
+.rp-date{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--pc);color:var(--on-pc);border-radius:10px;min-height:56px;padding:4px 2px;line-height:1.1}
+.rp-date b{font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.rp-date small{font-size:11.5px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;text-align:center}
+.rp-card.past .rp-date{background:var(--s4);color:var(--on-sv)}
+.rp-body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.rp-body>small{color:var(--on-sv);font-size:13px;line-height:1.4}
+.rp-flag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--p)}
+.rp-name{font-size:17px;font-weight:500;line-height:1.3;overflow-wrap:anywhere}
+.rp-prog{display:grid;grid-template-columns:minmax(60px,1fr) auto;gap:10px;align-items:center;max-width:420px;margin-top:2px}
+.rp-ins{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.ins-tag{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:500;line-height:1.5;white-space:nowrap;border:1px solid var(--olv);color:var(--on-sv)}
+.ins-tag.g{border-color:color-mix(in srgb,var(--ig) 45%,transparent);color:var(--ig)}
+.ins-tag.c{border-color:color-mix(in srgb,var(--ic) 45%,transparent);color:var(--ic)}
+.ins-tag i{width:8px;height:8px;border-radius:50%;box-shadow:inset 0 0 0 1.5px currentColor;flex:none}
+.ins-tag.st-1 i{background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+.ins-tag.st-2 i{background:var(--ok);box-shadow:none}
+.ins-tag.st-2{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.ins-tag.st-x{border-style:dashed}
+.rp-dados{background:var(--s1);border-radius:12px;padding:4px 14px;box-shadow:var(--e1)}
+.rp-dados[open]{padding-bottom:16px}
+.rp-dados summary{font-weight:500;padding:10px 0;cursor:pointer}
+.rp-dados>.grid2{margin-bottom:12px}
+.rp-dados textarea{font-family:var(--f-body)}
+.rp-items{display:flex;flex-direction:column;min-width:0}
+.rp-row{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;border:0;border-bottom:1px solid var(--olv);background:none;text-align:left;padding:10px 0;min-height:56px;color:var(--on-s);min-width:0}
+.rp-row:hover b{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.rp-row .imp-n,.rp-item-h .imp-n{padding-top:2px}
+.rp-item-h{grid-template-columns:24px minmax(0,1fr) auto}
+.rp-inst{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:center}
+.rp-inst .segm{max-width:none}
+.rp-inst .btn{grid-column:1/-1;justify-self:start}
+.rp-add{align-items:center}
+.rp-foot{margin-top:8px}
+@media (min-width:560px){ .rp-inst{grid-template-columns:64px minmax(0,340px) auto} .rp-inst .btn{grid-column:auto} }
+@media (orientation:landscape) and (max-height:540px) and (max-width:759px){ :root[data-skin="rep"] .app{margin-left:0} }
 @media (min-width:760px){ .snack{bottom:24px} }
 
 /* exercícios */
@@ -861,7 +949,7 @@ var S={
            text:'Beethoven, domínio público\n+5 +5 -5 +6 +6 -5 +5 -4\n+4 +4 -4 +5 +5 -4 -4\n+5 +5 -5 +6 +6 -5 +5 -4\n+4 +4 -4 +5 -4 +4 +4' }],
   notes:[{ id:'nx1', u:0, sec:'Em foco', title:'Como usar o caderno (exemplo)', harp:{type:'diat',key:0},
            text:'Este é um exemplo. Pode apagar.\n\nAnote aqui o que está estudando, o que o professor pediu e o que precisa conferir na próxima aula.\n• Uma linha que começa com “•” vira item de lista.\n• Links ficam clicáveis: https://github.com/ymanfron/harmonica\n\nLinhas de tablatura ganham o nome das notas, porque esta anotação está marcada como diatônica em C:\n+4 -4 +5 -5 +6' }],
-  note:null, noteEdit:false, nq:'', songEdit:null, rz:1, cjSongs:null, cjEx:null, cjGroup:'Todas', cjEdit:null, cjTab:'musicas', cjView:'foco', cjQ:'', cjAdd:false, cjSel:null, cjLevel:2, cjLesson:null, cjClick:true,
+  note:null, noteEdit:false, nq:'', songEdit:null, rz:1, cjSongs:null, cjEx:null, cjGroup:'Todas', cjEdit:null, cjTab:'musicas', cjView:'foco', cjQ:'', cjAdd:false, cjSel:null, cjLevel:2, cjLesson:null, cjClick:true, reps:[], gRep:null, cjRep:null, repView:'prox', repSel:null, repRow:null, repAddIns:'g', repNewId:null, imp:{text:'',def:'',harp:null,done:null},
   cur:'ex1', q:'', del:{}, exDone:{}, course:{}, sync:{token:'',gist:'',last:0}, mineAt:0, thTab:'curso', lesson:null, ex:null, exLevel:2, back:'gaita',
   tr:{ text:"-6 -6 -6 -7 +7\n-7 -8 +7 -7 -6", from:{type:'diat',key:7}, to:{type:'crom'}, semis:0, oct:'auto', chords:'Em C G D', cFrom:null, cSemis:2, songKey:4, songMode:'menor' }
 };
@@ -2394,7 +2482,7 @@ function cjGroupList(items){ var pri=['Apresentação','Sempre toco','Setlist'],
 function cjTouch(it){ it.u=Date.now(); saveData(); }
 function cjMove(it, st){ var old=it.st; it.st=st; cjTouch(it); render(true);
   toast('“'+(it.t||'Sem nome')+'” foi para '+CJ_ST_LABEL[st]+'.','Desfazer',function(){ it.st=old; cjTouch(it); render(true); }); }
-function cjSongRow(it, show){
+function cjSongRow(it, show, idx){
   if(S.cjEdit===it.id) return cjSongCard(it);
   var meta=[it.a, show.group?(it.g||'Outras'):'', show.st?CJ_ST_LABEL[it.st]||it.st:'', it.bpm?it.bpm+' bpm':'', it.lv, it.n?String(it.n).split('\n')[0]:''].filter(Boolean).join(' · ');
   var act = it.st==='pronta' ? el('button',{class:'btn sm ghost cj-act',type:'button',text:'Rever',title:'Voltar para Praticando',onclick:function(){ cjMove(it,'praticando'); }})
@@ -2402,7 +2490,7 @@ function cjSongRow(it, show){
           : el('button',{class:'btn sm tonal cj-act',type:'button',text:'Começar',title:'Passar para Praticando',onclick:function(){ cjMove(it,'praticando'); }});
   return el('div',{class:'cj-row'+(it.st==='pronta'?' ok':'')},[
     el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':(it.star?'Tirar das prioridades: ':'Marcar como prioridade: ')+it.t,title:it.star?'Prioridade':'Marcar como prioridade',text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; cjTouch(it); render(true); }}),
-    el('button',{class:'cj-main',type:'button',title:'Abrir a ficha',onclick:function(){ S.cjEdit=it.id; save(); render(true); }},[el('b',{text:it.t||'Sem nome'}), meta?el('small',{text:meta}):null]),
+    el('button',{class:'cj-main',type:'button',title:'Abrir a ficha',onclick:function(){ S.cjEdit=it.id; save(); render(true); }},[el('b',{text:(show.num?(idx+1)+'. ':'')+(it.t||'Sem nome')}), meta?el('small',{text:meta}):null]),
     act ]);
 }
 function cjSongCard(it){
@@ -2431,7 +2519,7 @@ function viewCajonSongs(){
   var inView=function(x,v){ return v==='todas' ? true : v==='foco' ? (x.star || x.st==='praticando') : x.st===v; };
   var view=CJ_VIEWS.some(function(v){ return v[0]===S.cjView; }) ? S.cjView : 'foco';
   var prontas=songs.filter(function(x){ return x.st==='pronta'; }).length;
-  var listHost=el('div',{class:'cj-lists'});
+  var listHost=el('div',{class:'cj-lists'}), rep=S.cjRep?repById(S.cjRep):null; if(rep && !repHas(rep,'c')) rep=null;
   function addForm(){
     var t=el('input',{type:'text',id:'cjNewSong',placeholder:'Nome da música'}), a=el('input',{type:'text',id:'cjNewArtist',placeholder:'Artista'}), g=el('input',{type:'text',id:'cjNewGroup',list:'cjGroupsNew',placeholder:'Grupo',value:(S.cjGroup&&S.cjGroup!=='Todas')?S.cjGroup:'Sempre toco'});
     var go=function(){ var name=t.value.trim(); if(!name){ t.focus(); return; }
@@ -2444,13 +2532,16 @@ function viewCajonSongs(){
       el('div',{class:'row end'},[el('button',{class:'btn ghost',type:'button',text:'Cancelar',onclick:function(){ S.cjAdd=false; save(); render(true); }}),el('button',{class:'btn pri',type:'button',text:'Adicionar',onclick:go})]) ]);
   }
   function section(title, items, show, right){ if(!items.length) return null;
-    return el('div',{class:'cj-group'},[ title?el('div',{class:'cj-gh'},[el('b',{text:title}),el('span',{class:'dim small',text:right||String(items.length)})]):null, el('div',{class:'cj-list'},items.map(function(x){ return cjSongRow(x,show); })) ]); }
+    return el('div',{class:'cj-group'},[ title?el('div',{class:'cj-gh'},[el('b',{text:title}),el('span',{class:'dim small',text:right||String(items.length)})]):null, el('div',{class:'cj-list'},items.map(function(x,i){ return cjSongRow(x,show,i); })) ]); }
   function empty(msg){ return el('div',{class:'cj-empty'},[el('p',{class:'dim',text:msg})]); }
   function paint(){
     listHost.textContent=''; var q=cjNorm(S.cjQ).trim(), kids=[];
     if(q){
       var hits=songs.filter(function(x){ return cjNorm([x.t,x.a,x.g,x.lv,x.n].join(' ')).indexOf(q)>=0; });
       kids.push(hits.length ? section('Resultados em todas as situações',hits,{group:true,st:true}) : empty('Nenhuma música com “'+S.cjQ.trim()+'”.'));
+    } else if(rep){
+      var rl=repSongs(rep,'c');
+      kids.push(rl.length ? section(rep.name,rl,{st:true,num:true,group:false},rl.length+(rl.length===1?' música':' músicas')) : empty('As músicas deste repertório não estão mais na lista do cajon.'));
     } else if(view==='foco'){
       var pr=songs.filter(function(x){ return x.star; }), pt=songs.filter(function(x){ return !x.star && (x.st==='praticando' || x.id===S.cjEdit); });
       if(!pr.length && !pt.length) kids.push(empty('Nada em estudo agora. Marque uma música com a estrela ou toque em “Começar” numa música de “A tirar”.'));
@@ -2469,11 +2560,12 @@ function viewCajonSongs(){
   out.push(el('section',{class:'sec cj-page'},[
     el('div',{class:'cj-head'},[
       el('div',{},[el('h2',{text:'Músicas'}), el('p',{class:'dim small',text:prontas+' de '+songs.length+' prontas'})]),
-      el('button',{class:'btn pri',type:'button',id:'cjNewBtn',text:'+ Nova música',onclick:function(){ S.cjAdd=!S.cjAdd; save(); render(true); var f=document.getElementById('cjNewSong'); if(f) f.focus(); }}) ]),
+      el('div',{class:'row'},[
+      el('button',{class:'btn pri',type:'button',id:'cjNewBtn',text:'+ Nova música',onclick:function(){ S.cjAdd=!S.cjAdd; save(); render(true); var f=document.getElementById('cjNewSong'); if(f) f.focus(); }}) ]) ]),
     el('div',{class:'prog'},[el('i',{style:'width:'+(songs.length?100*prontas/songs.length:0)+'%'})]),
     S.cjAdd ? addForm() : null,
-    search,
-    el('div',{class:'segm stats',role:'group','aria-label':'Situação'},CJ_VIEWS.map(function(v){ var c=songs.filter(function(x){ return inView(x,v[0]); }).length;
+    search, repChips('c'),
+    rep ? null : el('div',{class:'segm stats',role:'group','aria-label':'Situação'},CJ_VIEWS.map(function(v){ var c=songs.filter(function(x){ return inView(x,v[0]); }).length;
       return el('button',{type:'button','aria-pressed':view===v[0]?'true':'false',onclick:function(){ S.cjView=v[0]; S.cjEdit=null; S.cjQ=''; save(); render(true); }},[el('b',{text:String(c)}),el('span',{text:v[1]})]); })),
     listHost ]));
   paint();
@@ -3013,11 +3105,264 @@ var CJ_CURSO=[
         Q("Onde costuma ficar o microfone principal do cajon?",["Atrás, na boca","No chão","Em cima do tampo"],0,"É por onde o grave sai.") ] } ]}
 ];
 
+/* ---------- repertório: apresentações (missas, bandas, canjas) com as músicas de gaita e de cajon ----------
+   Importador em texto:
+   Texto: a primeira linha de cada bloco é o nome do repertório; depois, uma música por linha.
+   O instrumento vai entre parênteses no fim da linha: (gaita), (cajon), (gaita e cajon), (cromática), (gaita A).
+   Blocos separados por linha em branco viram repertórios diferentes. */
+function repNorm(s){ return cjNorm(s).replace(/\([^)]*\)|\[[^\]]*\]/g,' ').replace(/[^a-z0-9]+/g,' ').trim(); }
+/* lê o conteúdo de um parêntese; devolve {ins,harp} se for marcação de instrumento, senão null */
+function repTag(inner){
+  var s=cjNorm(inner).replace(/[,+\/&]/g,' ').replace(/\s+/g,' ').trim(); if(!s) return null;
+  var c=/\bcajon\b/.test(s), both=/\b(os dois|ambos|as duas)\b/.test(s), crom=/\bcrom/.test(s), g=crom || /\b(gaita|harmonica|diatonica|diat)\b/.test(s);
+  if(!c && !g && !both) return null;
+  var harp=crom?{type:'crom'}:null, m=/\b(?:gaita|harmonica|diatonica|diat)\s+(?:em\s+|de\s+)?([a-g](?:b|#)?)(?!\s+cajon)(?=\s|$)/.exec(s);
+  if(m){ if(!harp){ var pn=C.parseNoteName(m[1].charAt(0).toUpperCase()+m[1].slice(1)); if(pn) harp={type:'diat',key:pn.pc}; } s=s.slice(0,m.index)+' gaita '+s.slice(m.index+m[0].length); }
+  var rest=s.replace(/\b(cajon|os dois|ambos|as duas|cromatica|crom|gaita|harmonica|diatonica|diat|e|em|de|na|no|c)\b/g,' ').trim();
+  if(rest) return null;
+  return { ins:(both||(c&&g))?'gc':c?'c':'g', harp:harp };
+}
+function repTagText(ins, harp){ var g=harp?(harp.type==='crom'?'cromática':'gaita '+HARP_KEYS[harp.key]):'gaita'; return ins==='c'?'(cajon)':ins==='g'?'('+g+')':'('+g+' e cajon)'; }
+/* separa a marcação do resto da linha */
+function repSplitLine(line){
+  var s=String(line), tag=null, m=/\s*[\(\[]([^\)\]]*)[\)\]]\s*$/.exec(s);
+  if(m){ var t=repTag(m[1]); if(t){ tag=t; s=s.slice(0,m.index); } }
+  if(!tag){ m=/^\s*[\(\[]([^\)\]]*)[\)\]]\s*/.exec(s); if(m){ var t2=repTag(m[1]); if(t2){ tag=t2; s=s.slice(m[0].length); } } }
+  return { base:s.replace(/\s+$/,''), tag:tag };
+}
+function repParse(text){
+  var blocks=[], cur=null;
+  String(text||'').split('\n').forEach(function(raw,i){
+    var line=raw.replace(/\r/g,''); if(!line.trim() || /^[\s\-=_*#]+$/.test(line)){ cur=null; return; }
+    if(/^\s*(#|\/\/)/.test(line)) return;
+    var sp=repSplitLine(line), body=sp.base.replace(/^\s*(?:\d{1,3}\s*[.)\-:]\s+|[-•*]\s+)/,'').trim();
+    if(!cur){ cur={ name:'', line:-1, items:[] }; blocks.push(cur); if(!sp.tag){ cur.name=body.replace(/[:：]\s*$/,''); cur.line=i; return; } }
+    if(!body) return;
+    var parts=body.split(/\s+[-–—]\s+/), t=parts.shift().trim(), a=parts.join(' - ').trim();
+    cur.items.push({ line:i, t:t, a:a, ins:sp.tag?sp.tag.ins:'', harp:sp.tag?sp.tag.harp:null });
+  });
+  var d=new Date(), dd=('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);
+  blocks.forEach(function(b){ if(!b.name) b.name='Importado em '+dd; });
+  return blocks.filter(function(b){ return b.items.length; });
+}
+function repSetIns(text, lineIdx, ins){ var ls=String(text||'').split('\n'), sp=repSplitLine(ls[lineIdx]||''); ls[lineIdx]=sp.base+' '+repTagText(ins, ins==='c'?null:(sp.tag?sp.tag.harp:null)); return ls.join('\n'); }
+function repFindG(t){ var k=repNorm(t), r=null; if(k) S.songs.forEach(function(s){ if(!r && repNorm(s.title)===k) r=s; }); return r; }
+function repFindC(t){ var k=repNorm(t), r=null; if(k) S.cjSongs.forEach(function(s){ if(!r && repNorm(s.t)===k) r=s; }); return r; }
+function repById(id){ var r=null; (S.reps||[]).forEach(function(x){ if(x.id===id) r=x; }); return r; }
+function repHas(rep, kind){ return rep.items.some(function(it){ return it.ins.indexOf(kind)>=0; }); }
+/* músicas do repertório para um instrumento, na ordem do repertório */
+function repSongs(rep, kind){ var out=[]; rep.items.forEach(function(it){ if(it.ins.indexOf(kind)<0) return; var s=kind==='g'?repFindG(it.t):repFindC(it.t); if(s && out.indexOf(s)<0) out.push(s); }); return out; }
+function repText(rep){ return [rep.name].concat(rep.items.map(function(it){ return it.t+(it.a?' - '+it.a:'')+' '+repTagText(it.ins, it.h||null); })).join('\n'); }
+var REP_KINDS=[['missa','Missa'],['banda','Banda ou canja'],['outro','Outra']];
+var REP_ST=['a tirar','praticando','pronta'], REP_DOW=['dom','seg','ter','qua','qui','sex','sáb'], REP_MON=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function repDefIns(){ var d=S.imp.def; return (d==='g'||d==='c'||d==='gc') ? d : 'g'; }
+function gSt(s){ return REP_ST.indexOf(s.st)>=0 ? s.st : (String(s.text||'').trim()?'praticando':'a tirar'); }
+function repToday(){ var t=new Date(); return new Date(t.getFullYear(),t.getMonth(),t.getDate()); }
+function repIso(d){ return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function repDate(r){ var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(r.date||''); return m?new Date(+m[1],+m[2]-1,+m[3]):null; }
+function repDays(r){ var d=repDate(r); return d?Math.round((d-repToday())/864e5):null; }
+function repWhen(n){ return n===0?'hoje':n===1?'amanhã':n===-1?'ontem':n>0?'em '+n+' dias':'há '+(-n)+' dias'; }
+function repDm(d){ return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
+function repKind(r){ var k=''; REP_KINDS.forEach(function(x){ if(x[0]===r.kind) k=x[1]; }); return k; }
+/* data escrita no nome ("Missa 12/10"): sem ano, vale a próxima ocorrência */
+function repGuessDate(name){ var m=/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/.exec(String(name||'')); if(!m) return '';
+  var dd=+m[1], mm=+m[2], t=repToday(), y=m[3]?(+m[3]<100?2000+(+m[3]):+m[3]):t.getFullYear(); if(dd<1||dd>31||mm<1||mm>12) return '';
+  var d=new Date(y,mm-1,dd); if(d.getMonth()!==mm-1) return ''; if(!m[3] && (t-d)/864e5>30) d=new Date(y+1,mm-1,dd); return repIso(d); }
+function repGuessKind(name){ var n=cjNorm(name); return /\bmissa\b|celebrac|igreja|paroquia/.test(n)?'missa':/\b(banda|canja|show|ensaio|bar|festa|jam)\b/.test(n)?'banda':''; }
+function repUpcoming(r){ var n=repDays(r); return n==null || n>=0; }
+function repSorted(up){ return (S.reps||[]).filter(function(r){ return repUpcoming(r)===up; }).sort(function(a,b){ var da=repDays(a), db=repDays(b); if(da==null&&db==null) return (b.u||0)-(a.u||0); if(da==null) return 1; if(db==null) return -1; return up?da-db:db-da; }); }
+/* cada música em cada instrumento, com a situação que está na lista do instrumento */
+function repPairs(r){ var out=[]; r.items.forEach(function(it){ ['g','c'].forEach(function(k){ if(it.ins.indexOf(k)<0) return; var s=k==='g'?repFindG(it.t):repFindC(it.t); out.push({ it:it, k:k, song:s, st:s?(k==='g'?gSt(s):(REP_ST.indexOf(s.st)>=0?s.st:'a tirar')):null }); }); }); return out; }
+function repProgress(r){ var p=repPairs(r); return { n:p.length, ok:p.filter(function(x){ return x.st==='pronta'; }).length }; }
+/* garante que a música existe na lista de cada instrumento marcado */
+function repEnsure(rep, it, res){
+  var now=Date.now(), uid=now+'-'+Math.floor(Math.random()*1e5);
+  if(it.ins.indexOf('c')>=0){ if(repFindC(it.t)){ if(res) res.cOld++; } else { S.cjSongs.push({ id:'cj'+uid, u:now, t:it.t, a:it.a||'', g:rep.kind==='missa'?'Missa':(rep.name||'Apresentações'), st:'a tirar', star:false, n:'' }); if(res) res.c++; } }
+  if(it.ins.indexOf('g')>=0){ if(repFindG(it.t)){ if(res) res.gOld++; } else { S.songs.push({ id:'m'+uid, u:now, title:it.t+(it.a?' ('+it.a+')':''), key:null, harp:it.h||S.imp.harp||S.harp, bpm:80, text:'', st:'a tirar' }); if(res) res.g++; } }
+}
+function repTouch(r){ r.u=Date.now(); saveData(); }
+function repDoImport(blocks){
+  var def=repDefIns(), now=Date.now(), res={ reps:0, g:0, c:0, gOld:0, cOld:0, last:null };
+  blocks.forEach(function(b,bi){
+    var key=repNorm(b.name), rep=null; S.reps.forEach(function(r){ if(!rep && cjNorm(r.name).trim()===cjNorm(b.name).trim()) rep=r; });
+    if(!rep){ rep={ id:'rp'+now+'-'+bi, u:now, name:b.name, date:repGuessDate(b.name), time:'', kind:repGuessKind(b.name), place:'', note:'', items:[] }; S.reps.push(rep); }
+    rep.name=b.name; rep.u=now; res.reps++; res.last=rep;
+    rep.items=b.items.map(function(it){ var ins=it.ins||def, o={ t:it.t, a:it.a, ins:ins }; if(it.harp && ins!=='c') o.h=it.harp; return o; });
+    rep.items.forEach(function(it){ repEnsure(rep,it,res); });
+  });
+  saveData(); return res;
+}
+/* filtro por apresentação nas telas de Músicas de cada instrumento: só as próximas */
+function repChips(kind){
+  var key=kind==='g'?'gRep':'cjRep', reps=repSorted(true).filter(function(r){ return repHas(r,kind); }).slice(0,6), cur=S[key]?repById(S[key]):null;
+  if(cur && repHas(cur,kind) && reps.indexOf(cur)<0) reps.unshift(cur); if(!reps.length) return null;
+  return el('div',{class:'row rep-chips'},[el('span',{class:'lbl',text:'Apresentação'})].concat(reps.map(function(r){ return chip(r.name||'Sem nome', S[key]===r.id, function(){ S[key]=(S[key]===r.id)?null:r.id; if(kind==='g' && S[key]){ var l=repSongs(r,'g'); if(l.length){ S.cur=l[0].id; S.songEdit=null; } } if(kind==='c') S.cjEdit=null; save(); stopPlay(); render(true); },'sm'); })));
+}
+function repOpenSong(rep, kind, song){
+  if(kind==='c'){ S.cjRep=rep.id; S.cjTab='musicas'; S.cjQ=''; S.cjEdit=song?song.id:null; S.tab='cajon'; S.back='cajon'; }
+  else { S.gRep=rep.id; if(song) S.cur=song.id; S.songEdit=null; S.tab='musicas'; S.back='musicas'; S.gback='musicas'; }
+  save(); stopPlay(); render(); window.scrollTo(0,0);
+}
+function openImport(){ S.tab='importar'; S.back='rep'; save(); stopPlay(); render(); window.scrollTo(0,0); }
+
+/* ---------- tela: Repertório (lista de apresentações) ---------- */
+function repBar(pr){ return el('div',{class:'rp-prog'},[el('div',{class:'prog'},[el('i',{style:'width:'+(pr.n?100*pr.ok/pr.n:0)+'%'})]), el('span',{class:'small dim',text:pr.n?pr.ok+' de '+pr.n+' prontas':'sem músicas'})]); }
+function repMeta(r){ var d=repDate(r), n=repDays(r), a=[]; if(d) a.push(REP_DOW[d.getDay()]+', '+repDm(d)+(d.getFullYear()!==repToday().getFullYear()?'/'+d.getFullYear():'')); if(r.time) a.push(r.time); if(repKind(r)) a.push(repKind(r)); if(r.place) a.push(r.place); return a.join(' · '); }
+function repCard(r, first){
+  var d=repDate(r), n=repDays(r), pr=repProgress(r), ng=r.items.filter(function(i){ return i.ins.indexOf('g')>=0; }).length, nc=r.items.filter(function(i){ return i.ins.indexOf('c')>=0; }).length;
+  return el('button',{class:'rp-card'+(first?' next':'')+(n!=null&&n<0?' past':''),type:'button',onclick:function(){ S.repSel=r.id; S.repRow=null; save(); render(); window.scrollTo(0,0); }},[
+    el('span',{class:'rp-date'}, d ? [el('b',{text:String(d.getDate())}),el('small',{text:REP_MON[d.getMonth()]})] : [el('small',{text:'sem data'})]),
+    el('span',{class:'rp-body'},[
+      first?el('span',{class:'rp-flag',text:'Próxima'}):null,
+      el('b',{class:'rp-name',text:r.name||'Sem nome'}),
+      el('small',{text:[n!=null?repWhen(n):'', repMeta(r)].filter(Boolean).join(' · ')}),
+      repBar(pr),
+      el('span',{class:'rp-ins'},[ng?el('span',{class:'ins-tag g',text:'Gaita '+ng}):null, nc?el('span',{class:'ins-tag c',text:'Cajon '+nc}):null]) ]) ]);
+}
+function repNew(){ var r={ id:'rp'+Date.now(), u:Date.now(), name:'', date:'', time:'', kind:'', place:'', note:'', items:[] }; S.reps.push(r); S.repSel=r.id; S.repRow=null; S.repNewId=r.id; saveData(); render(); window.scrollTo(0,0); var f=document.getElementById('rpName'); if(f) f.focus(); }
+function repList(){
+  var up=repSorted(true), past=repSorted(false), view=S.repView==='past'?'past':'prox', list=view==='past'?past:up, out=[];
+  out.push(el('section',{class:'sec rp-page'},[
+    el('div',{class:'cj-head'},[
+      el('div',{},[el('h2',{text:'Apresentações'}), el('p',{class:'dim small',text:up.length?(up.length===1?'1 apresentação pela frente':up.length+' apresentações pela frente'):'Nenhuma apresentação marcada'})]),
+      el('div',{class:'row'},[el('button',{class:'btn',type:'button',id:'rpImport',text:'Importar texto',onclick:openImport}), el('button',{class:'btn pri',type:'button',id:'rpNew',text:'+ Nova apresentação',onclick:repNew})]) ]),
+    el('div',{class:'segm stats two',role:'group','aria-label':'Período'},[['prox','Próximas',up.length],['past','Passadas',past.length]].map(function(v){ return el('button',{type:'button','aria-pressed':view===v[0]?'true':'false',onclick:function(){ S.repView=v[0]; save(); render(true); }},[el('b',{text:String(v[2])}),el('span',{text:v[1]})]); })),
+    list.length ? el('div',{class:'rp-list'},list.map(function(r,i){ return repCard(r, view==='prox' && i===0 && repDays(r)!=null); }))
+      : el('div',{class:'cj-empty'},[el('p',{class:'dim',text:view==='past'?'Nada por aqui ainda. As apresentações passam para cá no dia seguinte à data.':'Nenhuma apresentação cadastrada. Toque em “Nova apresentação” ou importe uma lista em texto.'})]) ]));
+  out.push(el('p',{class:'dim small',text:'Missas, canjas e shows ficam todos aqui, com as músicas de gaita e de cajon de cada um. A situação de cada música é a mesma que aparece na lista do instrumento.'}));
+  return out;
+}
+function repStTag(p){ return el('span',{class:'ins-tag '+p.k+' st-'+(p.st?REP_ST.indexOf(p.st):'x')},[el('i'),(p.k==='g'?'Gaita':'Cajon')+' · '+(p.st?CJ_ST_LABEL[p.st]:'fora da lista')]); }
+function repItemRow(rep, it, idx){
+  var pairs=repPairs({items:[it]});
+  if(S.repRow!==idx) return el('button',{class:'rp-row',type:'button',onclick:function(){ S.repRow=idx; save(); render(true); }},[
+    el('span',{class:'imp-n',text:String(idx+1)}),
+    el('span',{class:'imp-t'},[el('b',{text:it.t}), it.a?el('small',{text:it.a}):null, el('span',{class:'rp-ins'},pairs.map(repStTag))]) ]);
+  var setIns=function(k){ var has=it.ins.indexOf(k)>=0, nv=has?(it.ins==='gc'?(k==='g'?'c':'g'):it.ins):'gc'; if(nv===it.ins) return; it.ins=nv; if(nv==='c') delete it.h; repEnsure(rep,it); repTouch(rep); render(true); };
+  var move=function(d){ var j=idx+d; if(j<0||j>=rep.items.length) return; var x=rep.items[idx]; rep.items[idx]=rep.items[j]; rep.items[j]=x; S.repRow=j; repTouch(rep); render(true); };
+  var blocks=pairs.map(function(p){
+    var setSt=function(st){ if(!p.song){ repEnsure(rep,it); p.song=p.k==='g'?repFindG(it.t):repFindC(it.t); } if(!p.song) return; p.song.st=st; p.song.u=Date.now(); saveData(); render(true); };
+    return el('div',{class:'rp-inst'},[
+      el('span',{class:'ins-tag '+p.k,text:p.k==='g'?'Gaita':'Cajon'}),
+      el('div',{class:'segm three',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':p.st===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ setSt(st); }}); })),
+      el('button',{class:'btn sm ghost',type:'button',text:p.k==='g'?'Abrir na gaita ›':'Abrir no cajon ›',onclick:function(){ if(!p.song){ repEnsure(rep,it); saveData(); } repOpenSong(rep,p.k,p.k==='g'?repFindG(it.t):repFindC(it.t)); }}) ]); });
+  var del=el('button',{class:'btn sm danger',type:'button',text:'Tirar da apresentação',onclick:function(){ rep.items.splice(idx,1); S.repRow=null; repTouch(rep); render(true); }});
+  return el('div',{class:'cj-card rp-item'},[
+    el('div',{class:'cj-card-h rp-item-h'},[el('span',{class:'imp-n',text:String(idx+1)}), el('div',{class:'imp-t'},[el('h3',{text:it.t}), it.a?el('small',{text:it.a}):null]), el('button',{class:'btn sm ghost',type:'button',text:'Fechar',onclick:function(){ S.repRow=null; save(); render(true); }})]),
+    el('div',{class:'row'},[el('span',{class:'lbl',text:'Toco em'}), el('span',{class:'imp-ins',role:'group','aria-label':'Instrumento'},[
+      el('button',{type:'button','aria-pressed':it.ins.indexOf('g')>=0?'true':'false',text:'Gaita',onclick:function(){ setIns('g'); }}),
+      el('button',{type:'button','aria-pressed':it.ins.indexOf('c')>=0?'true':'false',text:'Cajon',onclick:function(){ setIns('c'); }}) ])]) ]
+    .concat(blocks).concat([
+    el('div',{class:'row between'},[el('div',{class:'row'},[
+      el('button',{class:'btn sm',type:'button','aria-label':'Subir na ordem',text:'↑ Subir',disabled:idx===0,onclick:function(){ move(-1); }}),
+      el('button',{class:'btn sm',type:'button','aria-label':'Descer na ordem',text:'↓ Descer',disabled:idx===rep.items.length-1,onclick:function(){ move(1); }}) ]), del]) ]));
+}
+function repDetail(rep){
+  var out=[], pr=repProgress(rep), n=repDays(rep), isNew=S.repNewId===rep.id;
+  var ttl=el('h2',{text:rep.name||'Nova apresentação'}), meta=el('p',{class:'dim',text:''});
+  var paintMeta=function(){ var d=repDays(rep); meta.textContent=[d!=null?repWhen(d):'sem data', repMeta(rep)].filter(Boolean).join(' · '); };
+  paintMeta();
+  var inp=function(id,type,val,fn,ph){ return el('input',{type:type,id:id,value:val||'',placeholder:ph,oninput:function(e){ fn(e.target.value); repTouch(rep); paintMeta(); },onchange:function(e){ fn(e.target.value); repTouch(rep); paintMeta(); }}); };
+  var note=el('textarea',{id:'rpNote',rows:'3',placeholder:'horário de chegada, quem toca, tom combinado, o que ficou para acertar',oninput:function(e){ rep.note=e.target.value; repTouch(rep); }}); note.value=rep.note||''; growArea(note);
+  var dados=el('details',{class:'rp-dados'},[el('summary',{text:'Dados da apresentação'}),
+    el('div',{class:'grid2'},[
+      field('Nome', inp('rpName','text',rep.name,function(v){ rep.name=v; ttl.textContent=v||'Nova apresentação'; },'ex.: Missa 12/10')),
+      field('Tipo', select([['','escolha']].concat(REP_KINDS), rep.kind||'', function(v){ rep.kind=v; repTouch(rep); paintMeta(); },'rpKind')),
+      field('Data', inp('rpDate','date',rep.date,function(v){ rep.date=/^\d{4}-\d{2}-\d{2}$/.test(v)?v:''; })),
+      field('Hora', inp('rpTime','time',rep.time,function(v){ rep.time=v; })),
+      field('Local', inp('rpPlace','text',rep.place,function(v){ rep.place=v; },'igreja, bar, casa de alguém')) ]),
+    field('Observações', note) ]);
+  if(isNew || (!rep.date && !rep.items.length)) dados.open=true;
+  /* acrescentar música */
+  var known=[]; S.songs.forEach(function(s){ if(s.title && known.indexOf(s.title)<0) known.push(s.title); }); S.cjSongs.forEach(function(s){ if(s.t && known.indexOf(s.t)<0) known.push(s.t); });
+  var addIns=S.repAddIns==='c'||S.repAddIns==='gc'?S.repAddIns:'g';
+  var nm=el('input',{type:'text',id:'rpAdd',list:'rpKnown',placeholder:'Nome da música',style:'flex:1 1 180px;min-width:0'});
+  var insBox=el('span',{class:'imp-ins',role:'group','aria-label':'Instrumento da música nova'});
+  var paintIns=function(){ insBox.textContent=''; [['g','Gaita'],['c','Cajon']].forEach(function(o){ insBox.appendChild(el('button',{type:'button','aria-pressed':addIns.indexOf(o[0])>=0?'true':'false',text:o[1],onclick:function(){ var has=addIns.indexOf(o[0])>=0; addIns=has?(addIns==='gc'?(o[0]==='g'?'c':'g'):addIns):'gc'; S.repAddIns=addIns; save(); paintIns(); }})); }); };
+  paintIns();
+  var add=function(){ var v=nm.value.trim(); if(!v){ nm.focus(); return; } var parts=v.split(/\s+[-–—]\s+/), it={ t:parts.shift().trim(), a:parts.join(' - ').trim(), ins:addIns }; rep.items.push(it); repEnsure(rep,it); repTouch(rep); render(true); var f=document.getElementById('rpAdd'); if(f) f.focus(); };
+  nm.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); add(); } });
+  var dup=el('button',{class:'btn',type:'button',id:'rpDup',text:rep.date?'Duplicar para a semana seguinte':'Duplicar',onclick:function(){
+    var d=repDate(rep), nd=d?new Date(d.getFullYear(),d.getMonth(),d.getDate()+7):null, name=rep.name||'';
+    if(d && nd){ var re=new RegExp('\\b0?'+d.getDate()+'/0?'+(d.getMonth()+1)+'\\b'); name=re.test(name)?name.replace(re,repDm(nd)):name; } if(name===rep.name) name=(name||'Apresentação')+(nd?' '+repDm(nd):' (cópia)');
+    var r={ id:'rp'+Date.now(), u:Date.now(), name:name, date:nd?repIso(nd):'', time:rep.time||'', kind:rep.kind||'', place:rep.place||'', note:'', items:rep.items.map(function(i){ var o={ t:i.t, a:i.a, ins:i.ins }; if(i.h) o.h=i.h; return o; }) };
+    S.reps.push(r); S.repSel=r.id; S.repRow=null; saveData(); render(); window.scrollTo(0,0); toast('Cópia criada: “'+name+'”. Ajuste as músicas que mudarem.'); }});
+  var del=el('button',{class:'btn danger',type:'button',text:'Excluir apresentação',onclick:function(){ if(del.dataset.sure){ S.del[rep.id]=Date.now(); S.reps=S.reps.filter(function(x){ return x.id!==rep.id; }); if(S.gRep===rep.id) S.gRep=null; if(S.cjRep===rep.id) S.cjRep=null; S.repSel=null; saveData(); render(); } else { del.dataset.sure='1'; del.textContent='Excluir mesmo?'; } }});
+  out.push(el('section',{class:'sec rp-page'},[
+    el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Apresentações',onclick:function(){ S.repSel=null; S.repRow=null; save(); render(); window.scrollTo(0,0); }})]),
+    ttl, meta, repBar(pr), dados,
+    el('div',{class:'row between'},[el('h3',{text:'Músicas'+(rep.items.length?' ('+rep.items.length+')':'')}), el('button',{class:'btn sm',type:'button',id:'rpText',text:'Editar como texto',onclick:function(){ S.imp.text=repText(rep); save(); openImport(); }})]),
+    rep.items.length ? el('div',{class:'rp-items'},rep.items.map(function(it,i){ return repItemRow(rep,it,i); })) : el('div',{class:'cj-empty'},[el('p',{class:'dim',text:'Nenhuma música ainda. Acrescente uma por uma aqui embaixo, ou use “Editar como texto” para escrever a lista inteira.'})]),
+    el('div',{class:'row cj-add rp-add'},[nm, insBox, el('button',{class:'btn pri',type:'button',id:'rpAddBtn',text:'Adicionar',onclick:add})]),
+    el('datalist',{id:'rpKnown'},known.map(function(k){ return el('option',{value:k}); })),
+    el('div',{class:'row between rp-foot'},[dup, del]) ]));
+  out.push(el('p',{class:'dim small',text:'Toque numa música para mudar a situação, a ordem ou o instrumento. Tirar uma música da apresentação não apaga a música da lista do instrumento.'}));
+  S.repNewId=null;
+  return out;
+}
+function viewRep(){ var r=S.repSel?repById(S.repSel):null; return r ? repDetail(r) : repList(); }
+
+/* ---------- tela: importar em texto ---------- */
+function viewImportar(){
+  var out=[], host=el('div',{class:'imp-prev'}), msg=el('div',{class:'mtxt',id:'impMsg'}), def=repDefIns();
+  var EX='Missa 12/10\nMúsica 1 (gaita)\nMúsica 2 (cajon)\nMúsica 3 (gaita e cajon)\n\nCanja com a banda 18/10\nMúsica 4 - Artista (cajon)\nMúsica 5 (gaita A)';
+  var ta=growArea(el('textarea',{id:'impText',rows:8,spellcheck:'false',autocapitalize:'sentences',placeholder:EX,oninput:function(){ S.imp.text=ta.value; save(); paint(); }})); ta.value=S.imp.text||'';
+  var setText=function(v){ ta.value=v; S.imp.text=v; save(); paint(); };
+  var file=el('input',{type:'file',id:'impFile',accept:'.txt,text/plain',hidden:true,onchange:function(e){ var f=e.target.files&&e.target.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ setText(String(rd.result||'')); msg.textContent='Arquivo “'+f.name+'” carregado. Confira a prévia.'; msg.className='mtxt ok'; }; rd.readAsText(f); e.target.value=''; }});
+  function paint(){
+    host.textContent=''; var blocks=repParse(ta.value), dflt=repDefIns(), total=0;
+    if(!blocks.length){ host.appendChild(el('div',{class:'cj-empty'},[el('p',{class:'dim',text:String(ta.value||'').trim()?'Só encontrei o nome da apresentação. Escreva as músicas nas linhas de baixo, uma por linha.':'A prévia aparece aqui enquanto você escreve.'})])); return; }
+    blocks.forEach(function(b){
+      var old=null; S.reps.forEach(function(r){ if(!old && cjNorm(r.name).trim()===cjNorm(b.name).trim()) old=r; }); total+=b.items.length;
+      var gd=old?old.date:repGuessDate(b.name), dt=gd?repDate({date:gd}):null;
+      host.appendChild(el('div',{class:'imp-block'},[
+        el('div',{class:'cj-gh'},[el('b',{text:b.name}), el('span',{class:'dim small',text:[b.items.length+(b.items.length===1?' música':' músicas'), dt?'data '+repDm(dt)+'/'+dt.getFullYear():'sem data', old?'atualiza a que já existe':''].filter(Boolean).join(' · ')})]),
+        el('div',{class:'imp-list'},b.items.map(function(it,ii){
+          var ins=it.ins||dflt, st=[];
+          if(ins.indexOf('g')>=0) st.push(repFindG(it.t)?'já está na gaita':'nova na gaita'+(it.harp?' ('+(it.harp.type==='crom'?'cromática':'gaita '+NN(HARP_KEYS[it.harp.key]))+')':''));
+          if(ins.indexOf('c')>=0) st.push(repFindC(it.t)?'já está no cajon':'nova no cajon');
+          var tog=function(k){ var has=ins.indexOf(k)>=0, nv=has ? (ins==='gc'?(k==='g'?'c':'g'):ins) : 'gc'; if(nv===ins && it.ins) return; setText(repSetIns(ta.value,it.line,nv)); };
+          return el('div',{class:'imp-row'},[
+            el('span',{class:'imp-n',text:String(ii+1)}),
+            el('span',{class:'imp-t'},[el('b',{text:it.t}), el('small',{text:[it.a,st.join(' · ')].filter(Boolean).join(' · ')})]),
+            el('span',{class:'imp-ins'+(it.ins?'':' auto'),role:'group','aria-label':'Instrumento de '+it.t},[
+              el('button',{type:'button','aria-pressed':ins.indexOf('g')>=0?'true':'false',text:'Gaita',onclick:function(){ tog('g'); }}),
+              el('button',{type:'button','aria-pressed':ins.indexOf('c')>=0?'true':'false',text:'Cajon',onclick:function(){ tog('c'); }}) ]) ]); })) ])); });
+    host.appendChild(el('div',{class:'row'},[el('button',{class:'btn pri',type:'button',id:'impGo',text:blocks.length===1?'Salvar apresentação com '+total+(total===1?' música':' músicas'):'Salvar '+blocks.length+' apresentações',onclick:function(){
+      var r=repDoImport(blocks), parts=[];
+      parts.push(r.reps===1?'“'+r.last.name+'” salva.':r.reps+' apresentações salvas.');
+      if(r.c) parts.push(r.c+(r.c===1?' música nova':' músicas novas')+' no cajon.'); if(r.g) parts.push(r.g+(r.g===1?' música nova':' músicas novas')+' na gaita.');
+      S.imp.text=''; S.repSel=r.reps===1?r.last.id:null; S.repRow=null; S.repView='prox'; S.tab='rep'; S.back='rep'; save(); render(); window.scrollTo(0,0); toast(parts.join(' ')); }})]));
+  }
+  out.push(el('section',{class:'sec imp-page'},[
+    el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Voltar',onclick:function(){ S.tab='rep'; S.back='rep'; save(); render(); window.scrollTo(0,0); }})]),
+    el('h2',{text:'Importar texto'}),
+    el('p',{class:'dim',text:'A primeira linha é o nome da apresentação; se tiver a data (12/10), ela já entra na agenda. Depois, uma música por linha. Marque o instrumento entre parênteses ou toque nos botões Gaita e Cajon da prévia.'}),
+    ta,
+    el('div',{class:'row'},[el('label',{class:'btn filebtn'},['Abrir arquivo .txt',file]), el('button',{class:'btn',type:'button',text:'Usar o exemplo',onclick:function(){ setText(EX); }}), el('button',{class:'btn ghost',type:'button',text:'Limpar',onclick:function(){ setText(''); msg.textContent=''; }})]),
+    msg,
+    el('div',{class:'row imp-opts'},[
+      el('div',{class:'field'},[el('span',{text:'Linhas sem marcação vão para'}), el('div',{class:'segm three',role:'group','aria-label':'Instrumento padrão'},[['g','Gaita'],['c','Cajon'],['gc','Os dois']].map(function(o){ return el('button',{type:'button','aria-pressed':def===o[0]?'true':'false',text:o[1],onclick:function(){ S.imp.def=o[0]; save(); render(true); }}); }))]),
+      field('Gaita das músicas novas', harpSelect(S.imp.harp||S.harp,function(h){ S.imp.harp=h; save(); },'impHarp')) ]),
+    el('h3',{text:'Prévia'}), host ]));
+  paint();
+  out.push(el('details',{},[el('summary',{text:'Como escrever'}),
+    el('pre',{class:'mono-block',text:EX}),
+    el('ul',{},[
+      el('li',{text:'Marcações aceitas: (gaita), (cajon), (gaita e cajon) ou (os dois). Para escolher a gaita: (cromática), (gaita A), (gaita Bb).'}),
+      el('li',{text:'“Música - Artista” separa o artista. Numeração no começo da linha é ignorada.'}),
+      el('li',{text:'Uma linha em branco começa outra apresentação; a linha seguinte é o nome dela.'}),
+      el('li',{text:'Salvar de novo com o mesmo nome atualiza a lista de músicas da apresentação e mantém data, local e observações.'}),
+      el('li',{text:'Música que já existe na lista do instrumento não é duplicada. A comparação é pelo nome, sem contar maiúsculas, acentos e o que estiver entre parênteses.'}),
+      el('li',{text:'Na gaita, as músicas novas entram sem tablatura, para você colar depois. No cajon, entram em “A tirar”.'}) ]) ]));
+  return out;
+}
+
 /* ---------- sincronização entre aparelhos (gist secreto na conta do GitHub) ---------- */
 var SYNC_FILE='estudo-de-gaita.json';
-var SYNC_LISTS=['songs','notes','cjSongs','cjEx'];
-function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
-function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine]); }
+var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps'];
+function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
+function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[]]); }
 /* junta os dados de outro aparelho com os daqui; devolve true se algo mudou aqui */
 function mergeDoc(r){
   if(!r || typeof r!=='object') return false;
@@ -3130,7 +3475,7 @@ function viewAjustes(){
     el('p',{class:'dim small',text:'As marcadas aparecem como atalho no topo e são destacadas nas sugestões de qual gaita usar.'}),
     el('div',{class:'row'},all.map(function(h){ var on=S.mine.some(function(m){ return sameHarp(m,h); });
       return chip(h.type==='crom'?'Cromática':NN(HARP_KEYS[h.key]), on, function(){ if(on){ if(S.mine.length>1) S.mine=S.mine.filter(function(m){ return !sameHarp(m,h); }); } else S.mine.push(h); S.mineAt=Date.now(); saveData(); render(); }); })) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 10 (05/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 12 (05/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -3187,12 +3532,14 @@ function viewMusicas(){
   var song=curSong(), out=[], fileIn=fileImportInput('songFile','songMsg');
   var addSong=function(){ var id='m'+Date.now(); S.songs.push({id:id,u:Date.now(),title:'',key:null,harp:S.harp,bpm:80,text:''}); S.cur=id; S.songEdit=id; saveData(); render(); window.scrollTo(0,0); var t=document.getElementById('songTitle'); t&&t.focus(); };
   var pick=function(id){ S.cur=id; S.songEdit=null; save(); stopPlay(); render(); };
-  var sorted=S.songs.slice().sort(function(a,b){ return (a.title||'').localeCompare(b.title||'','pt'); });
-  var picker = S.songs.length>8
-    ? field('Música ('+S.songs.length+')', select(sorted.map(function(s){ return [s.id,(s.title||'Sem título')]; }), song?song.id:'', pick,'songPick'))
-    : el('div',{class:'songs'}, S.songs.map(function(s){ return chip(s.title||'Sem título', song&&s.id===song.id, function(){ pick(s.id); }); }));
-  out.push(el('section',{class:'sec'},[el('h2',{text:'Músicas'}), picker,
-    el('div',{class:'row'},[el('button',{class:'btn tonal',type:'button',text:'Nova música',onclick:addSong}), el('label',{class:'btn filebtn'},['Importar arquivo',fileIn])]),
+  var rep=S.gRep?repById(S.gRep):null; if(rep && !repHas(rep,'g')) rep=null;
+  var pool=rep?repSongs(rep,'g'):S.songs, sorted=rep?pool:S.songs.slice().sort(function(a,b){ return (a.title||'').localeCompare(b.title||'','pt'); });
+  var nm=function(s,i){ return (rep?(i+1)+'. ':'')+(s.title||'Sem título'); };
+  var picker = !pool.length ? el('div',{class:'note',text:'As músicas deste repertório não estão mais na lista da gaita.'}) : pool.length>8
+    ? field((rep?rep.name:'Música')+' ('+pool.length+')', select((song&&pool.indexOf(song)<0?[['','escolha uma música']]:[]).concat(sorted.map(function(s,i){ return [s.id,nm(s,i)]; })), song&&pool.indexOf(song)>=0?song.id:'', function(v){ if(v) pick(v); },'songPick'))
+    : el('div',{class:'songs'}, pool.map(function(s,i){ return chip(nm(s,i), song&&s.id===song.id, function(){ pick(s.id); }); }));
+  out.push(el('section',{class:'sec'},[el('h2',{text:'Músicas'}), repChips('g'), picker,
+    el('div',{class:'row'},[el('button',{class:'btn tonal',type:'button',text:'Nova música',onclick:addSong}), el('label',{class:'btn filebtn'},['Importar arquivo de dados',fileIn])]),
     el('div',{class:'mtxt dim',id:'songMsg'})]));
   if(!song){ out.push(el('div',{class:'note',text:'Nenhuma música ainda. Toque em “Nova música” e cole uma tablatura.'})); return out; }
 
@@ -3233,6 +3580,7 @@ function viewMusicas(){
       el('div',{class:'song-id'},[el('h3',{class:'song-title',text:song.title||'Sem título'}),el('p',{class:'small dim',text:I.meta})]),
       el('div',{class:'row'},[ hasText?el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}):null,
         el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}) ])]),
+    el('div',{class:'segm three song-st',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':gSt(song)===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ song.st=st; song.u=Date.now(); saveData(); render(true); }}); })),
     I.bad?el('div',{class:'note bad',text:I.bad+' marcação(ões) não existem na '+harpLc(song.harp)+' (sublinhadas). Toque em Editar e confira a gaita escolhida.'}):null,
     hasText ? el('div',{class:'sheet'},[te]) : el('div',{class:'note',text:'Esta música ainda não tem tablatura. Toque em Editar e cole a notação.'}),
     I.seq.length ? el('div',{class:'row'},[bPlay,
@@ -3457,28 +3805,32 @@ var ICON={
 };
 function icon(name){ var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','ic'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICON[name]; return s; }
 var TABS=[['gaita','Gaita'],['escalas','Escalas'],['exercicios','Exercícios'],['musicas','Músicas'],['caderno','Anotações'],['transpor','Transpor'],['teoria','Teoria']];
-var VIEWS={ gaita:viewGaita, escalas:viewEscalas, exercicios:viewExercicios, musicas:viewMusicas, caderno:viewCaderno, cajon:viewCajon, transpor:viewTranspor, teoria:viewTeoria, metronomo:viewMetronomo, ajustes:viewAjustes };
-function isAux(t){ return t==='metronomo' || t==='ajustes' || t==='cajon'; }
-function openAux(name){ if(S.tab===name){ S.tab=(S.back && S.back!==name)?S.back:'gaita'; } else { if(!isAux(S.tab) || (S.tab==='cajon' && name!=='cajon')) S.back=S.tab; S.tab=name; } save(); stopPlay(); render(); window.scrollTo(0,0); }
+var VIEWS={ gaita:viewGaita, escalas:viewEscalas, exercicios:viewExercicios, musicas:viewMusicas, caderno:viewCaderno, cajon:viewCajon, importar:viewImportar, rep:viewRep, transpor:viewTranspor, teoria:viewTeoria, metronomo:viewMetronomo, ajustes:viewAjustes };
+function isAux(t){ return t==='metronomo' || t==='ajustes' || t==='cajon' || t==='importar' || t==='rep'; }
+function area(){ var aux=(S.tab==='metronomo'||S.tab==='ajustes'); if(S.tab==='rep' || S.tab==='importar' || (S.back==='rep' && aux)) return 'rep'; if(S.tab==='cajon' || (S.back==='cajon' && aux)) return 'cajon'; return 'gaita'; }
+function openAux(name){ if(S.tab===name){ S.tab=(S.back && S.back!==name)?S.back:'gaita'; } else { if(!isAux(S.tab) || ((S.tab==='cajon'||S.tab==='rep') && name!==S.tab)) S.back=S.tab; S.tab=name; } save(); stopPlay(); render(); window.scrollTo(0,0); }
 function goCajon(){ if(S.tab!=='cajon'){ if(!isAux(S.tab)) S.gback=S.tab; S.back='cajon'; S.tab='cajon'; save(); stopPlay(); render(); window.scrollTo(0,0); } }
-function goGaita(){ if(S.tab==='cajon' || S.back==='cajon'){ S.tab=S.gback||'gaita'; S.back=S.tab; save(); stopPlay(); render(); window.scrollTo(0,0); } }
+function goRep(){ if(S.tab!=='rep'){ if(!isAux(S.tab)) S.gback=S.tab; S.back='rep'; S.tab='rep'; save(); stopPlay(); render(); window.scrollTo(0,0); } }
+function goGaita(){ if(area()!=='gaita'){ S.tab=S.gback||'gaita'; S.back=S.tab; save(); stopPlay(); render(); window.scrollTo(0,0); } }
 function render(keepFocus){
   if(!keepFocus){ var sn=document.getElementById('snack'); if(sn) sn.remove(); }
   cleanup.forEach(function(f){ try{ f(); }catch(e){} }); cleanup=[];
   var act=document.activeElement, fid=act&&act.id, ss=act&&act.selectionStart, y=window.scrollY;
-  var cj=S.tab==='cajon' || (S.back==='cajon' && (S.tab==='metronomo'||S.tab==='ajustes'));
-  if(cj) document.documentElement.setAttribute('data-skin','cajon'); else document.documentElement.removeAttribute('data-skin');
+  var ar=area(), cj=ar==='cajon', rp=ar==='rep';
+  if(ar!=='gaita') document.documentElement.setAttribute('data-skin',ar); else document.documentElement.removeAttribute('data-skin');
   var hb=document.getElementById('harpbar'); hb.textContent='';
   hb.appendChild(el('div',{class:'ins',role:'group','aria-label':'Instrumento'},[
-    el('button',{type:'button',id:'insGaita','aria-pressed':cj?'false':'true',text:'Gaita',onclick:goGaita}),
-    el('button',{type:'button',id:'insCajon','aria-pressed':cj?'true':'false',text:'Cajon',onclick:goCajon})]));
-  if(!cj){
+    el('button',{type:'button',id:'insGaita','aria-pressed':ar==='gaita'?'true':'false',text:'Gaita',onclick:goGaita}),
+    el('button',{type:'button',id:'insCajon','aria-pressed':cj?'true':'false',text:'Cajon',onclick:goCajon}),
+    el('button',{type:'button',id:'insRep','aria-pressed':rp?'true':'false',text:'Repertório',onclick:goRep})]));
+  if(ar==='gaita'){
   var mineHas=S.mine.some(function(m){ return sameHarp(m,S.harp); });
   var pick=function(h){ S.harp=h; if(S.sc.pos===0 && h.type==='diat') S.sc.pos=1; S.ex=null; save(); render(); };
   S.mine.concat(mineHas?[]:[S.harp]).forEach(function(h){ hb.appendChild(chip(h.type==='crom'?'Cromática':NN(HARP_KEYS[h.key]), sameHarp(h,S.harp), function(){ pick(h); },'hp')); });
   var os=harpSelect(S.harp,pick,'harpOther'); os.setAttribute('aria-label','Escolher outra gaita'); hb.appendChild(os);
   }
   ['tabs','tabsBottom'].forEach(function(id){ var tb=document.getElementById(id); tb.textContent=''; tb.style.setProperty('--nt',cj?CJ_TABS.length:TABS.length);
+    if(rp) return;
     if(cj) CJ_TABS.forEach(function(t){ tb.appendChild(el('button',{type:'button',role:'tab','aria-selected':(S.tab==='cajon' && (S.cjTab||'musicas')===t[0])?'true':'false',onclick:function(){ READER=false; S.cjTab=t[0]; S.tab='cajon'; S.back='cajon'; save(); stopPlay(); render(); window.scrollTo(0,0); try{ history.replaceState(null,'','#cajon'); }catch(e){} }},[icon(t[0]),el('span',{text:t[1]})])); });
     else TABS.forEach(function(t){ tb.appendChild(el('button',{type:'button',role:'tab','aria-selected':S.tab===t[0]?'true':'false',onclick:function(){ READER=false; S.tab=t[0]; S.back=t[0]; save(); stopPlay(); render(); window.scrollTo(0,0); try{ history.replaceState(null,'','#'+t[0]); }catch(e){} }},[icon(t[0]),el('span',{text:t[1]})])); }); });
   document.getElementById('cfgBtn').setAttribute('aria-pressed',S.tab==='ajustes'?'true':'false');
@@ -3497,14 +3849,14 @@ function init(){
   if(!S.cjSongs) S.cjSongs=cjSeedSongs(); if(!S.cjEx) S.cjEx=cjSeedEx();
   var cfg=document.getElementById('cfgBtn'); cfg.appendChild(icon('ajustes')); cfg.addEventListener('click',function(){ openAux('ajustes'); });
   var sb=document.getElementById('syncBtn'); sb.appendChild(icon('nuvem')); sb.addEventListener('click',function(){ if(Sync.on()) Sync.run(true); else openAux('ajustes'); });
-  S.songEdit=null; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
+  S.songEdit=null; if(!Array.isArray(S.reps)) S.reps=[]; S.repRow=null; S.repNewId=null; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
   var onLand=function(){ if(!mqLand.matches) readerDismissed=false; render(true); };
   if(mqLand.addEventListener) mqLand.addEventListener('change',onLand); else if(mqLand.addListener) mqLand.addListener(onLand);
   render();
   if(Sync.on()){ Sync.st='ok'; Sync.run(); }
   document.addEventListener('visibilitychange',function(){ if(!document.hidden && Sync.on() && Date.now()-(S.sync.last||0)>30000) Sync.run(); });
 }
-window.__gaita={ S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno };
+window.__gaita={ S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno, repParse:repParse, repTag:repTag, repSetIns:repSetIns };
 init();
 })();
 </script>
