@@ -624,6 +624,67 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .mus-main>.sec:first-child{margin-top:0}
 #songMsg:empty{display:none}
 .lib-toggle small{white-space:nowrap}
+.metro-gap{min-height:1.4em;margin:0;text-align:center;font-size:14px;color:var(--on-sv)}
+.dots.mute i{opacity:.35}
+
+/* ---------- ficha de preparo e modo palco (v16) ---------- */
+.fc-page{gap:14px}
+.fc-page .lbl{margin:0}
+.fc-steps{display:flex;flex-wrap:wrap;gap:6px}
+.fc-step{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--olv);border-radius:999px;padding:3px 10px 3px 4px;font-size:13px;color:var(--on-sv)}
+.fc-step i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--ol);display:inline-grid;place-items:center;font-style:normal;font-size:11px;font-weight:700}
+.fc-step.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.fc-step.ok i{background:var(--ok);border-color:var(--ok);color:var(--s1)}
+.fc-page .cj-card{display:flex;flex-direction:column;gap:10px}
+.fc-page .cj-card h3{margin:0}
+.fc-page input[type=number]{width:110px}
+.fc-tr{gap:6px;align-items:center}
+.fc-form{display:flex;flex-wrap:wrap;gap:6px}
+.fc-part{display:inline-flex;align-items:baseline;gap:6px;border-radius:8px;padding:4px 10px;background:var(--s3);font-size:14px;transition:background .12s,color .12s}
+.fc-part small{color:var(--on-sv);font-size:12px}
+.fc-part.on{background:var(--p);color:var(--on-p)}
+.fc-part.on small{color:inherit;opacity:.85}
+.ins-tag.fc{color:var(--on-sv)}
+.fc-count{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:60;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:180px;padding:14px 22px;border-radius:24px;background:color-mix(in srgb,var(--s1) 88%,transparent);box-shadow:var(--e2);backdrop-filter:blur(6px)}
+.fc-count b{font-size:88px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;color:var(--p)}
+.fc-count span{font-size:15px;color:var(--on-sv);text-align:center}
+.fc-count.cnt b{color:var(--err)}
+.fc-count.go b{color:var(--ok);font-size:64px}
+.fc-count.mute b{opacity:.35}
+.fc-count:not(.cnt):not(.go){top:auto;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);flex-direction:row;gap:12px;padding:8px 18px;min-width:0}
+.fc-count:not(.cnt):not(.go) b{font-size:40px}
+/* cifra */
+.cf{font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace;font-size:15px;line-height:1.35;overflow-x:auto;padding:4px 0;color:var(--on-s)}
+.cf-l{white-space:pre;min-height:1.35em}
+.cf-l.ch{color:var(--p);font-weight:700}
+.cf-l.sec{font-family:inherit;font-weight:700;margin-top:.6em;color:var(--on-sv)}
+.cf-l.gap{min-height:.7em}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .cf-l.ch{color:var(--ig)} }
+:root[data-theme="dark"] .cf-l.ch{color:var(--ig)}
+/* palco */
+.palco .pl-body{padding-bottom:120px}
+.pl-list{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;margin:0 0 6px;scrollbar-width:none}
+.pl-chip{flex:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--olv);background:none;border-radius:999px;padding:4px 12px 4px 4px;font:inherit;font-size:13px;color:var(--on-sv);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-chip span{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:50%;background:var(--s3);font-size:12px;font-weight:600}
+.pl-chip[aria-current="true"]{background:var(--sc);color:var(--on-sc);border-color:var(--sc)}
+.pl-head{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.pl-ins{display:flex;gap:6px}
+.pl-entry{margin:0;font-size:calc(16px*var(--rz));line-height:1.4}
+.pl-nt{margin:0;white-space:pre-wrap;color:var(--on-sv);font-size:calc(15px*var(--rz))}
+.pl-tab{margin-top:22px;display:flex;flex-direction:column;gap:8px}
+.pl-bar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:stretch;gap:8px;padding:8px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));background:var(--s2);box-shadow:0 -1px 0 var(--olv),var(--e1)}
+.pl-nav{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:6px;border:0;background:none;border-radius:12px;padding:6px 8px;font:inherit;color:var(--on-s);text-align:left}
+.pl-nav.nx{justify-content:flex-end;text-align:right}
+.pl-nav b{font-size:30px;line-height:1;font-weight:400;flex:none}
+.pl-nav small{font-size:12px;color:var(--on-sv);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pl-nav:disabled{opacity:.35}
+.pl-nav:not(:disabled):hover{background:var(--s3)}
+.pl-tr{display:flex;align-items:center;gap:2px;flex:none}
+.pl-tr span{min-width:38px;text-align:center;font-weight:600;font-size:15px}
+.pl-go{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;border-radius:16px;background:var(--p);color:var(--on-p);padding:6px 18px;min-height:52px;font:inherit}
+.pl-go b{font-size:16px;font-weight:600}
+.pl-go small{font-size:11px;opacity:.85}
+@media (max-width:420px){ .pl-nav small{display:none} .pl-nav{flex:0 0 auto;padding:6px 10px} .pl-bar{justify-content:space-between} }
 </style>
 <div class="app">
   <header class="top">
@@ -1034,7 +1095,7 @@ var S={
   tab:'gaita', harp:{type:'diat',key:0}, mine:[{type:'diat',key:0},{type:'diat',key:9},{type:'diat',key:7},{type:'crom'}],
   solfejo:false, showOver:false, a4:440, tol:25, hold:160, ignOct:false,
   sc:{ pos:1, root:0, type:'maior' }, th:{ root:0, mode:'maior' },
-  metro:{ bpm:80, beats:4, sub:1, accent:true, vol:0.8, ladder:false, lStep:5, lBars:4, lMax:120 },
+  metro:{ bpm:80, beats:4, sub:1, accent:true, vol:0.8, ladder:false, lStep:5, lBars:4, lMax:120, mode:'all', gOn:2, gOff:2 },
   songs:[{ id:'ex1', u:0, title:'Ode à Alegria (exemplo)', key:{pc:0,mode:'maior'}, harp:{type:'diat',key:0}, bpm:90,
            text:'Beethoven, domínio público\n+5 +5 -5 +6 +6 -5 +5 -4\n+4 +4 -4 +5 +5 -4 -4\n+5 +5 -5 +6 +6 -5 +5 -4\n+4 +4 -4 +5 -4 +4 +4' }],
   notes:[{ id:'nx1', u:0, sec:'Em foco', title:'Como usar o caderno (exemplo)', harp:{type:'diat',key:0},
@@ -1110,26 +1171,36 @@ function playSeq(seq, bpm, onStep, onEnd){
 }
 
 /* ---------- metrônomo ---------- */
-var Metro={ on:false, next:0, beat:0, sub:0, bar:0, timer:0, ui:null,
-  start:function(){ if(Groove.on) Groove.stop(); var a=AC(); this.on=true; this.beat=0; this.sub=0; this.bar=0; this.next=a.currentTime+0.06; var self=this; this.timer=setInterval(function(){ self.tick(); },25); this.tick(); paintMini(); },
-  stop:function(){ this.on=false; clearInterval(this.timer); paintMini(); if(this.ui) this.ui(-1); },
+var Metro={ on:false, next:0, beat:0, sub:0, bar:0, timer:0, ui:null, cnt:0, after:'go', halt:false,
+  /* opts.count: compassos de contagem antes de começar; opts.after: 'stop' para parar no 1 da música */
+  start:function(opts){ if(Groove.on) Groove.stop(); var a=AC(); if(this.on){ clearInterval(this.timer); } this.on=true; this.halt=false; this.beat=0; this.sub=0; this.bar=0;
+    this.cnt=opts&&opts.count?opts.count:0; this.after=opts&&opts.after==='stop'?'stop':'go';
+    this.next=a.currentTime+0.08; var self=this; this.timer=setInterval(function(){ self.tick(); },25); this.tick(); paintMini(); },
+  stop:function(){ this.on=false; this.halt=false; this.cnt=0; clearInterval(this.timer); paintMini(); if(this.ui) this.ui(-1); },
   toggle:function(){ this.on ? this.stop() : this.start(); },
   click:function(when, kind){
     var a=AC(), o=a.createOscillator(), g=a.createGain(), m=S.metro;
-    o.frequency.value = kind===2 ? 1560 : kind===1 ? 1040 : 780;
-    var v=m.vol*(kind===0?0.35:0.9);
+    o.frequency.value = kind===3 ? 1900 : kind===2 ? 1560 : kind===1 ? 1040 : 780;
+    var v=m.vol*(kind===0?0.35:kind===3?1:0.9);
     g.gain.setValueAtTime(v,when); g.gain.exponentialRampToValueAtTime(0.001,when+0.05);
     o.connect(g); g.connect(a.destination); o.start(when); o.stop(when+0.06);
   },
+  /* silêncio do compasso (rel = compasso contado depois da contagem) */
+  muted:function(rel){ var m=S.metro; if(m.mode!=='gap') return false; var on=Math.max(1,m.gOn||2), off=Math.max(1,m.gOff||2); return (rel%(on+off))>=on; },
   tick:function(){
     var a=AC(), m=S.metro, self=this;
+    if(this.halt) return;
     while(this.next < a.currentTime+0.12){
-      var first=this.sub===0, b=this.beat;
-      this.click(this.next, first ? ((b===0 && m.accent)?2:1) : 0);
-      if(first){ (function(bb,t){ setTimeout(function(){ if(self.on && self.ui) self.ui(bb); }, Math.max(0,(t-a.currentTime)*1000)); })(b,this.next); }
-      this.next += 60/m.bpm/m.sub;
-      this.sub++; if(this.sub>=m.sub){ this.sub=0; this.beat++; if(this.beat>=m.beats){ this.beat=0; this.bar++;
-        if(m.ladder && this.bar%m.lBars===0 && m.bpm<m.lMax){ m.bpm=Math.min(m.lMax,m.bpm+m.lStep); save(); setTimeout(function(){ paintMini(); if(S.tab==='metronomo') render(); },0); } } }
+      var first=this.sub===0, b=this.beat, inCount=this.bar<this.cnt, rel=this.bar-this.cnt;
+      if(!inCount && this.cnt && this.after==='stop'){ this.halt=true; clearInterval(this.timer); var at=this.next;
+        setTimeout(function(){ if(self.ui) self.ui(0,0,false,false,true); self.stop(); }, Math.max(0,(at-a.currentTime)*1000)); return; }
+      var mute=!inCount && this.muted(rel), md=m.mode||'all';
+      var sound = inCount ? first : !mute && (md==='24' ? (first && b%2===1) : md==='1' ? (first && b===0) : true);
+      if(sound) this.click(this.next, inCount ? (b===0?3:2) : first ? ((b===0 && m.accent)?2:1) : 0);
+      if(first){ (function(bb,t,rr,mu,ic){ setTimeout(function(){ if(self.on && self.ui) self.ui(bb,rr,mu,ic); }, Math.max(0,(t-a.currentTime)*1000)); })(b,this.next,rel,mute,inCount); }
+      this.next += 60/m.bpm/((inCount||md==='24'||md==='1')?1:m.sub);
+      this.sub++; if(this.sub>=((inCount||md==='24'||md==='1')?1:m.sub)){ this.sub=0; this.beat++; if(this.beat>=m.beats){ this.beat=0; this.bar++;
+        if(m.ladder && this.bar>this.cnt && (this.bar-this.cnt)%m.lBars===0 && m.bpm<m.lMax){ m.bpm=Math.min(m.lMax,m.bpm+m.lStep); save(); setTimeout(function(){ paintMini(); if(S.tab==='metronomo') render(); },0); } } }
     }
   }
 };
@@ -2787,7 +2858,7 @@ function cjSongCard(it){
     el('datalist',{id:'cjGroups'},groups.map(function(g){ return el('option',{value:g}); })),
     field('Levada', el('input',{type:'text',id:'cjL',value:it.lv||'',placeholder:'ex.: train beat; levada básica com grave duplo',oninput:function(e){ it.lv=e.target.value; cjTouch(it); }})),
     field('Roteiro e observações', txt),
-    el('div',{class:'row between'},[mBtn, del]) ]);
+    el('div',{class:'row between'},[el('div',{class:'row'},[mBtn, el('button',{class:'btn sm',type:'button',text:'Ficha e cifra',onclick:function(){ fcOpen(it.t||'Sem nome'); }})]), del]) ]);
 }
 function viewCajonSongs(){
   var songs=S.cjSongs, out=[];
@@ -3531,11 +3602,12 @@ function repList(){
   return out;
 }
 function repStTag(p){ return el('span',{class:'ins-tag '+p.k+' st-'+(p.st?REP_ST.indexOf(p.st):'x')},[el('i'),(p.k==='g'?'Gaita':'Cajon')+' · '+(p.st?CJ_ST_LABEL[p.st]:'fora da lista')]); }
+function repFcTag(it){ var f=fcFind(it.t); if(!f) return el('span',{class:'ins-tag fc st-x'},[el('i'),'Preparo · sem ficha']); var sc=fcScore(f); return el('span',{class:'ins-tag fc st-'+(sc>=5?2:sc>=2?1:0)},[el('i'),'Preparo '+sc+'/5'+(String(f.cifra||'').trim()?' · cifra':'')]); }
 function repItemRow(rep, it, idx){
   var pairs=repPairs({items:[it]});
   if(S.repRow!==idx) return el('button',{class:'rp-row',type:'button',onclick:function(){ S.repRow=idx; save(); render(true); }},[
     el('span',{class:'imp-n',text:String(idx+1)}),
-    el('span',{class:'imp-t'},[el('b',{text:it.t}), it.a?el('small',{text:it.a}):null, el('span',{class:'rp-ins'},pairs.map(repStTag))]) ]);
+    el('span',{class:'imp-t'},[el('b',{text:it.t}), it.a?el('small',{text:it.a}):null, el('span',{class:'rp-ins'},pairs.map(repStTag).concat([repFcTag(it)]))]) ]);
   var setIns=function(k){ var has=it.ins.indexOf(k)>=0, nv=has?(it.ins==='gc'?(k==='g'?'c':'g'):it.ins):'gc'; if(nv===it.ins) return; it.ins=nv; if(nv==='c') delete it.h; repEnsure(rep,it); repTouch(rep); render(true); };
   var move=function(d){ var j=idx+d; if(j<0||j>=rep.items.length) return; var x=rep.items[idx]; rep.items[idx]=rep.items[j]; rep.items[j]=x; S.repRow=j; repTouch(rep); render(true); };
   var blocks=pairs.map(function(p){
@@ -3551,10 +3623,12 @@ function repItemRow(rep, it, idx){
       el('button',{type:'button','aria-pressed':it.ins.indexOf('g')>=0?'true':'false',text:'Gaita',onclick:function(){ setIns('g'); }}),
       el('button',{type:'button','aria-pressed':it.ins.indexOf('c')>=0?'true':'false',text:'Cajon',onclick:function(){ setIns('c'); }}) ])]) ]
     .concat(blocks).concat([
+    el('div',{class:'row'},[el('button',{class:'btn sm tonal',type:'button',text:'Ficha e cifra ›',onclick:function(){ fcOpen(it.t, rep); }}), el('button',{class:'btn sm',type:'button',text:'Abrir no palco',onclick:function(){ palcoOpen(rep, idx); }})]),
     el('div',{class:'row between'},[el('div',{class:'row'},[
       el('button',{class:'btn sm',type:'button','aria-label':'Subir na ordem',text:'↑ Subir',disabled:idx===0,onclick:function(){ move(-1); }}),
       el('button',{class:'btn sm',type:'button','aria-label':'Descer na ordem',text:'↓ Descer',disabled:idx===rep.items.length-1,onclick:function(){ move(1); }}) ]), del]) ]));
 }
+function repPrepLine(rep){ var ok=0, cf=0; rep.items.forEach(function(it){ var f=fcFind(it.t); if(f && fcScore(f)>=5) ok++; if(f && String(f.cifra||'').trim()) cf++; }); return ok+' de '+rep.items.length+' com preparo completo · '+cf+' com cifra'; }
 function repDetail(rep){
   var out=[], pr=repProgress(rep), n=repDays(rep), isNew=S.repNewId===rep.id;
   var ttl=el('h2',{text:rep.name||'Nova apresentação'}), meta=el('p',{class:'dim',text:''});
@@ -3588,7 +3662,7 @@ function repDetail(rep){
   var del=el('button',{class:'btn danger',type:'button',text:'Excluir apresentação',onclick:function(){ if(del.dataset.sure){ S.del[rep.id]=Date.now(); S.reps=S.reps.filter(function(x){ return x.id!==rep.id; }); if(S.gRep===rep.id) S.gRep=null; if(S.cjRep===rep.id) S.cjRep=null; S.repSel=null; saveData(); render(); } else { del.dataset.sure='1'; del.textContent='Excluir mesmo?'; } }});
   out.push(el('section',{class:'sec rp-page'},[
     el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Apresentações',onclick:function(){ S.repSel=null; S.repRow=null; save(); render(); window.scrollTo(0,0); }})]),
-    ttl, meta, repBar(pr), dados,
+    ttl, meta, repBar(pr), rep.items.length?el('div',{class:'row'},[el('button',{class:'btn pri',type:'button',id:'rpPalco',text:'▶ Modo palco',onclick:function(){ palcoOpen(rep,0); }}), el('span',{class:'dim small',text:repPrepLine(rep)})]):null, dados,
     el('div',{class:'row between'},[el('h3',{text:'Músicas'+(rep.items.length?' ('+rep.items.length+')':'')}), el('button',{class:'btn sm',type:'button',id:'rpText',text:'Editar como texto',onclick:function(){ S.imp.text=repText(rep); save(); openImport(); }})]),
     rep.items.length ? el('div',{class:'rp-items'},rep.items.map(function(it,i){ return repItemRow(rep,it,i); })) : el('div',{class:'cj-empty'},[el('p',{class:'dim',text:'Nenhuma música ainda. Acrescente uma por uma aqui embaixo, ou use “Editar como texto” para escrever a lista inteira.'})]),
     el('div',{class:'row cj-add rp-add'},[nm, insBox, el('button',{class:'btn pri',type:'button',id:'rpAddBtn',text:'Adicionar',onclick:add})]),
@@ -3656,11 +3730,206 @@ function viewImportar(){
   return out;
 }
 
+/* ---------- fichas de preparo (uma por música, vale para gaita e cajon) ---------- */
+function fcAll(){ if(!Array.isArray(S.fichas)) S.fichas=[]; return S.fichas; }
+function fcFind(t){ var k=repNorm(t); if(!k) return null; var r=null; fcAll().forEach(function(f){ if(!r && repNorm(f.t)===k) r=f; }); return r; }
+function fcNew(t){ return { id:'fc'+Date.now()+Math.floor(Math.random()*1000), u:Date.now(), t:String(t||'').trim(), bpm:0, beats:4, quem:'', cnt:1, after:'stop', entra:'', form:'', cifra:'', tr:0, nt:'', met:'', gap:'' }; }
+function fcTouch(f){ if(fcAll().indexOf(f)<0) fcAll().push(f); f.u=Date.now(); saveData(); }
+function fcBpm(f){ if(f.bpm) return f.bpm; var c=repFindC(f.t); return c&&c.bpm?c.bpm:0; }
+var FC_QUEM=[['eu','Eu conto'],['outro','Outra pessoa conta'],['intro','Entra pela introdução']];
+var FC_BEATS=[[2,'2/4'],[3,'3/4'],[4,'4/4'],[6,'6/8']];
+function fcBeatsLabel(b){ var r='4/4'; FC_BEATS.forEach(function(x){ if(x[0]===b) r=x[1]; }); return r; }
+function fcToday(){ return repIso(repToday()); }
+function fcAgo(iso){ if(!iso) return ''; var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso); if(!m) return ''; return repWhen(Math.round((new Date(+m[1],+m[2]-1,+m[3])-repToday())/864e5)); }
+
+/* estrutura: uma parte por linha, "Refrão 8 x2" */
+function fcForm(text){
+  var out=[]; String(text||'').split(/\n|;|\s\|\s/).forEach(function(l){ l=l.trim(); if(!l) return;
+    var m=/^(.*?)(?:\s*[:\-–·]?\s*(\d{1,3})\s*(?:c|comp|compassos?)?\.?)?(?:\s*[x×]\s*(\d{1,2}))?\s*$/i.exec(l);
+    var name=(m&&m[1]||'').trim()||l, n=m&&m[2]?parseInt(m[2],10):0, rep=m&&m[3]?parseInt(m[3],10):1;
+    out.push({ name:name, n:n, rep:rep }); });
+  return out;
+}
+function fcBars(parts){ return parts.reduce(function(a,p){ return a+p.n*p.rep; },0); }
+function fcDur(bars, beats, bpm){ if(!bars||!bpm) return ''; var s=Math.round(bars*beats*60/bpm); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
+/* em que parte está o compasso rel (0 = primeiro compasso da música) */
+function fcPartAt(parts, rel){ var acc=0; for(var i=0;i<parts.length;i++){ var p=parts[i], len=p.n*p.rep; if(!len) continue; if(rel<acc+len){ var k=rel-acc; return { i:i, bar:(k%p.n)+1, of:p.n, pass:Math.floor(k/p.n)+1 }; } acc+=len; } return null; }
+function fcSteps(f){ return [['Andamento',!!fcBpm(f)],['Estrutura',fcBars(fcForm(f.form))>0],['Entrada',!!f.quem],['Com clique',!!f.met],['Sem clique',!!f.gap]]; }
+function fcScore(f){ return fcSteps(f).filter(function(x){ return x[1]; }).length; }
+
+/* ---------- cifra ---------- */
+function fcIsChordLine(line){ var ws=String(line).split(/[\s|]+/).filter(Boolean); if(!ws.length) return false; var hit=0;
+  ws.forEach(function(w){ var b=w.replace(/^[(\[]+|[)\].:;,]+$/g,''); if(C.parseChord(b) || /^(%|\/+|-+|\.+|x\d)$/i.test(b)) hit++; });
+  return hit/ws.length>=0.6; }
+/* [Am]letra (formato ChordPro) vira linha de acordes em cima da letra */
+function fcChordPro(text){
+  return String(text||'').split('\n').map(function(line){
+    var re=/\[([^\]\s]{1,12})\]/g, m, ch='', ly='', last=0, any=false;
+    while((m=re.exec(line))){ if(!C.parseChord(m[1])) continue; any=true; ly+=line.slice(last,m.index); last=re.lastIndex; while(ch.length<ly.length) ch+=' '; while(ly.length<ch.length) ly+=' '; ch+=m[1]+' '; }
+    if(!any) return line; ly+=line.slice(last); return ch.replace(/\s+$/,'')+'\n'+ly;
+  }).join('\n');
+}
+function fcChords(text){ var out=[]; String(text||'').split('\n').forEach(function(l){ if(fcIsChordLine(l)) out=out.concat(C.extractChords(l)); }); return out; }
+function fcKey(f){ var ch=fcChords(fcChordPro(f.cifra)); if(ch.length<2) return null; var k=C.detectKeyFromChords(ch)[0]; return k?{ pc:k.pc, mode:k.mode }:null; }
+function fcText(f){
+  var src=fcChordPro(f.cifra), tr=((f.tr||0)%12+12)%12; if(!tr) return src;
+  var k=fcKey(f), pc=k?(k.pc+tr)%12:0, flat=k ? (k.mode==='menor'?[2,7,0,5,10]:[5,10,3,8,1]).indexOf(pc)>=0 : false;
+  return C.transposeChordText(src, tr, flat?'b':'#');
+}
+function fcKeyLabel(f){ var k=fcKey(f); if(!k) return ''; return keyLabel(((k.pc+(f.tr||0))%12+12)%12, k.mode); }
+function fcSheet(f){
+  var box=el('div',{class:'cf'}), max=0;
+  fcText(f).split('\n').forEach(function(line){ line=line.replace(/\t/g,'    ').replace(/\s+$/,''); if(line.length>max) max=line.length;
+    var t=line.trim(), isCh=t&&fcIsChordLine(line), isSec=!isCh && t.length<=28 && (/^\[[^\]]+\]$/.test(t) || /^(intro|introdução|refrão|refrao|verso|estrofe|ponte|pré|pre|solo|final|coda|interlúdio|interludio|parte)\b.*:?$/i.test(t));
+    box.appendChild(el('div',{class:'cf-l'+(isCh?' ch':'')+(isSec?' sec':'')+(t?'':' gap'),text:line||' '})); });
+  box.dataset.max=String(max); return box;
+}
+/* cabe na largura: a cifra não quebra linha (acorde perderia o lugar), então a letra encolhe até um mínimo */
+function fcFit(box, base){ if(!box || !box.isConnected) return; var max=parseInt(box.dataset.max,10)||1, w=box.clientWidth-4;
+  var fs=Math.max(12,Math.min(base, w/(max*0.61))); box.style.fontSize=fs.toFixed(1)+'px'; }
+
+/* ---------- contagem e metrônomo com a música ---------- */
+function fcMetro(f, mode, count, after){ var m=S.metro, b=fcBpm(f); if(b) m.bpm=b; m.beats=f.beats||4; if(mode) m.mode=mode; save(); Metro.start({count:count, after:after}); paintMini(); }
+function fcCountBox(f, onBar){
+  var box=el('div',{class:'fc-count',hidden:true,'aria-live':'off'}), big=el('b'), small=el('span'); box.appendChild(big); box.appendChild(small);
+  var parts=fcForm(f.form);
+  Metro.ui=function(b,rel,mu,ic,done){
+    if(done){ box.hidden=false; box.className='fc-count go'; big.textContent='Já!'; small.textContent=''; setTimeout(function(){ if(!Metro.on) box.hidden=true; },900); if(onBar) onBar(-1); return; }
+    if(b<0){ box.hidden=true; if(onBar) onBar(-1); return; }
+    box.hidden=false; box.className='fc-count'+(ic?' cnt':'')+(mu?' mute':''); big.textContent=String(b+1);
+    if(ic){ small.textContent='contagem'; if(onBar) onBar(-1); return; }
+    var p=fcPartAt(parts, rel); small.textContent=mu?'silêncio, segue contando':(p?parts[p.i].name+' · '+p.bar+'/'+p.of+(parts[p.i].rep>1?' ('+p.pass+'ª vez)':''):'compasso '+(rel+1));
+    if(onBar) onBar(p?p.i:-1);
+  };
+  cleanup.push(function(){ Metro.ui=null; });
+  return box;
+}
+function fcFormChips(parts, beats, bpm){
+  var bars=fcBars(parts);
+  var row=el('div',{class:'fc-form'},parts.map(function(p,i){ return el('span',{class:'fc-part','data-i':String(i)},[el('b',{text:p.name}), p.n?el('small',{text:p.n+(p.rep>1?' ×'+p.rep:'')}):null]); }));
+  return { row:row, total:bars?bars+' compassos'+(bpm?' · ≈ '+fcDur(bars,beats,bpm):''):'' };
+}
+function fcEntryText(f){ var q=''; FC_QUEM.forEach(function(x){ if(x[0]===f.quem) q=x[1]; }); var a=[];
+  if(q) a.push(q+(f.quem!=='intro'?' · '+(f.cnt||1)+(f.cnt===2?' compassos':' compasso'):''));
+  if(f.entra) a.push(f.entra); return a.join(' — '); }
+
+function fcOpen(t, rep){ S.fcT=t; S.fcRep=rep?rep.id:(S.fcRep||null); if(S.tab!=='ficha') S.fcBack=S.tab; S.tab='ficha'; save(); stopPlay(); render(); window.scrollTo(0,0); }
+function fcClose(){ if(Metro.on && Metro.cnt) Metro.stop(); S.tab=S.fcBack&&S.fcBack!=='ficha'?S.fcBack:'rep'; save(); render(); window.scrollTo(0,0); }
+
+/* ---------- tela: ficha da música ---------- */
+function viewFicha(){
+  var t=S.fcT||'', f=fcFind(t)||fcNew(t), out=[], touch=function(){ fcTouch(f); paintTop(); };
+  var steps=el('div',{class:'fc-steps'}), paintTop=function(){ fill(steps, fcSteps(f).map(function(x){ return el('span',{class:'fc-step'+(x[1]?' ok':'')},[el('i',{text:x[1]?'✓':''}),x[0]]); })); };
+  paintTop();
+  var bpmIn=el('input',{type:'number',id:'fcBpm',inputmode:'numeric',min:30,max:240,value:fcBpm(f)||'',placeholder:'ex.: 72',oninput:function(e){ var v=parseInt(e.target.value,10); f.bpm=(v>=30&&v<=240)?v:0; touch(); paintForm(); }});
+  var taps=[], tap=el('button',{class:'btn',type:'button',text:'Bater o tempo',onclick:function(){ var n=performance.now(); taps=taps.filter(function(x){ return n-x<2500; }); taps.push(n); if(taps.length>=3){ var iv=(taps[taps.length-1]-taps[0])/(taps.length-1); f.bpm=Math.max(30,Math.min(240,Math.round(60000/iv))); bpmIn.value=f.bpm; touch(); paintForm(); } else tap.textContent='Bater de novo…'; }});
+  var listen=el('button',{class:'btn',type:'button',text:'Ouvir andamento',onclick:function(){ if(Metro.on){ Metro.stop(); listen.textContent='Ouvir andamento'; return; } if(!fcBpm(f)){ bpmIn.focus(); return; } fcMetro(f,null,0); listen.textContent='■ Parar'; }});
+  var seg=function(opts, cur, fn, label){ return el('div',{class:'segm',role:'group','aria-label':label},opts.map(function(o){ return el('button',{type:'button','aria-pressed':cur===o[0]?'true':'false',text:o[1],onclick:function(){ fn(o[0]); touch(); render(true); }}); })); };
+  var entra=el('input',{type:'text',id:'fcEntra',value:f.entra||'',placeholder:'ex.: "1, 2, 3, 4" falado; todos entram no 1 com o violão',oninput:function(e){ f.entra=e.target.value; touch(); }});
+  var cnt=fcCountBox(f, function(i){ var cs=formHost.querySelectorAll('.fc-part'); for(var j=0;j<cs.length;j++) cs[j].classList.toggle('on', j===i); });
+  var form=growArea(el('textarea',{id:'fcForm',rows:5,spellcheck:'false',placeholder:'Uma parte por linha, com o número de compassos:\nIntro 4\nVerso 8\nRefrão 8 x2\nParada\nFinal 4',value:f.form||'',oninput:function(e){ f.form=e.target.value; touch(); paintForm(); }}));
+  var formHost=el('div',{}), formTot=el('p',{class:'small dim'});
+  var paintForm=function(){ var c=fcFormChips(fcForm(f.form), f.beats||4, fcBpm(f)); fill(formHost,[c.row]); formTot.textContent=c.total; };
+  paintForm();
+  var mark=function(k,label){ var b=el('button',{class:'btn sm'+(f[k]===fcToday()?' tonal':''),type:'button',text:(f[k]===fcToday()?'✓ ':'')+label+(f[k]&&f[k]!==fcToday()?' (última: '+fcAgo(f[k])+')':''),onclick:function(){ f[k]=f[k]===fcToday()?'':fcToday(); touch(); render(true); }}); return b; };
+  var train=function(mode,label){ return el('button',{class:'btn',type:'button',text:label,onclick:function(){ if(!fcBpm(f)){ bpmIn.focus(); toast('Defina o andamento primeiro.'); return; } fcMetro(f,mode,1,'go'); }}); };
+  var key=fcKeyLabel(f), sheetHost=el('div',{});
+  var paintSheet=function(){ fill(sheetHost, String(f.cifra||'').trim()?[fcSheet(f)]:[]); var b=sheetHost.firstChild; if(b) requestAnimationFrame(function(){ fcFit(b,15); }); };
+  var cif=growArea(el('textarea',{id:'fcCifra',rows:8,spellcheck:'false',autocapitalize:'off',placeholder:'Cole a cifra aqui (acordes em cima da letra, ou no formato [Am]letra).',value:f.cifra||'',oninput:function(e){ f.cifra=e.target.value; touch(); clearTimeout(cif._t); cif._t=setTimeout(function(){ paintSheet(); keyTx.textContent=fcKeyLabel(f)?'Tom: '+fcKeyLabel(f):''; },500); }}));
+  var keyTx=el('b',{text:key?'Tom: '+key:''});
+  var trBtn=function(d,txt){ return el('button',{class:'btn sm',type:'button',text:txt,onclick:function(){ f.tr=(((f.tr||0)+d)%12+12)%12; if(f.tr>6) f.tr-=12; touch(); render(true); }}); };
+  var nt=growArea(el('textarea',{id:'fcNt',rows:3,placeholder:'quem faz a introdução, onde a banda costuma errar, o que combinar no ensaio',value:f.nt||'',oninput:function(e){ f.nt=e.target.value; touch(); }}));
+  var rep=S.fcRep?repById(S.fcRep):null, idx=-1; if(rep) rep.items.forEach(function(it,i){ if(idx<0 && repNorm(it.t)===repNorm(t)) idx=i; });
+  out.push(el('section',{class:'sec rp-page fc-page'},[
+    el('div',{class:'row between'},[el('button',{class:'btn ghost',type:'button',text:'‹ Voltar',onclick:fcClose}), idx>=0?el('button',{class:'btn tonal',type:'button',text:'Ver no palco',onclick:function(){ palcoOpen(rep,idx); }}):null]),
+    el('div',{},[el('p',{class:'lbl',text:'Ficha de preparo'}), el('h2',{text:t||'Sem nome'})]),
+    steps,
+    el('div',{class:'cj-card'},[el('h3',{text:'Andamento e compasso'}),
+      el('div',{class:'row'},[field('BPM',bpmIn), field('Compasso',select(FC_BEATS,f.beats||4,function(v){ f.beats=parseInt(v,10); touch(); paintForm(); },'fcBeats'))]),
+      el('div',{class:'row'},[tap,listen]),
+      el('p',{class:'dim small',text:'Ache o andamento batendo junto com a gravação que a banda usa como referência.'}) ]),
+    el('div',{class:'cj-card'},[el('h3',{text:'Entrada'}),
+      seg(FC_QUEM, f.quem, function(v){ f.quem=v; }, 'Quem conta'),
+      f.quem!=='intro' ? el('div',{class:'row'},[el('span',{class:'lbl',text:'Contagem'}), seg([[1,'1 compasso'],[2,'2 compassos']], f.cnt||1, function(v){ f.cnt=v; }, 'Compassos de contagem')]) : null,
+      field('Como entra (o que foi combinado)', entra),
+      el('div',{class:'row'},[el('button',{class:'btn pri',type:'button',id:'fcTest',text:'▶ Testar contagem',onclick:function(){ if(!fcBpm(f)){ bpmIn.focus(); toast('Defina o andamento primeiro.'); return; } fcMetro(f,null,f.quem==='intro'?1:(f.cnt||1),'stop'); }})]),
+      el('p',{class:'dim small',text:'Treine a contagem em voz alta junto com o clique, no andamento da música, até sair sem pensar. O clique para no 1: é ali que a banda entra.'}) ]),
+    el('div',{class:'cj-card'},[el('h3',{text:'Estrutura'}), form, formHost, formTot]),
+    el('div',{class:'cj-card'},[el('h3',{text:'Treinar com o metrônomo'}),
+      el('p',{class:'dim small',text:'Cada botão dá 1 compasso de contagem e segue no andamento da música, mostrando em que parte da estrutura você está.'}),
+      el('div',{class:'row'},[train('all','Todos os tempos'),train('24','Só 2 e 4'),train('gap','Compassos mudos'),el('button',{class:'btn ghost',type:'button',text:'■ Parar',onclick:function(){ Metro.stop(); }})]),
+      el('div',{class:'row'},[mark('met','Treinei com clique hoje'), mark('gap','Treinei sem clique hoje')]) ]),
+    el('div',{class:'cj-card'},[el('div',{class:'row between'},[el('h3',{text:'Cifra'}), el('div',{class:'row fc-tr'},[keyTx, trBtn(-1,'Tom −'), trBtn(1,'Tom +'), f.tr?el('span',{class:'small dim',text:(f.tr>0?'+':'')+f.tr+' semitom'+(Math.abs(f.tr)>1?'s':'')}):null])]),
+      cif, sheetHost,
+      el('p',{class:'dim small',text:'A cifra fica só neste aparelho e na sua sincronização. Tom −/+ muda a cifra mostrada aqui e no palco, sem mexer no texto colado.'}) ]),
+    el('div',{class:'cj-card'},[el('h3',{text:'Observações'}), nt]),
+    cnt ]));
+  paintSheet();
+  return out;
+}
+
+/* ---------- tela: modo palco ---------- */
+function palcoOpen(rep, i){ S.palco={ rep:rep.id, i:i||0 }; if(S.tab!=='palco') S.palcoBack=S.tab==='ficha'?'rep':S.tab; S.tab='palco'; save(); stopPlay(); render(); window.scrollTo(0,0); }
+function palcoClose(){ if(Metro.on && Metro.cnt) Metro.stop(); S.tab='rep'; if(S.palco) S.repSel=S.palco.rep; save(); render(); window.scrollTo(0,0); }
+function viewPalco(){
+  var P=S.palco||{}, rep=repById(P.rep); if(!rep || !rep.items.length){ S.tab='rep'; return viewRep(); }
+  var n=rep.items.length, i=Math.max(0,Math.min(n-1,P.i||0)), it=rep.items[i], f=fcFind(it.t)||fcNew(it.t), bpm=fcBpm(f);
+  var go=function(j){ if(j<0||j>=n) return; if(Metro.on && Metro.cnt) Metro.stop(); S.palco.i=j; save(); render(); window.scrollTo(0,0); };
+  var zoom=function(d){ S.pz=Math.max(0.8,Math.min(2.4,Math.round(((S.pz||1)+d)*10)/10)); save(); render(true); };
+  var sub=[bpm?bpm+' bpm':'', fcBeatsLabel(f.beats||4), fcKeyLabel(f)?'tom '+fcKeyLabel(f):''].filter(Boolean).join(' · ');
+  var parts=fcForm(f.form), fc=fcFormChips(parts, f.beats||4, bpm);
+  var cnt=fcCountBox(f, function(k){ var cs=fc.row.querySelectorAll('.fc-part'); for(var j=0;j<cs.length;j++) cs[j].classList.toggle('on', j===k); });
+  var g=it.ins.indexOf('g')>=0?repFindG(it.t):null, c=it.ins.indexOf('c')>=0?repFindC(it.t):null;
+  var body=[], entry=fcEntryText(f);
+  body.push(el('div',{class:'pl-list'},rep.items.map(function(x,j){ return el('button',{type:'button',class:'pl-chip','aria-current':j===i?'true':'false',onclick:function(){ go(j); }},[el('span',{text:String(j+1)}), x.t]); })));
+  body.push(el('div',{class:'pl-head'},[
+    el('div',{class:'pl-ins'},[it.ins.indexOf('g')>=0?el('span',{class:'ins-tag g',text:g&&g.harp?(g.harp.type==='crom'?'Cromática':'Gaita '+NN(HARP_KEYS[g.harp.key])):'Gaita'}):null, it.ins.indexOf('c')>=0?el('span',{class:'ins-tag c',text:'Cajon'}):null]),
+    entry?el('p',{class:'pl-entry'},[el('b',{text:'Entrada: '}),entry]):null,
+    parts.length?fc.row:null,
+    c&&c.lv?el('p',{class:'pl-entry'},[el('b',{text:'Levada: '}),c.lv]):null,
+    f.nt?el('p',{class:'pl-nt',text:f.nt}):null ]));
+  var sheet=String(f.cifra||'').trim()?fcSheet(f):null;
+  if(sheet) body.push(sheet);
+  if(g && String(g.text||'').trim()){ var I=songInfo(g); body.push(el('div',{class:'pl-tab'},[el('p',{class:'lbl',text:'Gaita · '+harpName(g.harp)}), tabElement(I.parsed,I.ctx)])); }
+  if(c && c.n) body.push(el('div',{class:'pl-tab'},[el('p',{class:'lbl',text:'Roteiro do cajon'}), el('p',{class:'pl-nt',text:c.n})]));
+  if(!sheet && !(g && String(g.text||'').trim()) && !(c && c.n) && !entry && !parts.length)
+    body.push(el('div',{class:'cj-empty'},[el('p',{class:'dim',text:'Esta música ainda não tem ficha nem cifra.'}), el('button',{class:'btn',type:'button',text:'Preencher a ficha',onclick:function(){ fcOpen(it.t, rep); }})]));
+  var wrap=el('div',{class:'reader-body pl-body'},body); wrap.style.setProperty('--rz', String(S.pz||1));
+  var trBtn=function(d,txt,lbl){ return el('button',{class:'tool',type:'button','aria-label':lbl,title:lbl,text:txt,onclick:function(){ f.tr=(((f.tr||0)+d)%12+12)%12; if(f.tr>6) f.tr-=12; fcTouch(f); render(true); }}); };
+  var countBtn=el('button',{class:'pl-go',type:'button',id:'plCount',onclick:function(){ if(Metro.on){ Metro.stop(); return; } if(!bpm){ toast('Esta música ainda não tem andamento na ficha.','Abrir ficha',function(){ fcOpen(it.t, rep); }); return; } fcMetro(f,null,f.quem==='intro'?1:(f.cnt||1),'stop'); }},[el('b',{text:bpm?'▶ Contar':'Contar'}), el('small',{text:bpm?bpm+' bpm':'sem bpm'})]);
+  var onKey=function(e){ if(e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+    var atEnd=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4, atTop=window.scrollY<=2;
+    if(e.key==='ArrowRight'){ e.preventDefault(); go(i+1); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); go(i-1); }
+    else if(e.key==='PageDown' || e.key===' ' || e.key==='ArrowDown'){ e.preventDefault(); if(atEnd) go(i+1); else window.scrollBy({top:window.innerHeight*0.8,behavior:'smooth'}); }
+    else if(e.key==='PageUp' || e.key==='ArrowUp'){ e.preventDefault(); if(atTop) go(i-1); else window.scrollBy({top:-window.innerHeight*0.8,behavior:'smooth'}); }
+    else if(e.key==='Enter'){ e.preventDefault(); countBtn.click(); }
+    else if(e.key==='Escape') palcoClose(); };
+  document.addEventListener('keydown',onKey); cleanup.push(function(){ document.removeEventListener('keydown',onKey); });
+  var onRs=function(){ fcFit(sheet, 18*(S.pz||1)); }; window.addEventListener('resize',onRs); cleanup.push(function(){ window.removeEventListener('resize',onRs); });
+  if(sheet) requestAnimationFrame(onRs);
+  return [ el('section',{class:'reader palco'},[
+    el('div',{class:'reader-bar'},[
+      el('div',{class:'reader-t'},[el('b',{text:(i+1)+'/'+n+' · '+it.t}),el('span',{text:sub||rep.name})]),
+      el('div',{class:'reader-tools'},[
+        el('button',{class:'tool',type:'button','aria-label':'Diminuir a letra',title:'Diminuir',text:'A−',onclick:function(){ zoom(-0.15); }}),
+        el('button',{class:'tool',type:'button','aria-label':'Aumentar a letra',title:'Aumentar',text:'A+',onclick:function(){ zoom(0.15); }}),
+        el('button',{class:'tool',type:'button','aria-label':'Ficha da música',title:'Ficha',text:'✎',onclick:function(){ fcOpen(it.t, rep); }}),
+        el('button',{class:'tool close',type:'button','aria-label':'Sair do palco',title:'Sair',text:'✕',onclick:palcoClose}) ])]),
+    wrap,
+    el('div',{class:'pl-bar'},[
+      el('button',{class:'pl-nav',type:'button','aria-label':'Música anterior',disabled:i===0,onclick:function(){ go(i-1); }},[el('b',{text:'‹'}), el('small',{text:i>0?rep.items[i-1].t:''})]),
+      sheet?el('div',{class:'pl-tr'},[trBtn(-1,'−','Baixar meio tom'), el('span',{text:fcKeyLabel(f)||'tom'}), trBtn(1,'+','Subir meio tom')]):null,
+      countBtn,
+      el('button',{class:'pl-nav nx',type:'button','aria-label':'Próxima música',disabled:i===n-1,onclick:function(){ go(i+1); }},[el('small',{text:i<n-1?rep.items[i+1].t:'fim'}), el('b',{text:'›'})]) ]),
+    cnt ]) ];
+}
+
 /* ---------- sincronização entre aparelhos (gist secreto na conta do GitHub) ---------- */
 var SYNC_FILE='estudo-de-gaita.json';
-var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps','gEx'];
-function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], gEx:S.gEx||[], del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
-function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[],d.gEx||[]]); }
+var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps','gEx','fichas'];
+function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], gEx:S.gEx||[], fichas:S.fichas||[], del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
+function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[],d.gEx||[],d.fichas||[]]); }
 /* junta os dados de outro aparelho com os daqui; devolve true se algo mudou aqui */
 function mergeDoc(r){
   if(!r || typeof r!=='object') return false;
@@ -3785,7 +4054,7 @@ function viewAjustes(){
     el('p',{class:'dim small',text:'As marcadas aparecem como atalho no topo e são destacadas nas sugestões de qual gaita usar.'}),
     el('div',{class:'row'},all.map(function(h){ var on=S.mine.some(function(m){ return sameHarp(m,h); });
       return chip(h.type==='crom'?'Cromática':NN(HARP_KEYS[h.key]), on, function(){ if(on){ if(S.mine.length>1) S.mine=S.mine.filter(function(m){ return !sameHarp(m,h); }); } else S.mine.push(h); S.mineAt=Date.now(); saveData(); render(); }); })) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 15 (09/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 16 (13/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -3955,7 +4224,8 @@ function viewMusicasMain(song){
     el('div',{class:'song-head'},[
       el('div',{class:'song-id'},[el('h3',{class:'song-title',text:song.title||'Sem título'}),el('p',{class:'small dim',text:I.meta})]),
       el('div',{class:'row'},[ hasText?el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}):null,
-        el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}) ])]),
+        el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}),
+        el('button',{class:'btn',type:'button',id:'songFicha',text:'Ficha e cifra',onclick:function(){ fcOpen(song.title||'Sem título'); }}) ])]),
     el('div',{class:'segm three song-st',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':gSt(song)===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ song.st=st; song.u=Date.now(); saveData(); render(true); }}); })),
     I.bad?el('div',{class:'note bad',text:I.bad+' marcação(ões) não existem na '+harpLc(song.harp)+' (sublinhadas). Toque em Editar e confira a gaita escolhida.'}):null,
     hasText ? el('div',{class:'sheet'},[te]) : el('div',{class:'note',text:'Esta música ainda não tem tablatura. Toque em Editar e cole a notação.'}),
@@ -4140,19 +4410,31 @@ function viewTeoria(){
 }
 
 /* ---------- tela: Metrônomo ---------- */
+var METRO_MODES=[['all','Todos os tempos','Clique em todos os tempos (e na subdivisão escolhida). Base para aprender a música.'],
+  ['24','Só 2 e 4','Clique só nos tempos 2 e 4, como a caixa da bateria. Você segura o 1 e o 3 sozinho.'],
+  ['1','Só o 1','Um clique por compasso. Cada tempo do meio é responsabilidade sua.'],
+  ['gap','Compassos mudos','O clique some por alguns compassos e volta. Se você voltar junto com ele, o andamento está firme; se adiantou ou atrasou, dá para ouvir na hora.']];
 function viewMetronomo(){
   var m=S.metro;
   var num=el('div',{class:'bpm'},[String(m.bpm),el('small',{text:'bpm'})]);
   var dots=el('div',{class:'dots'}); for(var i=0;i<m.beats;i++) dots.appendChild(el('i',{class:i===0?'first':''}));
-  Metro.ui=function(b){ var ds=dots.children; for(var j=0;j<ds.length;j++) ds[j].classList.toggle('on', j===b); };
+  var gapMsg=el('p',{class:'metro-gap',text:''});
+  Metro.ui=function(b,rel,mu){ var ds=dots.children; for(var j=0;j<ds.length;j++) ds[j].classList.toggle('on', j===b); dots.classList.toggle('mute',!!mu); gapMsg.textContent=mu?'Silêncio: continue contando por dentro':(b>=0 && m.mode==='gap'?'Clique ligado':''); };
   cleanup.push(function(){ Metro.ui=null; });
   function setBpm(v){ m.bpm=Math.max(30,Math.min(240,Math.round(v))); save(); num.firstChild.nodeValue=String(m.bpm); rng.value=m.bpm; paintMini(); }
   var rng=el('input',{type:'range',id:'mBpm',min:30,max:240,value:m.bpm,'aria-label':'Andamento',oninput:function(){ setBpm(parseInt(rng.value,10)); }});
   var taps=[], bGo=el('button',{class:'btn pri',type:'button',style:'min-width:120px',text:Metro.on?'■ Parar':'▶ Iniciar',onclick:function(){ Metro.toggle(); bGo.textContent=Metro.on?'■ Parar':'▶ Iniciar'; }});
-  return [ el('section',{class:'panel metro'},[ num, dots, rng,
+  return [ el('section',{class:'panel metro'},[ num, dots, gapMsg, rng,
       el('div',{class:'row',style:'justify-content:center'},[[-5,'−5'],[-1,'−1'],[1,'+1'],[5,'+5']].map(function(d){ return el('button',{class:'btn',type:'button',text:d[1],onclick:function(){ setBpm(m.bpm+d[0]); }}); }).concat([
         el('button',{class:'btn',type:'button',text:'Bater o tempo',onclick:function(){ var t=performance.now(); taps=taps.filter(function(x){ return t-x<2500; }); taps.push(t); if(taps.length>=3){ var iv=(taps[taps.length-1]-taps[0])/(taps.length-1); setBpm(60000/iv); } }})])),
       bGo ]),
+    el('section',{class:'sec'},[el('h3',{text:'Treino de firmeza'}),
+      el('div',{class:'row'},METRO_MODES.map(function(o){ return chip(o[1], (m.mode||'all')===o[0], function(){ m.mode=o[0]; save(); render(true); }); })),
+      el('p',{class:'dim small',text:METRO_MODES.filter(function(o){ return o[0]===(m.mode||'all'); })[0][2]}),
+      m.mode==='gap' ? el('label',{class:'row'},['Toca',
+        el('input',{type:'number',id:'mGOn',min:1,max:16,value:m.gOn||2,style:'width:64px','aria-label':'compassos com clique',onchange:function(e){ m.gOn=Math.max(1,Math.min(16,parseInt(e.target.value,10)||2)); save(); }}),'compassos, cala',
+        el('input',{type:'number',id:'mGOff',min:1,max:16,value:m.gOff||2,style:'width:64px','aria-label':'compassos em silêncio',onchange:function(e){ m.gOff=Math.max(1,Math.min(16,parseInt(e.target.value,10)||2)); save(); }}),'compassos']) : null,
+      el('div',{class:'row'},[el('button',{class:'btn',type:'button',id:'mCount',text:'Contagem de 1 compasso e segue',onclick:function(){ Metro.start({count:1,after:'go'}); bGo.textContent='■ Parar'; }})]) ]),
     el('section',{class:'sec'},[el('h3',{text:'Escada de velocidade'}),
       el('div',{class:'row'},[60,70,80,90,100,110,120].map(function(b){ return chip(String(b), m.bpm===b, function(){ setBpm(b); render(true); }); })),
       el('p',{class:'dim small',text:'Suba um degrau só quando o trecho sair limpo três vezes seguidas. Se travar, desça um.'}),
@@ -4183,9 +4465,9 @@ var ICON={
 };
 function icon(name){ var s=document.createElementNS('http://www.w3.org/2000/svg','svg'); s.setAttribute('viewBox','0 0 24 24'); s.setAttribute('class','ic'); s.setAttribute('aria-hidden','true'); s.innerHTML=ICON[name]; return s; }
 var TABS=[['gaita','Gaita'],['escalas','Escalas'],['exercicios','Exercícios'],['musicas','Músicas'],['caderno','Anotações'],['transpor','Transpor'],['teoria','Teoria']];
-var VIEWS={ gaita:viewGaita, escalas:viewEscalas, exercicios:viewExercicios, musicas:viewMusicas, caderno:viewCaderno, cajon:viewCajon, importar:viewImportar, rep:viewRep, transpor:viewTranspor, teoria:viewTeoria, metronomo:viewMetronomo, ajustes:viewAjustes };
-function isAux(t){ return t==='metronomo' || t==='ajustes' || t==='cajon' || t==='importar' || t==='rep'; }
-function area(){ var aux=(S.tab==='metronomo'||S.tab==='ajustes'); if(S.tab==='rep' || S.tab==='importar' || (S.back==='rep' && aux)) return 'rep'; if(S.tab==='cajon' || (S.back==='cajon' && aux)) return 'cajon'; return 'gaita'; }
+var VIEWS={ gaita:viewGaita, escalas:viewEscalas, exercicios:viewExercicios, musicas:viewMusicas, caderno:viewCaderno, cajon:viewCajon, importar:viewImportar, rep:viewRep, transpor:viewTranspor, teoria:viewTeoria, metronomo:viewMetronomo, ajustes:viewAjustes, ficha:viewFicha, palco:viewPalco };
+function isAux(t){ return t==='metronomo' || t==='ajustes' || t==='cajon' || t==='importar' || t==='rep' || t==='ficha' || t==='palco'; }
+function area(){ var aux=(S.tab==='metronomo'||S.tab==='ajustes'); if(S.tab==='rep' || S.tab==='importar' || S.tab==='ficha' || S.tab==='palco' || (S.back==='rep' && aux)) return 'rep'; if(S.tab==='cajon' || (S.back==='cajon' && aux)) return 'cajon'; return 'gaita'; }
 function openAux(name){ if(S.tab===name){ S.tab=(S.back && S.back!==name)?S.back:'gaita'; } else { if(!isAux(S.tab) || ((S.tab==='cajon'||S.tab==='rep') && name!==S.tab)) S.back=S.tab; S.tab=name; } save(); stopPlay(); render(); window.scrollTo(0,0); }
 function goCajon(){ if(S.tab!=='cajon'){ if(!isAux(S.tab)) S.gback=S.tab; S.back='cajon'; S.tab='cajon'; save(); stopPlay(); render(); window.scrollTo(0,0); } }
 function goRep(){ if(S.tab!=='rep'){ if(!isAux(S.tab)) S.gback=S.tab; S.back='rep'; S.tab='rep'; save(); stopPlay(); render(); window.scrollTo(0,0); } }
@@ -4212,8 +4494,8 @@ function render(keepFocus){
     if(cj) CJ_TABS.forEach(function(t){ tb.appendChild(el('button',{type:'button',role:'tab','aria-selected':(S.tab==='cajon' && (S.cjTab||'musicas')===t[0])?'true':'false',onclick:function(){ READER=false; S.cjTab=t[0]; S.tab='cajon'; S.back='cajon'; save(); stopPlay(); render(); window.scrollTo(0,0); try{ history.replaceState(null,'','#cajon'); }catch(e){} }},[icon(t[0]),el('span',{text:t[1]})])); });
     else TABS.forEach(function(t){ tb.appendChild(el('button',{type:'button',role:'tab','aria-selected':S.tab===t[0]?'true':'false',onclick:function(){ READER=false; S.tab=t[0]; S.back=t[0]; save(); stopPlay(); render(); window.scrollTo(0,0); try{ history.replaceState(null,'','#'+t[0]); }catch(e){} }},[icon(t[0]),el('span',{text:t[1]})])); }); });
   document.getElementById('cfgBtn').setAttribute('aria-pressed',S.tab==='ajustes'?'true':'false');
-  var rd=readerOn(); document.documentElement.classList.toggle('reading', !!rd);
-  try{ if(rd && navigator.wakeLock && !wakeRd) navigator.wakeLock.request('screen').then(function(w){ wakeRd=w; },function(){}); if(!rd && wakeRd){ wakeRd.release(); wakeRd=null; } }catch(e){}
+  var rd=S.tab==='palco'?null:readerOn(), stage=!!rd||S.tab==='palco'; document.documentElement.classList.toggle('reading', stage);
+  try{ if(stage && navigator.wakeLock && !wakeRd) navigator.wakeLock.request('screen').then(function(w){ wakeRd=w; },function(){}); if(!stage && wakeRd){ wakeRd.release(); wakeRd=null; } }catch(e){}
   var v=document.getElementById('view'); v.textContent=''; v.className='v-'+S.tab+(S.tab==='cajon'?' v-cj-'+(S.cjTab||'musicas'):'');
   (rd ? viewReader(rd) : (VIEWS[S.tab]||viewGaita)()).forEach(function(n){ if(n) v.appendChild(n); });
   paintMini(); paintSync();
@@ -4227,7 +4509,7 @@ function init(){
   if(!S.cjSongs) S.cjSongs=cjSeedSongs(); if(!S.cjEx) S.cjEx=cjSeedEx();
   var cfg=document.getElementById('cfgBtn'); cfg.appendChild(icon('ajustes')); cfg.addEventListener('click',function(){ openAux('ajustes'); });
   var sb=document.getElementById('syncBtn'); sb.appendChild(icon('nuvem')); sb.addEventListener('click',function(){ if(Sync.on()) Sync.run(true); else openAux('ajustes'); });
-  S.songEdit=null; if(!Array.isArray(S.reps)) S.reps=[]; S.repRow=null; S.repNewId=null; if(!Array.isArray(S.gEx)) S.gEx=[]; S.gExOpen=null; S.gExEdit=null; S.cjRhEdit=null; S.gExImp=false; S.gExLog=[]; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
+  S.songEdit=null; if(!Array.isArray(S.reps)) S.reps=[]; if(!Array.isArray(S.fichas)) S.fichas=[]; if(S.tab==='palco' && !(S.palco && repById(S.palco.rep))) S.tab='rep'; if(S.tab==='ficha' && !S.fcT) S.tab='rep'; S.repRow=null; S.repNewId=null; if(!Array.isArray(S.gEx)) S.gEx=[]; S.gExOpen=null; S.gExEdit=null; S.cjRhEdit=null; S.gExImp=false; S.gExLog=[]; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
   var onLand=function(){ if(!mqLand.matches) readerDismissed=false; render(true); };
   if(mqLand.addEventListener) mqLand.addEventListener('change',onLand); else if(mqLand.addListener) mqLand.addListener(onLand);
   render();
