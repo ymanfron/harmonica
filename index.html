@@ -760,6 +760,9 @@ button.hj-song-h{cursor:pointer;text-decoration:underline;text-underline-offset:
 .hj-p.dim{color:var(--on-sv);font-size:13px}
 .hj-tab .tk.grp{box-shadow:inset 0 0 0 1.5px currentColor;opacity:.95}
 .hj-tabl>.hj-step{margin-bottom:2px}
+.lib-repnote{gap:8px;align-items:center;font-size:14px}
+.lib-foot{justify-content:flex-end;margin-top:-4px}
+.recov .cj-row{grid-template-columns:auto minmax(0,1fr) auto}
 </style>
 <div class="app">
   <header class="top">
@@ -3606,7 +3609,7 @@ function repFindC(t){ var k=repNorm(t), r=null; if(k) S.cjSongs.forEach(function
 function repById(id){ var r=null; (S.reps||[]).forEach(function(x){ if(x.id===id) r=x; }); return r; }
 function repHas(rep, kind){ return rep.items.some(function(it){ return it.ins.indexOf(kind)>=0; }); }
 /* músicas do repertório para um instrumento, na ordem do repertório */
-function repSongs(rep, kind){ var out=[]; rep.items.forEach(function(it){ if(it.ins.indexOf(kind)<0) return; var s=kind==='g'?repFindG(it.t):repFindC(it.t); if(s && out.indexOf(s)<0) out.push(s); }); return out; }
+function repSongs(rep, kind){ var out=[]; rep.items.forEach(function(it){ if(it.ins.indexOf(kind)<0) return; var k=repNorm(it.t), ss=kind==='g'?S.songs.filter(function(x){ return k && repNorm(x.title)===k; }):[repFindC(it.t)]; ss.forEach(function(s){ if(s && out.indexOf(s)<0) out.push(s); }); }); return out; }
 function repText(rep){ return [rep.name].concat(rep.items.map(function(it){ return it.t+(it.a?' - '+it.a:'')+' '+repTagText(it.ins, it.h||null); })).join('\n'); }
 var REP_KINDS=[['missa','Missa'],['banda','Banda ou canja'],['outro','Outra']];
 var REP_ST=['a tirar','praticando','pronta'], REP_DOW=['dom','seg','ter','qua','qui','sex','sáb'], REP_MON=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -4190,6 +4193,42 @@ var Sync={ st:'off', msg:'', busy:false, again:false, timer:0,
   off:function(){ S.sync={token:'',gist:'',last:0}; save(); this.set('off'); }
 };
 function saveData(){ save(); Sync.touch(); }
+/* ---------- recuperar músicas apagadas ---------- */
+var RECOV={ items:[], msg:'', busy:false };
+function recovHave(kind, id){ return (kind==='c'?S.cjSongs:S.songs).some(function(x){ return x.id===id; }); }
+function recovAdd(kind, s, at, src){ if(!s || !s.id || recovHave(kind,s.id)) return 0; var k=kind+':'+s.id, old=null; RECOV.items.forEach(function(x){ if(x.k===k) old=x; });
+  if(old){ if((s.u||0)>(old.s.u||0)){ old.s=s; old.at=at; } return 0; } RECOV.items.push({ k:k, kind:kind, s:s, at:at, src:src }); return 1; }
+function recovFromTrash(){ (S.trash||[]).forEach(function(x){ recovAdd('g', x.s, x.at, 'lixeira'); }); }
+function recovFromDoc(d, at, src){ var n=0; if(!d) return 0; (d.songs||[]).forEach(function(s){ n+=recovAdd('g', s, at, src); }); (d.cjSongs||[]).forEach(function(s){ n+=recovAdd('c', s, at, src); }); return n; }
+function recovRestore(x){ var c=JSON.parse(JSON.stringify(x.s)); c.u=Date.now(); delete S.del[c.id];
+  if(x.kind==='c'){ if(!recovHave('c',c.id)) S.cjSongs.push(c); } else songRestore(c);
+  RECOV.items=RECOV.items.filter(function(y){ return y!==x; }); }
+function recovHistory(){
+  if(!Sync.on() || !S.sync.gist || RECOV.busy) return; RECOV.busy=true; RECOV.msg='Lendo o histórico da sincronização…'; render(true);
+  Sync.api('/gists/'+S.sync.gist+'/commits?per_page=60').then(function(list){
+    list=(list||[]).slice(0,60); var i=0, found=0;
+    var next=function(){ if(i>=list.length){ RECOV.busy=false; RECOV.msg=found?found+' música(s) apagada(s) encontrada(s) em '+list.length+' versões salvas.':'Nenhuma música apagada nas '+list.length+' versões salvas.'; render(true); return; }
+      var v=list[i++]; RECOV.msg='Lendo o histórico… '+i+' de '+list.length; var m=document.getElementById('recovMsg'); if(m) m.textContent=RECOV.msg;
+      Sync.api('/gists/'+S.sync.gist+'/'+v.version).then(function(g){ return Sync.read(g); }).then(function(d){ found+=recovFromDoc(d, Date.parse(v.committed_at)||0, 'histórico'); next(); }).catch(function(){ next(); }); };
+    next();
+  }).catch(function(e){ RECOV.busy=false; RECOV.msg=Sync.fail(e); render(true); });
+}
+function recovSection(){
+  recovFromTrash();
+  var file=el('input',{type:'file',accept:'.json,application/json',hidden:true,onchange:function(){ var f=file.files&&file.files[0]; if(!f) return; var rd=new FileReader(); rd.onload=function(){ var d=null; try{ d=JSON.parse(String(rd.result||'')); }catch(e){} var n=recovFromDoc(d, Date.now(), 'arquivo'); RECOV.msg=d?(n?n+' música(s) do arquivo não estão no app.':'Todas as músicas do arquivo já estão no app.'):'Esse arquivo não é um arquivo de dados do app.'; render(true); }; rd.readAsText(f); }});
+  var items=RECOV.items.slice().sort(function(a,b){ return String(a.s.title||a.s.t||'').localeCompare(String(b.s.title||b.s.t||''),'pt'); });
+  return el('section',{class:'sec',id:'recov'},[el('h2',{text:'Músicas apagadas'}),
+    el('p',{class:'dim small',text:'Traga de volta músicas que foram apagadas. Procure na lixeira deste aparelho, no histórico da sincronização ou num arquivo de dados antigo.'}),
+    el('div',{class:'row'},[ Sync.on()&&S.sync.gist?el('button',{class:'btn',type:'button',id:'recovHist',disabled:RECOV.busy,text:'Procurar no histórico da sincronização',onclick:recovHistory}):null,
+      el('label',{class:'btn filebtn'},['Procurar num arquivo',file]) ]),
+    el('p',{class:'mtxt dim',id:'recovMsg',text:RECOV.msg}),
+    items.length ? el('div',{class:'cj-list recov'},items.map(function(x){ var s=x.s, t=s.title||s.t||'Sem título';
+      return el('div',{class:'cj-row'},[el('span',{class:'ins-tag '+x.kind,text:x.kind==='c'?'Cajon':(s.harp&&s.harp.type==='crom'?'Cromática':'Diatônica')}),
+        el('div',{class:'cj-main'},[el('b',{text:t}), el('small',{text:[x.src, String(s.text||'').trim()?'com tablatura':'', x.at?'de '+new Date(x.at).toLocaleDateString('pt-BR'):''].filter(Boolean).join(' · ')})]),
+        el('button',{class:'btn sm tonal',type:'button',text:'Restaurar',onclick:function(){ recovRestore(x); saveData(); toast('“'+t+'” voltou para as músicas.'); render(true); }}) ]); })) : null,
+    items.length>1 ? el('div',{class:'row'},[el('button',{class:'btn',type:'button',text:'Restaurar todas ('+items.length+')',onclick:function(){ items.forEach(recovRestore); saveData(); toast(items.length+' músicas voltaram.'); render(true); }})]) : null ]);
+}
+
 function paintSync(){
   var b=document.getElementById('syncBtn'); if(!b) return;
   var st=Sync.st==='err'?'err':(Sync.on()?Sync.st:'off'), lab={ off:'Sincronização desligada', ok:'Sincronizado', sync:'Sincronizando…', wait:'Alterações a enviar', err:'Erro na sincronização' }[st]||'';
@@ -4247,11 +4286,12 @@ function viewAjustes(){
     el('p',{class:'dim small',text:'As marcadas aparecem como atalho no topo e são destacadas nas sugestões de qual gaita usar.'}),
     el('div',{class:'row'},all.map(function(h){ var on=S.mine.some(function(m){ return sameHarp(m,h); });
       return chip(h.type==='crom'?'Cromática':NN(HARP_KEYS[h.key]), on, function(){ if(on){ if(S.mine.length>1) S.mine=S.mine.filter(function(m){ return !sameHarp(m,h); }); } else S.mine.push(h); S.mineAt=Date.now(); saveData(); render(); }); })) ]));
+  out.push(recovSection());
   var oldNotes=(S.notes||[]).filter(function(n){ return n.id!=='nx1' && String((n.title||'')+(n.text||'')).trim(); });
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 22 (13/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 23 (13/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4312,9 +4352,12 @@ function songTextKey(s){ return String(s.text||'').replace(/\s+/g,' ').trim(); }
 function songDupGroups(){ var m={}, out=[]; S.songs.forEach(function(s){ var k=songDupKey(s); (m[k]=m[k]||[]).push(s); });
   Object.keys(m).forEach(function(k){ if(m[k].length>1) out.push(m[k].slice().sort(function(a,b){ return (b.u||0)-(a.u||0); })); });
   return out.sort(function(a,b){ return (a[0].title||'').localeCompare(b[0].title||'','pt'); }); }
+/* lixeira local: cópia das músicas apagadas, para recuperar depois */
+function songTrash(s){ if(!Array.isArray(S.trash)) S.trash=[]; S.trash=S.trash.filter(function(x){ return x.s && x.s.id!==s.id && Date.now()-x.at<60*864e5; }); S.trash.unshift({ at:Date.now(), s:JSON.parse(JSON.stringify(s)) }); S.trash=S.trash.slice(0,60); }
+function songRestore(s){ var c=JSON.parse(JSON.stringify(s)); c.u=Date.now(); delete S.del[c.id]; if(!S.songs.some(function(x){ return x.id===c.id; })) S.songs.push(c); if(Array.isArray(S.trash)) S.trash=S.trash.filter(function(x){ return x.s.id!==c.id; }); }
 function songRemove(list, msg){
   var now=Date.now(), back=list.map(function(s){ return { s:s, i:S.songs.indexOf(s) }; }), wasCur=S.cur;
-  list.forEach(function(s){ S.del[s.id]=now; }); S.songs=S.songs.filter(function(s){ return list.indexOf(s)<0; });
+  list.forEach(function(s){ S.del[s.id]=now; songTrash(s); }); S.songs=S.songs.filter(function(s){ return list.indexOf(s)<0; });
   if(list.some(function(s){ return s.id===S.cur; })){ S.cur=S.songs[0]?S.songs[0].id:''; S.songEdit=null; stopPlay(); }
   saveData(); render(true);
   toast(msg,'Desfazer',function(){ var t=Date.now(); back.sort(function(a,b){ return a.i-b.i; }).forEach(function(b){ b.s.u=t; delete S.del[b.s.id]; S.songs.splice(Math.min(b.i,S.songs.length),0,b.s); }); S.cur=wasCur; saveData(); render(true); });
@@ -4334,7 +4377,7 @@ function musHead(){ var fileIn=fileImportInput('songFile','songMsg');
 function libPanel(song, pick){
   var dups=songDupGroups(), dupIds={}; dups.forEach(function(g){ g.forEach(function(s){ dupIds[s.id]=g; }); });
   var rep=S.gRep?repById(S.gRep):null; if(rep && !repHas(rep,'g')) rep=null;
-  var flt=S.libF==='dup'?'dup':'todas'; if(flt==='dup' && !dups.length) flt='todas';
+  var flt=['todas','diat','crom','dup'].indexOf(S.libF)>=0?S.libF:'todas'; if(flt==='dup' && !dups.length) flt='todas';
   var open=!song || S.libOpen===true, listHost=el('div',{class:'lib-list',role:'list'});
   var row=function(s, num, extra){
     var cur=song && s.id===song.id, g=dupIds[s.id], hasT=!!songTextKey(s);
@@ -4366,10 +4409,11 @@ function libPanel(song, pick){
   var search=el('input',{type:'search',id:'libQ',placeholder:'Buscar música',value:S.libQ||'','aria-label':'Buscar música',oninput:function(e){ S.libQ=e.target.value; save(); paint(); },
     onkeydown:function(e){ if(e.key==='Enter'){ var b=listHost.querySelector('.lib-main'); if(b){ e.preventDefault(); b.click(); } } }});
   var nD=S.songs.filter(function(s){ return songHarpKey(s)!=='crom'; }).length, nDup=dups.reduce(function(a,g){ return a+g.length-1; },0);
-  var F=dups.length?[['todas','Todas',S.songs.length],['dup','Repetidas',nDup]]:[];
+  var F=[['todas','Todas',S.songs.length],['diat','Diatônica',nD],['crom','Cromática',S.songs.length-nD]]; if(dups.length) F.push(['dup','Repetidas',nDup]);
   var body=el('div',{class:'lib-body'},[ search, repChips('g'),
-    rep || !F.length ? null : el('div',{class:'row lib-f'},F.map(function(f){ return chip(f[1]+' '+f[2], flt===f[0], function(){ S.libF=f[0]; S.libQ=''; save(); render(true); },'sm'+(f[0]==='dup'?' warn':'')); })),
-    listHost ]);
+    rep ? el('div',{class:'note row between lib-repnote'},[el('span',{text:'Mostrando só as músicas de “'+(rep.name||'apresentação')+'”.'}), el('button',{class:'btn sm',type:'button',text:'Ver todas',onclick:function(){ S.gRep=null; save(); render(true); }})]) : el('div',{class:'row lib-f'},F.map(function(f){ return chip(f[1]+' '+f[2], flt===f[0], function(){ S.libF=f[0]; S.libQ=''; save(); render(true); },'sm'+(f[0]==='dup'?' warn':'')); })),
+    listHost,
+    el('div',{class:'row lib-foot'},[el('button',{class:'btn sm ghost',type:'button',id:'libTrash',text:'Músicas apagadas',onclick:function(){ S.recovOpen=true; openAux('ajustes'); setTimeout(function(){ var r=document.getElementById('recov'); if(r) r.scrollIntoView({block:'start'}); },50); }})]) ]);
   paint();
   var toggle=el('button',{class:'lib-toggle',type:'button','aria-expanded':open?'true':'false',onclick:function(){ S.libOpen=!open; save(); render(true); if(!open){ var f=document.getElementById('libQ'); f&&f.focus(); } }},[
     el('span',{},rep?[el('b',{text:rep.name||'Apresentação'}),el('small',{text:' · '+repSongs(rep,'g').length+' na gaita'})]:[el('b',{text:'Biblioteca'}),el('small',{text:' · '+S.songs.length+(S.songs.length===1?' música':' músicas')})]),
@@ -4390,8 +4434,8 @@ function viewMusicasMain(song){
     var done=function(){ S.songEdit=null; save(); render(); window.scrollTo(0,0); };
     var dupBox=el('div',{}), paintDup=function(){ var k=songDupKey(song), o=String(song.title||'').trim()?S.songs.filter(function(x){ return x!==song && songDupKey(x)===k; }):[];
       fill(dupBox, o.length?[el('div',{class:'note warn row between'},[el('span',{text:'Já existe “'+(o[0].title||'Sem título')+'” na '+harpLc(o[0].harp)+'. Se for a mesma música, abra a que já existe e apague esta.'}),
-        el('button',{class:'btn sm',type:'button',text:'Abrir a outra',onclick:function(){ var empty=!songTextKey(song); S.cur=o[0].id; S.songEdit=null; if(empty){ S.del[song.id]=Date.now(); S.songs=S.songs.filter(function(x){ return x!==song; }); saveData(); } else save(); render(); window.scrollTo(0,0); }})])]:[]); };
-    var del=el('button',{class:'btn danger',type:'button',text:'Excluir música',onclick:function(){ if(del.dataset.sure){ S.del[song.id]=Date.now(); S.songs=S.songs.filter(function(s){ return s.id!==song.id; }); S.cur=S.songs[0]?S.songs[0].id:''; S.songEdit=null; saveData(); render(); } else { del.dataset.sure='1'; del.textContent='Excluir mesmo?'; } }});
+        el('button',{class:'btn sm',type:'button',text:'Abrir a outra',onclick:function(){ var empty=!songTextKey(song); S.cur=o[0].id; S.songEdit=null; if(empty){ S.del[song.id]=Date.now(); songTrash(song); S.songs=S.songs.filter(function(x){ return x!==song; }); saveData(); } else save(); render(); window.scrollTo(0,0); }})])]:[]); };
+    var del=el('button',{class:'btn danger',type:'button',text:'Excluir música',onclick:function(){ if(del.dataset.sure){ S.del[song.id]=Date.now(); songTrash(song); S.songs=S.songs.filter(function(s){ return s.id!==song.id; }); S.cur=S.songs[0]?S.songs[0].id:''; S.songEdit=null; saveData(); render(); } else { del.dataset.sure='1'; del.textContent='Excluir mesmo?'; } }});
     out.push(el('section',{class:'sec'},[
       el('div',{class:'row between'},[el('h3',{text:'Editando'}),el('button',{class:'btn pri',type:'button',text:'Concluir',onclick:done})]),
       el('div',{class:'panel'},[
@@ -4693,7 +4737,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=22;
+var APP_VER=23;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
