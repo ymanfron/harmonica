@@ -2423,7 +2423,7 @@ function exRoutine(){
 }
 function exCard(e){
   var times=(S.exDone[e.id]||[]).length;
-  return el('button',{class:'excard'+(exDoneToday(e.id)?' done':''),type:'button',onclick:function(){ S.ex=e.id; save(); render(); window.scrollTo(0,0); }},[
+  return el('button',{class:'excard'+(exDoneToday(e.id)?' done':''),type:'button',onclick:function(){ S.ex=e.id; if(S.tab!=='exercicios'){ S.exFrom=S.tab; S.tab='exercicios'; S.back='exercicios'; S.gExSel=null; } else S.exFrom=null; save(); stopPlay(); render(); window.scrollTo(0,0); }},[
     el('span',{class:'lvl n'+e.n,title:['','Iniciante','Intermediário','Avançado'][e.n]},[el('i'),el('i'),el('i')]),
     el('span',{class:'ext'},[el('b',{text:e.t}),el('small',{text:e.obj})]),
     el('span',{class:'exm'},[el('span',{class:'dim small',text:e.min+' min'})]) ]);
@@ -2438,7 +2438,7 @@ function viewExercicios(){
     var doneBtn=el('button',{class:'btn'+(exDoneToday(cur.id)?' live':''),type:'button',text:exDoneToday(cur.id)?'Feito hoje':'Marcar como feito hoje',onclick:function(){ var a=S.exDone[cur.id]||(S.exDone[cur.id]=[]), t=today(), i=a.indexOf(t); if(i>=0) a.splice(i,1); else { a.push(t); if(a.length>120) a.shift(); } saveData(); render(true); }});
     var hist=S.exDone[cur.id]||[];
     out.push(el('section',{class:'sec'},[
-      el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Todos os exercícios',onclick:function(){ S.ex=null; save(); render(); }})]),
+      el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:S.exFrom==='hoje'?'‹ Hoje':'‹ Todos os exercícios',onclick:function(){ S.ex=null; if(S.exFrom){ S.tab=S.exFrom; S.back=S.exFrom; S.exFrom=null; } save(); stopPlay(); render(); window.scrollTo(0,0); }})]),
       el('p',{class:'dim small',text:cur.cat+' · '+['','iniciante','intermediário','avançado'][cur.n]+' · '+harpName(S.harp)}),
       el('h2',{text:cur.t}), el('p',{class:'lead',text:cur.obj}),
       el('ul',{class:'como'},cur.como.map(function(c){ return el('li',{text:c}); })),
@@ -3010,7 +3010,7 @@ function cjRoutine(){
 }
 function cjExCard(e){
   var times=(S.exDone[e.id]||[]).length;
-  return el('button',{class:'excard'+(exDoneToday(e.id)?' done':''),type:'button',onclick:function(){ S.cjSel=e.id; save(); stopPlay(); render(); window.scrollTo(0,0); }},[
+  return el('button',{class:'excard'+(exDoneToday(e.id)?' done':''),type:'button',onclick:function(){ S.cjSel=e.id; cjToEx(); save(); stopPlay(); render(); window.scrollTo(0,0); }},[
     el('span',{class:'lvl n'+e.n,title:['','Iniciante','Intermediário','Avançado'][e.n]},[el('i'),el('i'),el('i')]),
     el('span',{class:'ext'},[el('b',{text:e.t}),el('small',{text:e.obj})]),
     el('span',{class:'exm'},[el('span',{class:'dim small',text:e.min+' min'})]) ]);
@@ -3019,7 +3019,8 @@ function cjDoneBtn(id){ return null; }
 function cjDoneBtnOld(id){ return el('button',{class:'btn'+(exDoneToday(id)?' live':''),type:'button',text:exDoneToday(id)?'Feito hoje':'Marcar como feito hoje',onclick:function(){ var a=S.exDone[id]||(S.exDone[id]=[]), t=today(), i=a.indexOf(t); if(i>=0) a.splice(i,1); else { a.push(t); if(a.length>120) a.shift(); } saveData(); render(true); }}); }
 function cjHist(id){ return null; }
 function cjHistOld(id){ var h=S.exDone[id]||[]; return h.length ? el('p',{class:'dim small',text:'Feito '+h.length+(h.length>1?' vezes':' vez')+'. Última: '+h[h.length-1].split('-').reverse().join('/')+'.'}) : null; }
-function cjBack(){ return el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Todos os exercícios',onclick:function(){ S.cjSel=null; save(); stopPlay(); render(); }})]); }
+function cjToEx(){ if(S.cjTab!=='exercicios'){ S.cjFrom=S.cjTab; S.cjTab='exercicios'; } else S.cjFrom=null; }
+function cjBack(){ return el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:S.cjFrom==='hoje'?'‹ Hoje':'‹ Todos os exercícios',onclick:function(){ S.cjSel=null; if(S.cjFrom){ S.cjTab=S.cjFrom; S.cjFrom=null; } save(); stopPlay(); render(); }})]); }
 function cjExDetail(e){
   var hands=e.pats.some(function(p){ return !!p.h; });
   return [el('section',{class:'sec'},[ cjBack(),
@@ -3044,7 +3045,7 @@ function cjRhRow(it){
   var info=np ? (np===1?'1 levada':np+' levadas')+(it.bpm?' · '+it.bpm+' bpm':'') : (/^m[óo]dulo/i.test(it.m||'')?'levada por anotar':'');
   return el('div',{class:'cj-row'+(si===2?' ok':'')},[
     el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':(it.star?'Tirar das prioridades: ':'Marcar como prioridade: ')+it.t,text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; cjTouch(it); render(true); }}),
-    el('button',{class:'cj-main',type:'button',title:'Abrir',onclick:function(){ S.cjSel=it.id; S.cjRhEdit=null; save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[info, it.n?String(it.n).split('\n')[0]:''].filter(Boolean).join(' · ')||(it.m||'')})]),
+    el('button',{class:'cj-main',type:'button',title:'Abrir',onclick:function(){ S.cjSel=it.id; S.cjRhEdit=null; cjToEx(); save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[info, it.n?String(it.n).split('\n')[0]:''].filter(Boolean).join(' · ')||(it.m||'')})]),
     el('span',{class:'tag st'+si,text:CJ_ST_LABEL[CJ_ST_EX[si]]}) ]);
 }
 /* editor de uma levada (a principal ou uma variação) */
@@ -4250,7 +4251,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 21 (13/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 22 (13/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4692,7 +4693,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=21;
+var APP_VER=22;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
