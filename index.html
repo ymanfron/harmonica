@@ -732,6 +732,10 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .hj-pend{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px}
 .ok-tx{margin:0;color:var(--ok);font-weight:500}
 .ex-seg{max-width:520px}
+.hj-blks{display:flex;flex-direction:column;gap:10px}
+.hj-blk{border-left:3px solid var(--sc);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
+.hj-blk>b{font-size:15px;font-weight:600}
+.hj-blk .hj-text{font-size:14px}
 </style>
 <div class="app">
   <header class="top">
@@ -2384,7 +2388,8 @@ var EXS=[
    tab:'+5 +6 +7 +8 +7 +6 +5\n-5 -6 -7 -8 -7 -6 -5' }
 ];
 function today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
-function exDoneToday(id){ return !!(S.exDone[id] && S.exDone[id].indexOf(today())>=0); }
+/* a execução é registrada no gestor de tempo; aqui não há marcação de feito */
+function exDoneToday(id){ return false; }
 function exTab(e, harp){ return typeof e.tab==='function' ? e.tab(harp) : e.tab; }
 function exList(){ return EXS.filter(function(e){ return e.h===S.harp.type; }); }
 function exRoutine(){
@@ -2397,7 +2402,7 @@ function exCard(e){
   return el('button',{class:'excard'+(exDoneToday(e.id)?' done':''),type:'button',onclick:function(){ S.ex=e.id; save(); render(); window.scrollTo(0,0); }},[
     el('span',{class:'lvl n'+e.n,title:['','Iniciante','Intermediário','Avançado'][e.n]},[el('i'),el('i'),el('i')]),
     el('span',{class:'ext'},[el('b',{text:e.t}),el('small',{text:e.obj})]),
-    el('span',{class:'exm'},[exDoneToday(e.id)?el('span',{class:'tag ok',text:'feito hoje'}):el('span',{class:'dim small',text:e.min+' min'}), times?el('small',{class:'dim',text:times+'×'}):null]) ]);
+    el('span',{class:'exm'},[el('span',{class:'dim small',text:e.min+' min'})]) ]);
 }
 function viewExercicios(){
   var gx=S.gExSel?gExById(S.gExSel):null; if(gx) return gExDetail(gx);
@@ -2414,10 +2419,10 @@ function viewExercicios(){
       el('h2',{text:cur.t}), el('p',{class:'lead',text:cur.obj}),
       el('ul',{class:'como'},cur.como.map(function(c){ return el('li',{text:c}); })),
       el('div',{class:'sheet'},[te]),
-      el('div',{class:'row'},[el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}), bPlay, el('button',{class:'btn',type:'button',text:'Metrônomo a '+cur.bpm+' bpm',onclick:function(){ S.metro.bpm=cur.bpm; save(); if(!Metro.on) Metro.start(); paintMini(); }}), doneBtn]),
+      el('div',{class:'row'},[el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}), bPlay, el('button',{class:'btn',type:'button',text:'Metrônomo a '+cur.bpm+' bpm',onclick:function(){ S.metro.bpm=cur.bpm; save(); if(!Metro.on) Metro.start(); paintMini(); }})]),
       cur.mic===false ? el('div',{class:'note',text:'Este exercício usa acordes ou improviso, que o microfone não consegue conferir nota a nota. Use o metrônomo e grave para ouvir depois.'})
                       : practiceBox(seq, ctx, harp, hl, { hold:cur.hold, tol:cur.id.indexOf('sustentado')>=0?15:null }),
-      hist.length ? el('p',{class:'dim small',text:'Feito '+hist.length+(hist.length>1?' vezes':' vez')+'. Última: '+hist[hist.length-1].split('-').reverse().join('/')+'.'}) : null ]));
+      null ]));
     return out;
   }
   var list=exList(), rot=exRoutine(), mins=rot.reduce(function(a,e){ return a+e.min; },0), feitos=rot.filter(function(e){ return exDoneToday(e.id); }).length;
@@ -2427,7 +2432,7 @@ function viewExercicios(){
     el('div',{class:'segm four ex-seg',role:'tablist'},[['dia','Do dia'],['escalas','Escalas'],['aulas','Aulas'],['todos','Todos']].map(function(o){ return el('button',{type:'button',role:'tab','aria-pressed':seg===o[0]?'true':'false',text:o[1],onclick:function(){ S.exSeg=o[0]; save(); render(); window.scrollTo(0,0); }}); })) ]));
   if(seg==='dia'){
     out.push(el('section',{class:'sec routine'},[
-      el('div',{class:'row between'},[el('span',{class:'dim small',text:feitos+' de '+rot.length+' feitos, cerca de '+mins+' min'}),
+      el('div',{class:'row between'},[el('span',{class:'dim small',text:'cerca de '+mins+' min'}),
         el('div',{class:'row'},[[1,'Iniciante'],[2,'Intermediário'],[3,'Avançado']].map(function(l){ return chip(l[1],S.exLevel===l[0],function(){ S.exLevel=l[0]; save(); render(true); },'sm'); }))]),
       el('div',{class:'exgrid'},rot.map(exCard)),
       el('p',{class:'dim small',text:'Muda todo dia: aquecimento, técnica, escala e uma parte musical, no nível escolhido.'}) ]));
@@ -2566,8 +2571,7 @@ function gExDetail(it){
   var blocks=[]; (it.exs||[]).forEach(function(ex){ if(ex.k===firstX) blocks.push(el('h3',{class:'gx-extra',text:'Exercícios extras'})); blocks.push(gExBlock(ex)); });
   function gExBlock(ex){
     var key=gExKey(it,ex), done=exDoneToday(key), times=(S.exDone[key]||[]).length;
-    var head=el('div',{class:'gx-h'},[el('span',{class:'gx-k',text:ex.k}), el('b',{text:ex.t}),
-      el('button',{class:'btn sm'+(done?' live':''),type:'button',text:done?'Feito hoje':'Marcar feito',onclick:function(){ var a=S.exDone[key]||(S.exDone[key]=[]), t=today(), i=a.indexOf(t); if(i>=0) a.splice(i,1); else { a.push(t); if(a.length>120) a.shift(); } saveData(); render(true); }}) ]);
+    var head=el('div',{class:'gx-h'},[el('span',{class:'gx-k',text:ex.k}), el('b',{text:ex.t}) ]);
     if(S.gExEdit===ex.k){
       var ta=el('textarea',{id:'gxText',rows:'5',spellcheck:'false',autocapitalize:'off',oninput:function(){ ex.text=ta.value; gExTouch(it); }}); ta.value=ex.text||''; growArea(ta);
       return el('div',{class:'gx'},[head, field('Tablatura', ta), el('div',{class:'row'},[el('button',{class:'btn pri sm',type:'button',text:'Concluir',onclick:function(){ S.gExEdit=null; save(); render(true); }})])]);
@@ -2985,10 +2989,12 @@ function cjExCard(e){
   return el('button',{class:'excard'+(exDoneToday(e.id)?' done':''),type:'button',onclick:function(){ S.cjSel=e.id; save(); stopPlay(); render(); window.scrollTo(0,0); }},[
     el('span',{class:'lvl n'+e.n,title:['','Iniciante','Intermediário','Avançado'][e.n]},[el('i'),el('i'),el('i')]),
     el('span',{class:'ext'},[el('b',{text:e.t}),el('small',{text:e.obj})]),
-    el('span',{class:'exm'},[exDoneToday(e.id)?el('span',{class:'tag ok',text:'feito hoje'}):el('span',{class:'dim small',text:e.min+' min'}), times?el('small',{class:'dim',text:times+'×'}):null]) ]);
+    el('span',{class:'exm'},[el('span',{class:'dim small',text:e.min+' min'})]) ]);
 }
-function cjDoneBtn(id){ return el('button',{class:'btn'+(exDoneToday(id)?' live':''),type:'button',text:exDoneToday(id)?'Feito hoje':'Marcar como feito hoje',onclick:function(){ var a=S.exDone[id]||(S.exDone[id]=[]), t=today(), i=a.indexOf(t); if(i>=0) a.splice(i,1); else { a.push(t); if(a.length>120) a.shift(); } saveData(); render(true); }}); }
-function cjHist(id){ var h=S.exDone[id]||[]; return h.length ? el('p',{class:'dim small',text:'Feito '+h.length+(h.length>1?' vezes':' vez')+'. Última: '+h[h.length-1].split('-').reverse().join('/')+'.'}) : null; }
+function cjDoneBtn(id){ return null; }
+function cjDoneBtnOld(id){ return el('button',{class:'btn'+(exDoneToday(id)?' live':''),type:'button',text:exDoneToday(id)?'Feito hoje':'Marcar como feito hoje',onclick:function(){ var a=S.exDone[id]||(S.exDone[id]=[]), t=today(), i=a.indexOf(t); if(i>=0) a.splice(i,1); else { a.push(t); if(a.length>120) a.shift(); } saveData(); render(true); }}); }
+function cjHist(id){ return null; }
+function cjHistOld(id){ var h=S.exDone[id]||[]; return h.length ? el('p',{class:'dim small',text:'Feito '+h.length+(h.length>1?' vezes':' vez')+'. Última: '+h[h.length-1].split('-').reverse().join('/')+'.'}) : null; }
 function cjBack(){ return el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Todos os exercícios',onclick:function(){ S.cjSel=null; save(); stopPlay(); render(); }})]); }
 function cjExDetail(e){
   var hands=e.pats.some(function(p){ return !!p.h; });
@@ -3015,7 +3021,7 @@ function cjRhRow(it){
   return el('div',{class:'cj-row'+(si===2?' ok':'')},[
     el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':(it.star?'Tirar das prioridades: ':'Marcar como prioridade: ')+it.t,text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; cjTouch(it); render(true); }}),
     el('button',{class:'cj-main',type:'button',title:'Abrir',onclick:function(){ S.cjSel=it.id; S.cjRhEdit=null; save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[info, it.n?String(it.n).split('\n')[0]:''].filter(Boolean).join(' · ')||(it.m||'')})]),
-    exDoneToday(it.id) ? el('span',{class:'tag ok',text:'feito hoje'}) : el('span',{class:'tag st'+si,text:CJ_ST_LABEL[CJ_ST_EX[si]]}) ]);
+    el('span',{class:'tag st'+si,text:CJ_ST_LABEL[CJ_ST_EX[si]]}) ]);
 }
 /* editor de uma levada (a principal ou uma variação) */
 function cjPatEditor(it, x, idx){
@@ -3076,7 +3082,7 @@ function viewCajonEx(){
     el('div',{class:'mtxt dim',id:'cjFileMsg'}),
     el('div',{class:'row'},[el('span',{class:'lbl',text:'Nível'})].concat([[1,'Iniciante'],[2,'Intermediário'],[3,'Avançado']].map(function(l){ return chip(l[1],lvl===l[0],function(){ S.cjLevel=l[0]; save(); render(); },'sm'); }))) ]));
   out.push(el('section',{class:'sec routine'},[
-    el('div',{class:'row between'},[el('h3',{text:'Rotina de hoje'}),el('span',{class:'dim small',text:feitos+' de '+(rot.length+foco.length)+' feitos, cerca de '+(mins+foco.length*10)+' min'})]),
+    el('div',{class:'row between'},[el('h3',{text:'Rotina de hoje'}),el('span',{class:'dim small',text:'cerca de '+(mins+foco.length*10)+' min'})]),
     foco.length ? el('div',{class:'cj-list one'},foco.map(cjRhRow)) : null,
     el('div',{class:'exgrid'},rot.map(cjExCard)),
     el('p',{class:'dim small',text:'Primeiro o ritmo do curso marcado com estrela; depois um exercício de som, um de tempo, um rudimento, uma levada e uma virada, dentro do nível escolhido. A rotina muda todo dia.'}) ]));
@@ -3998,15 +4004,15 @@ function focoCard(){
       el('div',{class:'row'},[el('button',{class:'btn pri',type:'button',id:'focoSave',text:'Salvar foco',onclick:go}), f.text?el('button',{class:'btn ghost',type:'button',text:'Cancelar',onclick:function(){ S.focoEdit=false; save(); render(true); }}):null]),
       el('p',{class:'dim small',text:'No gestor de tempo, o botão “abrir no app” de cada bloco de música traz o plano do dia direto para cá.'}) ]);
   }
-  var songs=focoSongs(f.text), long=f.text.split('\n').length>7, open=!!S.focoAll;
-  var body=el('div',{class:'hj-text'+(long&&!open?' cut':''),text:f.text});
+  var songs=focoSongs(f.text), blocks=f.text.split(/\n\s*\n/).map(function(b){ return b.trim(); }).filter(Boolean);
+  var body = blocks.length>1 ? el('div',{class:'hj-blks'},blocks.map(function(b){ var ls=b.split('\n'); return el('div',{class:'hj-blk'},[el('b',{text:ls[0]}), ls.length>1?el('div',{class:'hj-text',text:ls.slice(1).join('\n')}):null]); }))
+                             : el('div',{class:'hj-text',text:f.text});
   return el('section',{class:'hj-card hj-foco'},[
     el('div',{class:'hj-h'},[el('h3',{text:'Foco'}), el('span',{class:'dim small',text:(f.src==='gestor'?'do gestor · ':'')+songDate(f.u)}),
       el('div',{class:'row'},[el('button',{class:'btn sm ghost',type:'button',text:'Editar',onclick:function(){ S.focoEdit=true; save(); render(true); var t=document.getElementById('focoText'); if(t) t.focus(); }})]) ]),
     songs.length ? el('div',{class:'hj-songs'},songs.map(function(x){ var st=x.kind==='g'?gSt(x.s):(x.s.st||'a tirar');
       return el('button',{class:'hj-song',type:'button',onclick:function(){ openSongFrom(x.kind,x.s); }},[el('span',{class:'ins-tag '+x.kind,text:x.kind==='g'?'Gaita':'Cajon'}), el('b',{text:x.t}), el('small',{text:CJ_ST_LABEL[st]||st}), el('i',{text:'›'})]); })) : null,
-    body,
-    long ? el('button',{class:'btn sm ghost',type:'button',text:open?'Mostrar menos':'Ver tudo',onclick:function(){ S.focoAll=!open; save(); render(true); }}) : null ]);
+    body ]);
 }
 function hojeRep(){
   var r=repSorted(true)[0]; if(!r) return null; var n=repDays(r); if(n!=null && n>21) return null;
@@ -4026,7 +4032,7 @@ function hojeEx(){
   var rot=exRoutine(), feitos=rot.filter(function(e){ return exDoneToday(e.id); }).length;
   var cur=null; gExSorted().forEach(function(x){ if(!cur && x.st==='praticando') cur=x; });
   return el('section',{class:'hj-card'},[
-    el('div',{class:'hj-h'},[el('h3',{text:'Sugestões do dia'}), el('span',{class:'dim small',text:feitos+' de '+rot.length+' feitos · '+harpLc(S.harp)})]),
+    el('div',{class:'hj-h'},[el('h3',{text:'Sugestões do dia'}), el('span',{class:'dim small',text:harpLc(S.harp)})]),
     el('div',{class:'exgrid'},rot.map(exCard)),
     el('div',{class:'row'},[
       el('button',{class:'btn sm',type:'button',text:'Escalas',onclick:function(){ S.tab='exercicios'; S.exSeg='escalas'; S.back='exercicios'; S.ex=null; save(); render(); window.scrollTo(0,0); }}),
@@ -4174,7 +4180,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 18 (13/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 20 (13/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4616,6 +4622,17 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
+var APP_VER=20;
+/* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
+function checkUpdate(){
+  if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
+  fetch(location.pathname+'?nc='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.text():''; }).then(function(t){
+    var m=/var APP_VER=(\d+)/.exec(t||''); if(!m || parseInt(m[1],10)<=APP_VER) return;
+    var old=document.getElementById('updBar'); if(old) old.remove();
+    document.body.appendChild(el('div',{class:'snack upd',id:'updBar',role:'status'},[el('span',{text:'Versão nova do app disponível.'}),
+      el('button',{type:'button',text:'Atualizar',onclick:function(){ location.replace(location.pathname+'?v='+m[1]+location.hash); }})]));
+  }).catch(function(){});
+}
 function hashFoco(){ var fm=/(?:^|[?&#])foco=([^&]*)/.exec(location.hash||''); if(!fm) return false; try{ focoSet(decodeURIComponent(fm[1].replace(/\+/g,' ')),'gestor'); }catch(e){ return false; } S.focoEdit=false; S.focoAll=false; READER=false; S.tab='hoje'; S.back='hoje'; save(); try{ history.replaceState(null,'','#hoje'); }catch(e){} return true; }
 function init(){
   var h=(location.hash||'').replace('#','');
@@ -4633,6 +4650,7 @@ function init(){
   if(mqLand.addEventListener) mqLand.addEventListener('change',onLand); else if(mqLand.addListener) mqLand.addListener(onLand);
   render();
   if(Sync.on()){ Sync.st='ok'; Sync.run(); }
+  setTimeout(checkUpdate,1500); document.addEventListener('visibilitychange',function(){ if(!document.hidden) checkUpdate(); });
   document.addEventListener('visibilitychange',function(){ if(!document.hidden && Sync.on() && Date.now()-(S.sync.last||0)>30000) Sync.run(); });
 }
 window.__gaita={ S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno, repParse:repParse, repTag:repTag, repSetIns:repSetIns, importCurso:importCurso, gParseSheet:gParseSheet, pdfLines:pdfLines };
