@@ -736,6 +736,30 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .hj-blk{border-left:3px solid var(--sc);padding:2px 0 2px 12px;display:flex;flex-direction:column;gap:4px}
 .hj-blk>b{font-size:15px;font-weight:600}
 .hj-blk .hj-text{font-size:14px}
+/* blocos do plano (v21) */
+.hj-blks{display:flex;flex-direction:column;gap:12px}
+.hj-blk{border:1px solid var(--olv);border-left:4px solid var(--ig);border-radius:14px;padding:12px 14px 14px;background:var(--s2);display:flex;flex-direction:column;gap:8px;min-width:0}
+.hj-blk.cj{border-left-color:var(--ic)}
+.hj-bh{display:flex;align-items:center;gap:10px}
+.hj-bh>b{font-size:16px;font-weight:600}
+.hj-dur{margin-left:auto;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--s3);color:var(--on-sv);white-space:nowrap}
+.hj-sub{margin:0;font-size:14px;font-weight:500;color:var(--on-s);line-height:1.4}
+.hj-bb{display:flex;flex-direction:column;gap:8px;min-width:0}
+.hj-step{display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:600;margin-top:4px;line-height:1.35}
+.hj-min{flex:none;font-size:12px;font-weight:700;padding:1px 8px;border-radius:6px;background:var(--sc);color:var(--on-sc)}
+.hj-blk.cj .hj-min{background:color-mix(in srgb,var(--ic) 22%,transparent);color:var(--on-s)}
+.hj-tab{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--f-mono,ui-monospace,Menlo,Consolas,monospace);font-size:14px}
+.hj-tab .tk{padding:3px 7px;min-width:28px;justify-content:center;flex-direction:row}
+.hj-sep{color:var(--on-sv);padding:0 2px}
+.hj-rep{font-size:12px;font-weight:700;color:var(--on-sv);padding:0 4px}
+.hj-tabl{display:flex;flex-direction:column;gap:4px}
+.hj-lbl{font-size:12px;font-weight:600;color:var(--on-sv);text-transform:none}
+.hj-song-h{align-self:flex-start;border:0;background:none;padding:0;font:inherit;font-size:14px;font-weight:700;color:var(--p);margin-top:4px;text-align:left}
+button.hj-song-h{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.hj-p{margin:0;font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.hj-p.dim{color:var(--on-sv);font-size:13px}
+.hj-tab .tk.grp{box-shadow:inset 0 0 0 1.5px currentColor;opacity:.95}
+.hj-tabl>.hj-step{margin-bottom:2px}
 </style>
 <div class="app">
   <header class="top">
@@ -3107,8 +3131,8 @@ function viewCajonEx(){
 /* ---------- tela: Teoria ---------- */
 function viewCajonTeoria(){ return courseView(CJ_CURSO,{ title:'Teoria e técnica de cajon', key:'cjLesson', sub:'Cada lição tem levadas para ouvir e perguntas de fixação.' }); }
 
-var CJ_TABS=[['musicas','Músicas'],['exercicios','Exercícios'],['teoria','Teoria']];
-function viewCajon(){ return S.cjTab==='exercicios' ? viewCajonEx() : S.cjTab==='teoria' ? viewCajonTeoria() : viewCajonSongs(); }
+var CJ_TABS=[['hoje','Hoje'],['musicas','Músicas'],['exercicios','Exercícios'],['teoria','Teoria']];
+function viewCajon(){ return S.cjTab==='hoje' ? viewHoje() : S.cjTab==='exercicios' ? viewCajonEx() : S.cjTab==='teoria' ? viewCajonTeoria() : viewCajonSongs(); }
 
 /* ---------- cajon: exercícios prontos e curso ---------- */
 function CP(n, p, o){ o=o||{}; return { n:n, p:p, beats:o.beats||4, div:o.div||4, h:o.h, bpm:o.bpm }; }
@@ -3995,6 +4019,43 @@ function openSongFrom(kind, s){
   else { S.tab='cajon'; S.back='cajon'; S.cjTab='musicas'; S.cjQ=''; S.cjRep=null; S.cjEdit=s.id; }
   save(); stopPlay(); render(); window.scrollTo(0,0);
 }
+
+/* ---------- blocos do plano (vindos do gestor) ---------- */
+var HJ_TABTOK=/^[+\-]?\d{1,2}(?:<|'{1,3}|"|°)?$|^[\/|…]+$|^\.{2,}$|^[-–—]{1,3}$|^x\d+$/i;
+/* separa em fichas; "(-4' -4)" fica junto, como um bend/ligadura */
+function hjToks(t){ return String(t).trim().match(/\([^)]*\)|\S+/g)||[]; }
+function hjTokOk(w){ w=w.replace(/[,;]$/,''); var g=/^\((.*)\)$/.exec(w); if(g) return g[1].trim().split(/\s+/).every(function(x){ return HJ_TABTOK.test(x); }); return HJ_TABTOK.test(w); }
+function hjIsTab(t){ var ws=hjToks(t); if(ws.length<2) return false; var hit=0; ws.forEach(function(w){ if(hjTokOk(w)) hit++; }); return hit/ws.length>=0.8; }
+function hjTabEl(t){ return el('div',{class:'hj-tab'},hjToks(t).map(function(w){
+  if(/^[\/|]$/.test(w)) return el('span',{class:'hj-sep',text:'│'});
+  if(/^(\.{2,}|…|[-–—]{1,3})$/.test(w)) return el('span',{class:'hj-sep',text:'…'});
+  if(/^\(?x\d+\)?$/i.test(w)) return el('span',{class:'hj-rep',text:'×'+w.replace(/[()x]/gi,'')});
+  var g=/^\((.*)\)$/.exec(w), inner=g?g[1].trim():w, draw=/^-/.test(inner);
+  return el('span',{class:'tk '+(draw?'d':'b')+(g?' grp':''),text:inner}); })); }
+/* "Rótulo: -4 -5 +6" → rótulo em cima, tablatura embaixo */
+function hjSplitLabel(tr){ var c=tr.indexOf(':'); while(c>0){ var rest=tr.slice(c+1); if(rest.trim() && hjIsTab(rest)) return { lbl:tr.slice(0,c).trim(), tab:rest }; c=tr.indexOf(':',c+1); } return null; }
+function hjLine(line, songs){
+  var t=line.replace(/\s+$/,''), tr=t.trim(); if(!tr) return null;
+  var m=/^(\d{1,3})\s*min\s+(.*)$/i.exec(tr);
+  if(m){ var rest=m[2], sl=hjSplitLabel(rest), st=el('div',{class:'hj-step'},[el('span',{class:'hj-min',text:m[1]+' min'}), el('span',{text:(sl?sl.lbl:rest).replace(/:\s*$/,'')})]);
+    return sl ? el('div',{class:'hj-tabl'},[st, hjTabEl(sl.tab)]) : st; }
+  if(/^[•·*]\s*/.test(tr)){ var nm=tr.replace(/^[•·*]\s*/,''), hit=null; songs.forEach(function(x){ if(!hit && repNorm(x.t.split(/\s+[-–—]\s+/)[0])===repNorm(nm)) hit=x; });
+    return hit ? el('button',{class:'hj-song-h',type:'button',onclick:function(){ openSongFrom(hit.kind,hit.s); }},[nm,el('i',{text:' ›'})]) : el('div',{class:'hj-song-h',text:nm}); }
+  var sl=hjSplitLabel(tr); if(sl) return el('div',{class:'hj-tabl'},[el('span',{class:'hj-lbl',text:sl.lbl}), hjTabEl(sl.tab)]);
+  if(hjIsTab(tr)) return hjTabEl(tr);
+  return el('p',{class:'hj-p'+(/^(articula|ar leve|obs|dica)/i.test(tr)?' dim':''),text:tr});
+}
+function hjBlock(b, songs){
+  var ls=b.split('\n'), head=ls.shift().trim(), cj=/^cajon/i.test(head);
+  var hm=/^(gaita|cajon)\s*[—–-]?\s*(.*?)\s*(?:\((\d+)\s*min\))?$/i.exec(head)||[];
+  var name=(hm[2]||'').replace(/^bloco\s*/i,'Bloco ')||(hm[1]?(cj?'Cajon':'Gaita'):head), mins=hm[3];
+  var sub=ls.length && !/^\d+\s*min/i.test(ls[0].trim()) && !hjIsTab(ls[0]) ? ls.shift().trim() : '';
+  sub=sub.replace(/\s*\(\d+\s*min\)\s*/i,' ').trim();
+  return el('article',{class:'hj-blk'+(cj?' cj':'')},[
+    el('header',{class:'hj-bh'},[ hm[1]&&hm[2]?el('span',{class:'ins-tag '+(cj?'c':'g'),text:cj?'Cajon':'Gaita'}):null, name?el('b',{text:name}):el('b',{text:head}), mins?el('span',{class:'hj-dur',text:mins+' min'}):null ]),
+    sub?el('p',{class:'hj-sub',text:sub}):null,
+    el('div',{class:'hj-bb'},ls.map(function(l){ return hjLine(l,songs); }).filter(Boolean)) ]);
+}
 function focoCard(){
   var f=focoGet(), editing=S.focoEdit || !f.text;
   if(editing){
@@ -4005,8 +4066,7 @@ function focoCard(){
       el('p',{class:'dim small',text:'No gestor de tempo, o botão “abrir no app” de cada bloco de música traz o plano do dia direto para cá.'}) ]);
   }
   var songs=focoSongs(f.text), blocks=f.text.split(/\n\s*\n/).map(function(b){ return b.trim(); }).filter(Boolean);
-  var body = blocks.length>1 ? el('div',{class:'hj-blks'},blocks.map(function(b){ var ls=b.split('\n'); return el('div',{class:'hj-blk'},[el('b',{text:ls[0]}), ls.length>1?el('div',{class:'hj-text',text:ls.slice(1).join('\n')}):null]); }))
-                             : el('div',{class:'hj-text',text:f.text});
+  var body = blocks.length>1 || /^(gaita|cajon)\b/i.test(f.text) ? el('div',{class:'hj-blks'},(area()==='cajon'?blocks.filter(function(b){ return /^cajon/i.test(b); }).concat(blocks.filter(function(b){ return !/^cajon/i.test(b); })):blocks).map(function(b){ return hjBlock(b,songs); })) : el('div',{class:'hj-text',text:f.text});
   return el('section',{class:'hj-card hj-foco'},[
     el('div',{class:'hj-h'},[el('h3',{text:'Foco'}), el('span',{class:'dim small',text:(f.src==='gestor'?'do gestor · ':'')+songDate(f.u)}),
       el('div',{class:'row'},[el('button',{class:'btn sm ghost',type:'button',text:'Editar',onclick:function(){ S.focoEdit=true; save(); render(true); var t=document.getElementById('focoText'); if(t) t.focus(); }})]) ]),
@@ -4029,6 +4089,7 @@ function hojeRep(){
       r.items.length?el('button',{class:'btn tonal',type:'button',text:'▶ Palco',onclick:function(){ palcoOpen(r,0); }}):null ]) ]);
 }
 function hojeEx(){
+  if(area()==='cajon') return hojeExCj();
   var rot=exRoutine(), feitos=rot.filter(function(e){ return exDoneToday(e.id); }).length;
   var cur=null; gExSorted().forEach(function(x){ if(!cur && x.st==='praticando') cur=x; });
   return el('section',{class:'hj-card'},[
@@ -4038,6 +4099,15 @@ function hojeEx(){
       el('button',{class:'btn sm',type:'button',text:'Escalas',onclick:function(){ S.tab='exercicios'; S.exSeg='escalas'; S.back='exercicios'; S.ex=null; save(); render(); window.scrollTo(0,0); }}),
       cur ? el('button',{class:'btn sm',type:'button',text:'Aula: '+cur.t,onclick:function(){ S.tab='exercicios'; S.gExSel=cur.id; S.back='exercicios'; save(); render(); window.scrollTo(0,0); }}) : null,
       el('button',{class:'btn sm',type:'button',text:'Mapa da gaita',onclick:function(){ S.tab='gaita'; S.back='gaita'; save(); render(); window.scrollTo(0,0); }}) ]) ]);
+}
+function hojeExCj(){
+  var rot=cjRoutine(), foco=(S.cjEx||[]).filter(function(x){ return x.star && x.st!=='dominado'; });
+  return el('section',{class:'hj-card'},[
+    el('div',{class:'hj-h'},[el('h3',{text:'Sugestões do dia'}), el('span',{class:'dim small',text:'cajon'})]),
+    foco.length ? el('div',{class:'cj-list one'},foco.map(cjRhRow)) : null,
+    el('div',{class:'exgrid'},rot.map(cjExCard)),
+    el('div',{class:'row'},[el('button',{class:'btn sm',type:'button',text:'Todos os exercícios',onclick:function(){ S.cjTab='exercicios'; S.cjSel=null; save(); render(); window.scrollTo(0,0); }}),
+      el('button',{class:'btn sm',type:'button',text:'Músicas do cajon',onclick:function(){ S.cjTab='musicas'; save(); render(); window.scrollTo(0,0); }})]) ]);
 }
 function viewHoje(){
   var d=new Date(), dias=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
@@ -4180,7 +4250,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 20 (13/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 21 (13/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4622,7 +4692,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=20;
+var APP_VER=21;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
