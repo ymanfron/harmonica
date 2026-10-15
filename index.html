@@ -1670,7 +1670,22 @@ var CURSO=[
     "**Anacruse** é quando a melodia começa antes do primeiro tempo forte. Muitas músicas entram assim: uma ou duas notas “de impulso” e só depois cai o tempo 1.",
     G("Conte em voz alta um compasso inteiro antes de entrar. Se a música começa em anacruse, você precisa saber em que tempo a primeira nota cai.") ],
     q:[ Q("Quanto vale uma semínima pontuada?",["1 tempo","1 tempo e meio","2 tempos"],1,"O ponto acrescenta metade: 1 + ½."),
-        Q("Uma melodia que começa antes do primeiro tempo forte começa em…",["síncope","anacruse","contratempo"],1,"Anacruse é a entrada antes do tempo 1.") ] }
+        Q("Uma melodia que começa antes do primeiro tempo forte começa em…",["síncope","anacruse","contratempo"],1,"Anacruse é a entrada antes do tempo 1.") ] },
+  { id:'2.8', t:'Sinais de repetição', c:[
+    "Quase toda música repete partes inteiras. Para não reescrever tudo, partituras e cifras usam sinais que dizem **o que repetir e para onde pular**. São os mesmos que organizam a estrutura de uma música da missa ou de uma canja.",
+    U(["**Ritornelo** ‖: :‖ — toque o trecho entre os sinais e repita. Se só houver o sinal de fim, repita desde o começo.",
+       "**Casas 1 e 2** — o trecho se repete, mas termina de jeito diferente: na primeira vez toque a casa 1; na repetição, pule a casa 1 e vá para a casa 2.",
+       "**%** dentro de um compasso — repita o compasso anterior.",
+       "**D.C. (da capo)** — volte para o começo da música.",
+       "**D.S. (dal segno)** — volte para o sinal 𝄋, que marca o início do trecho a repetir.",
+       "**Fine** — onde a música termina depois de um D.C. ou D.S.",
+       "**Coda** 𝄌 — “ao Coda”: na repetição, quando chegar nesse sinal, salte para o trecho final marcado com o mesmo símbolo."]),
+    "Em cifras de internet os sinais são mais simples: “Refrão (2x)”, “volta ao início”, “final: repete o último verso”. A ideia é a mesma.",
+    G("Ao preparar uma música, transforme os sinais em uma forma escrita por extenso, com compassos: Intro 4, Verso 8, Refrão 8 x2, Final 4. É exatamente o campo Forma do preparo da música no app."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Com casas 1 e 2, na segunda vez você…",["toca as duas casas","pula a casa 1 e toca a casa 2","para na casa 1"],1,"A casa 1 vale só na primeira passada."),
+        Q("D.C. al Fine quer dizer…",["volte ao começo e termine no Fine","volte ao sinal e vá para a Coda","repita o último compasso"],0,"Da capo = do começo; Fine = fim."),
+        Q("O sinal % num compasso significa…",["pausa","repetir o compasso anterior","tocar mais forte"],1,"É a forma curta de repetir um compasso inteiro.") ] }
 ]},
 { id:'m3', t:'Intervalos', d:'A distância entre duas notas, base de escalas e acordes.', l:[
   { id:'3.1', t:'O que é um intervalo', c:[
@@ -1799,6 +1814,8 @@ var CURSO=[
   { id:'6.4', t:'Como ler uma cifra', c:[
     "A cifra é montada em camadas: a **letra** é a fundamental; um **m** depois dela indica menor; **números** indicam notas acrescentadas, contadas a partir da fundamental.",
     W('cifra'),
+    "Outras cifras comuns, todas em Dó:",
+    U(["**C6**: Dó maior com a sexta acrescentada (Dó Mi Sol Lá).","**C9** ou **C(add9)**: Dó maior com a nona, que é o Ré uma oitava acima.","**C(#5)** ou **C+**: aumentado (Dó Mi Sol#).","**C°** ou **Cdim**: diminuto, empilhando terças menores (Dó Mib Solb Lá).","**Cø** ou **Cm7(b5)**: meio diminuto (Dó Mib Solb Sib)."]),
     "Em caso de dúvida, simplifique. C7M(9) continua sendo um acorde de Dó maior, e Am7 continua sendo Lá menor. Para escolher as notas da melodia, a tríade já diz quase tudo." ],
     q:[ Q("O que significa o “m” em Am7?",["Maior","Menor","Meio diminuto"],1,"m minúsculo depois da letra = acorde menor."),
         Q("Em Csus4, a terça foi trocada por…",["segunda","quarta","sexta"],1,"sus4 suspende a terça e põe a quarta no lugar.") ] },
@@ -1958,7 +1975,20 @@ var CURSO=[
     W('notasAlvo'),
     G("Na 2ª posição: I no -2, IV no +4 (ou +1), V no -4 (ou -1). Saber de cor esses três endereços já organiza o improviso.") ],
     q:[ Q("Na 2ª posição, onde está a tônica do acorde IV?",["-2","+4","-4"],1,"O IV é o tom da própria gaita: furos soprados 1, 4, 7 e 10."),
-        Q("Marcar as trocas de acorde serve para…",["tocar mais rápido","o solo acompanhar a harmonia","mudar de tom"],1,"A melodia mostra que ouviu a harmonia.") ] }
+        Q("Marcar as trocas de acorde serve para…",["tocar mais rápido","o solo acompanhar a harmonia","mudar de tom"],1,"A melodia mostra que ouviu a harmonia.") ] },
+  { id:'10.6', t:'Uma história curta do blues e da gaita', c:[
+    "O blues nasceu no fim do século XIX entre os negros do sul dos Estados Unidos, sobretudo no Delta do Mississippi. Vem das **work songs** (cantos de trabalho), dos **hollers** (gritos cantados) e dos **spirituals** (cantos religiosos, de onde vieram muitos acordes). A gaita entrou porque era barata, pequena e já estava espalhada pelo país, trazida pelos imigrantes alemães.",
+    "Algumas fases e nomes para ouvir na ordem:",
+    U(["**Blues rural (anos 1920–40)**: voz e violão ou gaita. Na gaita, DeFord Bailey e Sonny Terry, com o ritmo de trem e os gritos imitados na gaita.",
+       "**Chicago e a eletricidade (anos 1940–50)**: com a migração para o norte, o blues ganhou banda e amplificação. Sonny Boy Williamson I e II, Big Walter Horton e, principalmente, **Little Walter**, que pôs a gaita no microfone e transformou o som do instrumento. **Juke** (1952) é dele.",
+       "**Dos anos 1960 em diante**: James Cotton, Junior Wells, Paul Butterfield e Charlie Musselwhite levam a gaita para o rock e para festivais. Do blues saíram também o jazz, o rock e boa parte do pop.",
+       "**No Brasil**: Flávio Guimarães (Blues Etílicos), Jefferson Gonçalves e a cena de festivais de blues pelo país."]),
+    "Para o gaitista, a lição dessa história é que **o som vem antes da técnica**. Cada um desses músicos é reconhecido pelo jeito de afinar e “entoar” as blue notes com bend, mais do que pela velocidade.",
+    G("Ao estudar Juke, ouça também outras gravações do Little Walter da mesma época. O fraseado se repete de uma música para outra, e você vai reconhecer licks que já está tocando."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Quem levou a gaita amplificada para o centro do blues de Chicago?",["Little Walter","Stevie Wonder","Toots Thielemans"],0,"Little Walter tocava com a gaita colada ao microfone."),
+        Q("Uma das raízes do blues são…",["as óperas italianas","as work songs e os hollers","as marchas militares"],1,"Cantos de trabalho e gritos cantados das comunidades negras do sul."),
+        Q("Gaitista brasileiro de blues citado nesta lição:",["Flávio Guimarães","Edu da Gaita","Maurício Einhorn"],0,"Flávio Guimarães, do Blues Etílicos. Os outros dois são nomes da cromática.") ] }
 ]},
 { id:'m11', t:'Melodia sobre harmonia', d:'Como notas e acordes conversam.', l:[
   { id:'11.1', t:'Notas do acorde e notas de passagem', c:[
@@ -2000,7 +2030,8 @@ var CURSO=[
     "**Posição** é a relação entre o tom da gaita e o tom em que você toca nela. A mesma gaita toca em vários tons; em cada um, a tônica muda de furo e a escala natural muda de caráter.",
     W('posicoes'),
     "As posições seguem o ciclo de quintas: cada posição está uma quinta acima da anterior.",
-    U(["**1ª posição**: o tom da gaita. Melodias, hinos, folk.","**2ª posição**: uma quinta acima. Blues, rock, country. A mais usada.","**3ª posição**: um tom acima do tom da gaita. Menor com sabor de blues.","**4ª posição**: o relativo menor do tom da gaita. Menor natural sem bends."]) ],
+    U(["**1ª posição**: o tom da gaita. Melodias, hinos, folk.","**2ª posição**: uma quinta acima. Blues, rock, country. A mais usada.","**3ª posição**: um tom acima do tom da gaita. Menor com sabor de blues.","**4ª posição**: o relativo menor do tom da gaita. Menor natural sem bends.","**5ª posição**: uma terça maior acima do tom da gaita (Mi numa gaita em C). Menor escuro, com várias notas que dependem de bend. Pouco usada, mas aparece em blues e rock."]),
+    G("Roadhouse Blues está em Mi. Na sua gaita em Lá ela é 2ª posição, o caminho mais natural. Numa gaita em C ela seria 5ª posição, bem mais difícil: por isso o professor escolheu a gaita em Lá.") ],
     q:[ Q("Numa gaita em C, a 2ª posição toca em…",["G","F","D"],0,"Uma quinta acima de C."),
         Q("Para tocar blues em Mi na 2ª posição, a gaita é em…",["E","A","B"],1,"A gaita fica uma quarta acima do tom: Lá."),
         Q("A 4ª posição de uma gaita em G toca em…",["Em","Am","Bm"],0,"O relativo menor de Sol.") ] },
@@ -2017,7 +2048,8 @@ var CURSO=[
     "A **pauta** são cinco linhas. Cada linha e cada espaço é uma nota; quanto mais alto no desenho, mais aguda. A **clave de Sol** no começo avisa que a segunda linha, de baixo para cima, é o Sol.",
     W('pauta'),
     "Para decorar: as notas nas **linhas**, de baixo para cima, são E G B D F. Nos **espaços**, F A C E. Notas além das cinco linhas ganham pequenas linhas extras, as linhas suplementares: o Dó central fica numa delas, logo abaixo da pauta.",
-    "Você não precisa ler partitura para tocar gaita. Mas reconhecer se a melodia sobe ou desce no papel, e por quanto, já ajuda muito a acompanhar um arranjo." ],
+    "Você não precisa ler partitura para tocar gaita. Mas reconhecer se a melodia sobe ou desce no papel, e por quanto, já ajuda muito a acompanhar um arranjo.",
+    G("Na diatônica em C, o Dó central da pauta (na linha suplementar logo abaixo) é o +1. O +4 é o Dó do terceiro espaço, uma oitava acima. Na cromática em C vale o mesmo: o +1 é o Dó central.") ],
     q:[ Q("Que nota fica na segunda linha da clave de Sol?",["Mi","Sol","Si"],1,"É ela que dá nome à clave."),
         Q("As notas nos espaços, de baixo para cima, são…",["F A C E","E G B D","C E G B"],0,"Fá, Lá, Dó, Mi.") ] },
   { id:'13.2', t:'Tablatura de gaita', c:[
@@ -2055,6 +2087,115 @@ var CURSO=[
     W('abrirExercicios') ],
     q:[ Q("O que rende mais?",["Duas horas uma vez por semana","Vinte minutos todo dia","Estudar só quando der vontade"],1,"A repetição espaçada fixa melhor."),
         Q("Diante de um trecho difícil, o melhor é…",["tocar a música inteira várias vezes","isolar o trecho e tocar devagar","aumentar o andamento"],1,"Trecho pequeno, andamento lento.") ] }
+]},
+{ id:'m15', t:'Técnica da gaita', d:'O instrumento, a boca, o ar e os bends.', l:[
+  { id:'15.1', t:'Tipos de gaita e cuidados', c:[
+    "Toda gaita é um instrumento de **palheta livre**: uma lâmina de metal presa por uma ponta, que vibra quando o ar passa pelo furo. Cada palheta dá uma nota. A gaita de boca nasceu na Alemanha no começo do século XIX, e a fabricação em série, em meados daquele século, a espalhou pelo mundo junto com os imigrantes alemães.",
+    "Os três tipos que você vai encontrar:",
+    U(["**Diatônica (modelo Richter)**: 10 furos, duas palhetas por furo (uma soprada, uma aspirada), afinada em um tom só. É a gaita do blues, do folk e do rock.",
+       "**Trêmolo**: duas palhetas para cada nota, levemente desafinadas entre si, o que dá um som ondulado. Soprado e aspirado ficam em furos alternados, então a boca pode ser maior, mas a gaita é menos ágil.",
+       "**Cromática**: tem um botão lateral que sobe todas as notas meio tom. Toca em qualquer tom, com timbre mais macio. Ela tem um módulo próprio neste curso."]),
+    "Cuidados que fazem a gaita durar e soar melhor:",
+    U(["**Toque com a boca limpa.** Restos de comida e açúcar grudam nas palhetas e desafinam.",
+       "**No frio, aqueça a gaita nas mãos** antes de tocar. A palheta gelada condensa saliva e trava.",
+       "**Ar leve.** Força demais cansa a palheta e desafina com o tempo; e o bend sai melhor com pouco ar.",
+       "**Depois de tocar**, bata o bocal de leve na palma da mão para tirar a saliva e deixe secar fora do estojo antes de guardar.",
+       "**Não mergulhe a gaita na água** para limpar. Para o bocal, uma escova de dentes seca, de dentro para fora.",
+       "**Guarde no estojo**, longe de poeira."]),
+    G("Cabeça erguida enquanto toca: assim a saliva não escorre para dentro dos furos."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("O que diferencia a cromática da diatônica?",["Tem mais furos soprados","Tem um botão que sobe as notas meio tom","Só toca acordes"],1,"O botão dá acesso às doze notas em qualquer tom."),
+        Q("Qual destes hábitos ajuda a gaita a durar mais?",["Tocar com bastante força","Lavar na torneira","Tocar com ar leve e deixar secar antes de guardar"],2,"Ar leve poupa a palheta; secar evita sujeira e ferrugem.") ] },
+  { id:'15.2', t:'Embocadura: bico e bloqueio de língua', c:[
+    "**Embocadura** é o jeito de pôr a gaita na boca. Há duas principais, e vale treinar as duas.",
+    U(["**Bico**: os lábios formam um “o” que deixa passar ar por um furo só. Use o meio dos lábios, não a pontinha, e deixe a gaita bem dentro da boca. Com a língua livre, o bico facilita o **bend** e os ataques com a língua.",
+       "**Bloqueio de língua**: a boca cobre três ou quatro furos e a ponta da língua tampa os da esquerda; o ar sai só pelo furo da direita. Dá um som mais cheio e abre a porta para acordes e efeitos."]),
+    "Com o bloqueio de língua aparecem recursos que o bico não faz:",
+    U(["**Acompanhamento com acordes (vamping)**: tire e ponha a língua no ritmo. A nota da direita continua sendo a melodia; quando a língua sai, soam também as notas da esquerda, formando o acorde.",
+       "**Quintas e oitavas**: tampe um furo com a língua e deixe soar os vizinhos (+1 e +3, por exemplo, dão Dó e Sol, uma quinta). Tampando dois furos, +1 e +4 dão Dó e Dó, uma oitava.",
+       "**Tremido de oitava**: com a oitava montada, mexa a língua de um lado para o outro bem rápido. É um som clássico do blues."]),
+    G("Primeiro objetivo de qualquer gaitista: uma nota só, limpa, no furo 4, soprando e aspirando. Quando sair sem vazar, faça o mesmo do 4 ao 7, subindo e descendo devagar com o metrônomo."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Qual embocadura deixa a língua livre e facilita o bend?",["Bico","Bloqueio de língua"],0,"No bico a língua não tampa nada e pode mudar a forma da boca."),
+        Q("No bloqueio de língua, quando a língua sai da gaita…",["a nota some","soa o acorde junto com a melodia","a gaita desafina"],1,"Os furos da esquerda são liberados e formam o acorde."),
+        Q("Tampando dois furos com a língua e soando o +1 e o +4, você ouve…",["uma quinta","uma oitava","uma terça"],1,"Dó e Dó: a mesma nota em duas alturas.") ] },
+  { id:'15.3', t:'Respiração', c:[
+    "A gaita é um dos poucos instrumentos de sopro que tocam também puxando o ar: você praticamente respira através dela. Por isso o fôlego raramente acaba; o desafio é **controlar** o ar.",
+    "A base é a **respiração abdominal**: ao puxar o ar, a barriga se expande e os ombros ficam parados; ao soltar, a barriga volta. Quem enche o peito e sobe os ombros fica tenso, e a tensão sobe para a garganta, que é justamente onde o bend acontece.",
+    "Três exercícios, sempre com metrônomo:",
+    U(["**Nota longa.** Aspire o -4 de forma constante por 4 tempos, depois 6, 8, 10. Faça o mesmo soprando o +4. O som não pode crescer nem morrer no caminho.",
+       "**Ataques com a barriga.** Numa só respiração, solte o ar em 4 golpes curtos, contraindo a barriga como numa tosse leve; depois puxe o ar em 4 golpes, como num susto. Aumente para 5 e 6 golpes.",
+       "**Respiração curta e rápida.** Aspira-sopra em colcheias no -4/+4, só com golpes de barriga, no metrônomo a 80. Suba de 10 em 10 até onde o som continuar limpo. É o motor do ritmo de trem."]),
+    G("Se ficar tonto, pare: é sinal de que está puxando ar demais. Na gaita, o ar que entra num tempo deve sair no tempo seguinte."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Na respiração abdominal, ao puxar o ar…",["os ombros sobem","a barriga se expande","o peito se fecha"],1,"O diafragma desce e empurra a barriga para fora."),
+        Q("Por que a tensão nos ombros atrapalha a gaita?",["Porque sobe para a garganta, onde o bend acontece","Porque desafina a gaita","Porque aumenta o volume"],0,"Garganta tensa fecha a passagem do ar e trava o bend.") ] },
+  { id:'15.4', t:'Expressão: vibrato, ataques e shake', c:[
+    "A gaita responde ao menor movimento da boca, da garganta e das mãos. Os recursos de expressão mais usados:",
+    U(["**Mão em concha (wah).** Envolva a gaita com as duas mãos fechadas em concha e abra a mão da direita: o som passa de abafado a aberto, como um “uá”.",
+       "**Vibrato de mão.** Abra e feche a concha num ritmo regular, em colcheias ou tercinas do metrônomo. Comece devagar; a regularidade importa mais que a velocidade.",
+       "**Vibrato de garganta.** Pequenas pulsações de ar, como dizer “hu-hu-hu” sem voz, ou um bend bem leve repetido. É mais difícil e mais expressivo.",
+       "**Ataques com a língua.** A nota pode começar com “ta”, “da”, “ka” ou “ha”, cada um com um caráter. Para notas rápidas e repetidas, alterne “tu-ku”. Um bom treino é “falar” a letra de uma música enquanto toca a melodia.",
+       "**Shake (trinado).** Alternância rápida entre dois furos vizinhos, mexendo a cabeça ou a gaita, por exemplo -4 e -5. No blues, também vale com bend."]),
+    G("Uma nota longa com bom som e vibrato no tempo da música vale mais que muitas notas rápidas."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("O vibrato de mão é feito…",["abrindo e fechando a concha das mãos","mexendo a cabeça","apertando o botão"],0,"A alternância entre abafado e aberto cria a ondulação."),
+        Q("O shake é…",["um bend longo","a alternância rápida entre dois furos vizinhos","um ataque com “ta”"],1,"Por exemplo, -4 e -5 bem rápido.") ] },
+  { id:'15.5', t:'Bends: onde existem e como treinar', c:[
+    "Cada furo da diatônica tem duas palhetas, mas só a de **nota mais aguda** do furo aceita bend. E ela só desce até ficar **meio tom acima da outra nota** do mesmo furo. Por isso cada furo tem uma quantidade diferente de bends.",
+    "Na gaita em C, os bends aspirados ficam nos furos graves e os soprados nos agudos:",
+    { mono:"Furo  Nota  Com bend\n-1    Ré    Réb\n-2    Sol   Fá#, Fá\n-3    Si    Sib, Lá, Láb\n-4    Ré    Réb\n-5    Fá    quase nada\n-6    Lá    Láb\n+8    Mi    Mib\n+9    Sol   Fá#\n+10   Dó    Si, Sib" },
+    "O -5 quase não dobra porque o Mi soprado do mesmo furo está só meio tom abaixo do Fá. No +7 acontece o mesmo.",
+    "Em gaitas de outro tom os nomes mudam, mas os furos e as quantidades são sempre as mesmas.",
+    "Como sai o bend: a boca não aperta e o ar não aumenta. O que muda é o lugar onde o ar “bate” dentro da boca: comece com a língua na posição de “i” e leve para “u”, puxando o ar mais para baixo, perto da garganta. No começo a garganta fecha e o som some; isso é normal, e é justamente perto desse ponto que a nota começa a descer.",
+    "Treine cada bend em três fases, um furo por vez:",
+    U(["**1. Bend longo.** Nota natural, desce para o bend e segura o máximo que conseguir, afinado.",
+       "**2. Bends com pausa.** Vários bends seguidos com pausa entre eles, sem relaxar a garganta na pausa.",
+       "**3. Atacar já no bend.** Arme a boca antes de puxar o ar, comece direto na nota dobrada e solte devagar até a natural."]),
+    "Depois disso, use o bend como **nota**, não como efeito. A escala cromática descendo do furo 4 ao 2 usa todos os bends graves:",
+    { mono:"-4  -4'  +4  -3  -3'  -3''\nRé  Réb  Dó  Si  Sib  Lá\n\n-3'''  +3   -2'  -2''  +2\nLáb    Sol  Fá#  Fá    Mi" },
+    G("Confira a afinação de cada bend no Mapa da gaita, com o microfone ligado. O -3'' (Lá) e o -2'' (Fá) são os que mais costumam ficar “no meio do caminho”."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Qual furo aspirado da gaita em C tem três bends?",["Furo 2","Furo 3","Furo 4"],1,"O -3 desce de Si até Láb."),
+        Q("Por que o -5 quase não dobra?",["Porque a palheta é curta","Porque o Mi soprado está só meio tom abaixo do Fá","Porque é soprado"],1,"O bend só desce até meio tom acima da outra nota do furo."),
+        Q("Para fazer o bend, o principal é…",["soprar mais forte","apertar os lábios","mudar a forma da boca e da garganta, de “i” para “u”"],2,"Força e lábios apertados atrapalham; o bend vem da forma interna da boca.") ] }
+]},
+{ id:'m16', t:'A gaita cromática', d:'Organização, tablatura e outros tons.', l:[
+  { id:'16.1', t:'Como a cromática é organizada', c:[
+    "A cromática de 12 furos tem três oitavas, e cada grupo de 4 furos repete o mesmo desenho: **soprando Dó Mi Sol Dó, aspirando Ré Fá Lá Si**. É como se a oitava do meio da diatônica (furos 4 a 7) fosse copiada ao longo de toda a gaita. A de 16 furos tem uma oitava grave a mais.",
+    { mono:"Furos      1   2   3   4\nSoprando   Dó  Mi  Sol Dó\nAspirando  Ré  Fá  Lá  Si\n\nIgual nos furos 5–8 e 9–12,\numa oitava acima a cada grupo." },
+    "Duas consequências práticas:",
+    U(["**O Dó aparece duas vezes seguidas** (+4 e +5, +8 e +9). Escolha o que deixa a frase com menos movimento: na escala subindo, o costume é ir do -4 (Si) para o +5 (Dó), seguindo para o -5 (Ré).",
+       "**Não há inversão de soprado e aspirado** como nos furos agudos da diatônica: o desenho é sempre igual. Quem decora um grupo de 4 furos se localiza na gaita inteira."]),
+    "O **botão** desvia o ar para um segundo jogo de palhetas, todas meio tom acima. Com o botão apertado, é como tocar uma gaita em Dó#. Algumas notas acabam iguais: +2< e -2 são Fá; -4< e +5 são Dó.",
+    "Dentro de cada furo há válvulas que deixam o som macio e uniforme, mas tornam o bend difícil e pouco controlável. Na cromática, a nota que falta vem do botão, não do bend.",
+    "É uma gaita de melodia: choro, jazz, MPB, música de igreja. Para ouvir: Toots Thielemans, Stevie Wonder e Larry Adler; no Brasil, Maurício Einhorn, Rildo Hora e Edu da Gaita.",
+    G("No começo, aperte o botão inteiro e solte inteiro, sem meio-termo. Botão apertado pela metade dá nota suja."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Aspirando os furos 1 a 4 da cromática em C sai…",["Ré Fá Lá Si","Dó Mi Sol Dó","Ré Sol Si Ré"],0,"Esse é o desenho aspirado, repetido a cada 4 furos."),
+        Q("O +4 e o +5 da cromática são…",["notas diferentes","a mesma nota, Dó","Dó e Dó#"],1,"O Dó se repete entre os grupos de 4 furos."),
+        Q("Na cromática, a nota que não existe sem bend na diatônica vem…",["do botão","de um bend forte","da língua"],0,"O botão dá todos os semitons; o bend é difícil por causa das válvulas.") ] },
+  { id:'16.2', t:'Da diatônica para a cromática', c:[
+    "A mesma melodia muda de lugar quando você troca a diatônica em C pela cromática em C. Na oitava do meio a regra é simples: **um furo a mais, mesma direção do ar**. Fora dela, consulte a tabela.",
+    { mono:"Diatônica  Nota   Cromática\n+1         Dó     +1\n-1         Ré     -1\n-1'        Réb    +1<\n+2         Mi     +2\n-2''       Fá     -2\n-2'        Fá#    -2<\n-2  e +3   Sol    +3\n-3'''      Láb    +3<\n-3''       Lá     -3\n-3'        Sib    -3<\n-3         Si     -4\n+4         Dó     +4 ou +5\n-4'        Réb    +5<\n-4         Ré     -5\n+5         Mi     +6\n-5         Fá     -6\n+6         Sol    +7\n-6'        Láb    +7<\n-6         Lá     -7\n-7         Si     -8\n+7         Dó     +8 ou +9\n-8         Ré     -9\n+8'        Mib    -9<\n+8         Mi     +10\n-9         Fá     -10\n+9'        Fá#    -10<\n+9         Sol    +11\n-10        Lá     -11\n+10''      Sib    -11<\n+10'       Si     -12\n+10        Dó     +12" },
+    "Repare que **todos os bends da diatônica viram notas comuns ou notas com botão** na cromática. Uma frase cheia de bends pode ficar mais fácil; o que se perde é o “choro” do bend.",
+    G("A aba Transpor do app faz essa troca automaticamente: escolha “Diatônica em C” de origem e “Cromática em C” de destino. Antes de colar uma tab da internet, troque o travessão (–) por hífen (-)."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Na oitava do meio, o -5 da diatônica vira, na cromática…",["-5","-6","+6"],1,"Um furo a mais, mesma direção: Fá fica no -6."),
+        Q("O -3'' (Lá) da diatônica, na cromática, é…",["-3","+3<","-4"],0,"Lá é a nota aspirada do furo 3 da cromática, sem bend."),
+        Q("O +6 (Sol) da diatônica vira…",["+6","+7","-7"],1,"Na cromática, o Sol do meio fica no +7.") ] },
+  { id:'16.3', t:'Tocando em outros tons', c:[
+    "Na cromática, tocar em outro tom é só saber **quais notas levam o botão**. A regra para os acidentes:",
+    U(["**Sustenido**: a nota natural com o botão. Fá# = Fá + botão (-6<).",
+       "**Bemol**: a nota de baixo com o botão. Sib é o mesmo som que Lá# (-7<); Mib é Ré# (-5<). Duas notas iguais com nomes diferentes se chamam **enarmônicas**."]),
+    "Três escalas na oitava do meio para começar:",
+    { mono:"Sol maior\nSol +7 · Lá -7 · Si -8 · Dó +9\nRé -9 · Mi +10 · Fá# -10< · Sol +11\n\nRé maior\nRé -5 · Mi +6 · Fá# -6< · Sol +7\nLá -7 · Si -8 · Dó# +9< · Ré -9\n\nFá maior\nFá -6 · Sol +7 · Lá -7 · Sib -7<\nDó +9 · Ré -9 · Mi +10 · Fá -10" },
+    "Estude cada escala como as da diatônica: devagar, subindo e descendo, dizendo o nome da nota, e só aumente o andamento quando sair limpa. Depois procure a mesma escala uma oitava abaixo (furos 1 a 5) e uma acima.",
+    G("Para se localizar, use os Dós como âncora: eles estão no primeiro e no último furo de cada grupo de 4. Esse é o tema do aquecimento de localização na cromática do seu bloco 2."),
+    "Fonte de apoio: Apostila de Gaita de Boca, de Marcelo Mello (licença CC BY-NC-SA 4.0)." ],
+    q:[ Q("Como se toca Fá# na oitava do meio da cromática?",["-6 com botão","+6 com botão","-7"],0,"Fá é o -6; com o botão, sobe meio tom."),
+        Q("Sib na cromática sai como…",["Si com botão","Lá com botão","Dó sem botão"],1,"Sib é enarmônico de Lá#: Lá + botão."),
+        Q("Na escala de Sol maior, qual nota leva o botão?",["Dó","Fá#","Mi"],1,"Sol maior tem um sustenido: Fá#.") ] }
 ]}
 ];
 
@@ -4291,7 +4432,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 23 (13/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 24 (15/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4737,7 +4878,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=23;
+var APP_VER=24;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
