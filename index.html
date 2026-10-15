@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#F4F0E8">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#E5DDCF">
 <style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
 </head><body>
 <title>Caderno de Música</title>
@@ -10,15 +10,15 @@
    no celular a navegação fica numa barra inferior; deitado, vira trilho lateral ou modo leitura. */
 /* ---------- tema "Linho e sálvia" (v27): fundo de linho, cartões claros, sálvia e argila; letra Nunito ---------- */
 :root{
-  --p:#4E6B52; --on-p:#FFFFFF; --pc:#E2EBDF; --on-pc:#2F4A33;
-  --sc:#E9E3D7; --on-sc:#2F2B26;
-  --s0:#F4F0E8; --s1:#FFFDF8; --s2:#F1ECE3; --s3:#E9E3D7; --s4:#E0D8CA;
-  --on-s:#2F2B26; --on-sv:#6F675D; --ol:#A0968A; --olv:#E3DBCD;
-  --bar:#F4F0E8; --on-bar:#2F2B26; --on-bar-dim:#7A7268; --bar-line:#CFC5B4; --bar-layer:rgba(47,43,38,.06);
+  --p:#4E6B52; --on-p:#FFFFFF; --pc:#D7E3D3; --on-pc:#2B4630;
+  --sc:#DDD4C4; --on-sc:#2B2722;
+  --s0:#E5DDCF; --s1:#F7F2E9; --s2:#EEE7DB; --s3:#E0D7C8; --s4:#D5CBBA;
+  --on-s:#2B2722; --on-sv:#625A50; --ol:#978C7E; --olv:#D3C9B8;
+  --bar:#E5DDCF; --on-bar:#2B2722; --on-bar-dim:#6E665B; --bar-line:#BDB09C; --bar-layer:rgba(47,43,38,.06);
   --ok:#3F7A4A; --okc:#DDEEDC; --err:#A8382C; --errc:#F7E0DA;
   --e1:0 1px 2px rgba(90,70,40,.08),0 2px 8px rgba(90,70,40,.05);
   --e2:0 2px 4px rgba(90,70,40,.10),0 6px 18px rgba(90,70,40,.08);
-  --glow:#F4F0E8;
+  --glow:#E5DDCF;
   --ig:#4E6B52; --ic:#B86E4B;
   --f-body:'Nunito',system-ui,-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif;
   --f-mono:'Roboto Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -4391,7 +4391,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 27 (15/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 28 (15/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4837,7 +4837,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=27;
+var APP_VER=28;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
