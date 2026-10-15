@@ -1,86 +1,36 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#1F3B6E">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#F4F0E8">
 <style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
 </head><body>
 <title>Caderno de Música</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap">
 <style>
 /* Material Design 3. Gaita: cinza e azul escuro. Cajon: marrom e areia.
    Layout: barra superior colorida (título, metrônomo, instrumento, gaitas), uma tela por vez;
    no celular a navegação fica numa barra inferior; deitado, vira trilho lateral ou modo leitura. */
+/* ---------- tema "Linho e sálvia" (v27): fundo de linho, cartões claros, sálvia e argila; letra Nunito ---------- */
 :root{
-  --p:#1F3B6E; --on-p:#FFFFFF; --pc:#D8E2FF; --on-pc:#0B1B3A;
-  --sc:#DCE2EC; --on-sc:#151C27;
-  --s0:#F6F7F9; --s1:#FFFFFF; --s2:#EEF0F4; --s3:#E6E9EE; --s4:#DDE1E7;
-  --on-s:#1A1C1F; --on-sv:#454850; --ol:#757983; --olv:#C5C8D1;
-  --bar:#1F3B6E; --on-bar:#FFFFFF; --on-bar-dim:#B9C6E0; --bar-line:rgba(255,255,255,.28); --bar-layer:rgba(255,255,255,.12);
-  --ok:#1B6B3F; --okc:#D3EFDC; --err:#B3261E; --errc:#F9DEDC;
-  --e1:0 1px 2px rgba(0,0,0,.18),0 1px 3px 1px rgba(0,0,0,.10);
-  --e2:0 1px 2px rgba(0,0,0,.18),0 2px 6px 2px rgba(0,0,0,.10);
-  --f-body:'Roboto',system-ui,-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  --p:#4E6B52; --on-p:#FFFFFF; --pc:#E2EBDF; --on-pc:#2F4A33;
+  --sc:#E9E3D7; --on-sc:#2F2B26;
+  --s0:#F4F0E8; --s1:#FFFDF8; --s2:#F1ECE3; --s3:#E9E3D7; --s4:#E0D8CA;
+  --on-s:#2F2B26; --on-sv:#6F675D; --ol:#A0968A; --olv:#E3DBCD;
+  --bar:#F4F0E8; --on-bar:#2F2B26; --on-bar-dim:#7A7268; --bar-line:#CFC5B4; --bar-layer:rgba(47,43,38,.06);
+  --ok:#3F7A4A; --okc:#DDEEDC; --err:#A8382C; --errc:#F7E0DA;
+  --e1:0 1px 2px rgba(90,70,40,.08),0 2px 8px rgba(90,70,40,.05);
+  --e2:0 2px 4px rgba(90,70,40,.10),0 6px 18px rgba(90,70,40,.08);
+  --glow:#F4F0E8;
+  --ig:#4E6B52; --ic:#B86E4B;
+  --f-body:'Nunito',system-ui,-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif;
   --f-mono:'Roboto Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --p:#AFC6FF; --on-p:#0D2A5B; --pc:#284777; --on-pc:#D8E2FF;
-  --sc:#3C4658; --on-sc:#DCE2EC;
-  --s0:#111317; --s1:#1A1C20; --s2:#1E2025; --s3:#282A2F; --s4:#33353A;
-  --on-s:#E3E2E6; --on-sv:#C5C6D0; --ol:#8F9099; --olv:#44474F;
-  --bar:#182B4D; --on-bar:#E6ECFA; --on-bar-dim:#A3B1CE; --bar-line:rgba(255,255,255,.22); --bar-layer:rgba(255,255,255,.10);
-  --ok:#8AD6A3; --okc:#12402A; --err:#F2B8B5; --errc:#5C1D1A;
-  --e1:0 1px 2px rgba(0,0,0,.5),0 1px 3px 1px rgba(0,0,0,.3); --e2:0 1px 2px rgba(0,0,0,.5),0 2px 6px 2px rgba(0,0,0,.3); color-scheme:dark } }
-:root[data-theme="dark"]{
-  --p:#AFC6FF; --on-p:#0D2A5B; --pc:#284777; --on-pc:#D8E2FF;
-  --sc:#3C4658; --on-sc:#DCE2EC;
-  --s0:#111317; --s1:#1A1C20; --s2:#1E2025; --s3:#282A2F; --s4:#33353A;
-  --on-s:#E3E2E6; --on-sv:#C5C6D0; --ol:#8F9099; --olv:#44474F;
-  --bar:#182B4D; --on-bar:#E6ECFA; --on-bar-dim:#A3B1CE; --bar-line:rgba(255,255,255,.22); --bar-layer:rgba(255,255,255,.10);
-  --ok:#8AD6A3; --okc:#12402A; --err:#F2B8B5; --errc:#5C1D1A;
-  --e1:0 1px 2px rgba(0,0,0,.5),0 1px 3px 1px rgba(0,0,0,.3); --e2:0 1px 2px rgba(0,0,0,.5),0 2px 6px 2px rgba(0,0,0,.3); color-scheme:dark }
-/* cajon */
-:root[data-skin="cajon"]{
-  --p:#6B4A26; --on-p:#FFFFFF; --pc:#F3DDBB; --on-pc:#261804;
-  --sc:#EBDCC3; --on-sc:#241A0B;
-  --s0:#F6EEDF; --s1:#FFF9EF; --s2:#EEE4D1; --s3:#E7DBC5; --s4:#DFD2B9;
-  --on-s:#201A12; --on-sv:#4F4536; --ol:#817461; --olv:#D2C3AB;
-  --bar:#5A3D1E; --on-bar:#FFF4E2; --on-bar-dim:#D9C2A0;
-}
-@media (prefers-color-scheme: dark){ :root[data-skin="cajon"]:not([data-theme="light"]){
-  --p:#E6C290; --on-p:#3F2C0D; --pc:#57401F; --on-pc:#F3DDBB;
-  --sc:#4B3E2B; --on-sc:#EBDCC3;
-  --s0:#18130C; --s1:#211B13; --s2:#262017; --s3:#312A20; --s4:#3C352A;
-  --on-s:#EDE1CF; --on-sv:#D2C3AB; --ol:#9A8D79; --olv:#4F4536;
-  --bar:#3D2A13; --on-bar:#F6E7CF; --on-bar-dim:#C8B08B } }
-:root[data-skin="cajon"][data-theme="dark"]{
-  --p:#E6C290; --on-p:#3F2C0D; --pc:#57401F; --on-pc:#F3DDBB;
-  --sc:#4B3E2B; --on-sc:#EBDCC3;
-  --s0:#18130C; --s1:#211B13; --s2:#262017; --s3:#312A20; --s4:#3C352A;
-  --on-s:#EDE1CF; --on-sv:#D2C3AB; --ol:#9A8D79; --olv:#4F4536;
-  --bar:#3D2A13; --on-bar:#F6E7CF; --on-bar-dim:#C8B08B }
-
-:root[data-skin="rep"]{
-  --p:#2E3A46; --on-p:#FFFFFF; --pc:#DCE3EA; --on-pc:#111A22;
-  --sc:#E1E5E9; --on-sc:#191D21;
-  --s0:#F4F5F6; --s1:#FFFFFF; --s2:#ECEEF0; --s3:#E3E6E9; --s4:#D9DDE1;
-  --on-s:#1A1C1E; --on-sv:#43474C; --ol:#72777D; --olv:#C4C8CD;
-  --bar:#262C33; --on-bar:#FFFFFF; --on-bar-dim:#B6BDC6 }
-@media (prefers-color-scheme: dark){ :root[data-skin="rep"]:not([data-theme="light"]){
-  --p:#C3CCD6; --on-p:#1B242C; --pc:#3A4651; --on-pc:#DCE3EA;
-  --sc:#3F464D; --on-sc:#E1E5E9;
-  --s0:#111315; --s1:#1A1C1F; --s2:#1F2124; --s3:#292C2F; --s4:#34373B;
-  --on-s:#E3E4E6; --on-sv:#C3C7CC; --ol:#8D9197; --olv:#44484D;
-  --bar:#1A1F25; --on-bar:#E8ECF0; --on-bar-dim:#A4ACB6 } }
-:root[data-skin="rep"][data-theme="dark"]{
-  --p:#C3CCD6; --on-p:#1B242C; --pc:#3A4651; --on-pc:#DCE3EA;
-  --sc:#3F464D; --on-sc:#E1E5E9;
-  --s0:#111315; --s1:#1A1C1F; --s2:#1F2124; --s3:#292C2F; --s4:#34373B;
-  --on-s:#E3E4E6; --on-sv:#C3C7CC; --ol:#8D9197; --olv:#44484D;
-  --bar:#1A1F25; --on-bar:#E8ECF0; --on-bar-dim:#A4ACB6 }
-:root{ --ig:#1F3B6E; --ic:#6B4A26 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --ig:#AFC6FF; --ic:#E6C290 } }
-:root[data-theme="dark"]{ --ig:#AFC6FF; --ic:#E6C290 }
+/* cajon: argila */
+:root[data-skin="cajon"]{ --p:#A2593A; --pc:#F4E2D7; --on-pc:#5A2E18; --sc:#EFE4DA; --bar-line:#D6C2B2 }
+/* repertório: nogueira */
+:root[data-skin="rep"]{ --p:#6E5A45; --pc:#EDE4D8; --on-pc:#3F3022; --sc:#EAE2D6 }
 
 *{box-sizing:border-box}
-body{background:var(--s0);color:var(--on-s);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
+body{background:var(--s0) radial-gradient(140% 520px at 50% -80px,var(--glow) 0%,transparent 100%) no-repeat;background-attachment:fixed;color:var(--on-s);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
 button,select,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:2px solid var(--p);outline-offset:2px}
@@ -578,7 +528,6 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 
 /* ---------- biblioteca de músicas da gaita (v15) ---------- */
 :root{ --wa:#7A4B00; --wac:#FCE7C2 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --wa:#F5C46F; --wac:#4A3305 } }
 :root[data-theme="dark"]{ --wa:#F5C46F; --wac:#4A3305 }
 .mus{display:flex;flex-direction:column;gap:20px;min-width:0}
 .mus-main{display:flex;flex-direction:column;gap:28px;min-width:0}
@@ -659,7 +608,6 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .cf-l.ch{color:var(--p);font-weight:700}
 .cf-l.sec{font-family:inherit;font-weight:700;margin-top:.6em;color:var(--on-sv)}
 .cf-l.gap{min-height:.7em}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .cf-l.ch{color:var(--ig)} }
 :root[data-theme="dark"] .cf-l.ch{color:var(--ig)}
 /* palco */
 .palco .pl-body{padding-bottom:120px}
@@ -763,6 +711,17 @@ button.hj-song-h{cursor:pointer;text-decoration:underline;text-underline-offset:
 .lib-repnote{gap:8px;align-items:center;font-size:14px}
 .lib-foot{justify-content:flex-end;margin-top:-4px}
 .recov .cj-row{grid-template-columns:auto minmax(0,1fr) auto}
+/* palco: títulos de página com mais presença */
+.hj-top h2{font-size:34px;font-weight:500;letter-spacing:-.3px;line-height:1.1}
+.hj-top{margin:4px 0 2px}
+.top{box-shadow:0 1px 0 var(--olv)}
+/* linho e sálvia: topo claro com destaques na cor da área */
+.ins{border-color:var(--bar-line)}
+.ins button+button{border-left-color:var(--bar-line)}
+.ins button[aria-pressed="true"]{background:var(--p);color:var(--on-p)}
+.mm>button:first-child{background:var(--p);color:var(--on-p)}
+.mm{background:var(--s3)}
+.hj-tab .tk.grp{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,currentColor 35%,transparent);opacity:1}
 </style>
 <div class="app">
   <header class="top">
@@ -4432,7 +4391,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 24 (15/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 27 (15/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4878,7 +4837,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=24;
+var APP_VER=27;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
