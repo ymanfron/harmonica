@@ -2617,23 +2617,35 @@ function exRoutine(){
 /* ---------- músicas da cromática no treino do dia: 2 músicas, trocam a cada 2 dias ---------- */
 function rotDayIndex(d){ d=d||new Date(); return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5); }
 function rotRng(seed){ var x=(seed*2654435761)>>>0; return function(){ x^=x<<13; x>>>=0; x^=x>>>17; x^=x<<5; x>>>=0; return x/4294967296; }; }
-function rotShuffle(list, seed){ var a=list.slice().sort(function(p,q){ return p.id<q.id?-1:1; }), r=rotRng(seed+7919); for(var i=a.length-1;i>0;i--){ var j=Math.floor(r()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+/* a chave é o nome normalizado: o gestor de tempo faz a mesma conta com a mesma lista e chega na mesma dupla */
+function rotKey(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim(); }
+function rotShuffle(list, seed){ var a=list.slice().sort(function(p,q){ return p.k<q.k?-1:p.k>q.k?1:0; }), r=rotRng(seed+7919); for(var i=a.length-1;i>0;i--){ var j=Math.floor(r()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 function rotPool(){
   var withTab=S.songs.filter(function(s){ return s.harp && s.harp.type==='crom' && String(s.text||'').trim(); });
   var open=withTab.filter(function(s){ return gSt(s)!=='pronta'; });
-  return open.length>=2 ? open : withTab;
+  var src=open.length>=2 ? open : withTab, seen={};
+  return src.filter(function(x){ var k=rotKey(x.title); if(!k || seen[k]) return false; seen[k]=1; return true; });
+}
+/* se o plano de hoje veio do gestor com a dupla da cromática, ela manda */
+function rotFromFoco(){
+  var f=S.foco; if(!f || f.src!=='gestor' || !f.text || rotDayIndex(new Date(f.u||0))!==rotDayIndex()) return null;
+  var m=/M[ÚU]SICAS DA CROM[ÁA]TICA \(dia (\d) de 2\)\s*[—-]\s*(.+)/i.exec(f.text); if(!m) return null;
+  var all=S.songs.filter(function(x){ return x.harp && x.harp.type==='crom'; }), songs=[];
+  m[2].split(' · ').forEach(function(n){ var k=rotKey(n), hit=all.filter(function(x){ return rotKey(x.title)===k; })[0]; if(hit && songs.indexOf(hit)<0) songs.push(hit); });
+  return songs.length ? { songs:songs, dia:+m[1]===2?2:1 } : null;
 }
 /* rodízio: cada dupla evita a anterior e prefere as músicas que estão há mais tempo sem aparecer */
 function cromRotation(dayOpt){
-  var pool=rotPool(); if(!pool.length) return null;
+  if(dayOpt==null){ var ff=rotFromFoco(); if(ff) return ff; }
+  var pool=rotPool().map(function(x){ return { k:rotKey(x.title), s:x }; }); if(!pool.length) return null;
   var day=dayOpt!=null?dayOpt:rotDayIndex(), period=Math.floor(day/2), start=Math.min(10000,period), last={}, prev=[], pick=[];
   for(var q=start; q<=period; q++){
-    var order=rotShuffle(pool,q), rank={}; order.forEach(function(s,i){ rank[s.id]=i; });
-    var cand=order.filter(function(s){ return prev.indexOf(s.id)<0; }).sort(function(a,b){ var la=last[a.id]==null?-1e9:last[a.id], lb=last[b.id]==null?-1e9:last[b.id]; return la-lb || rank[a.id]-rank[b.id]; });
+    var order=rotShuffle(pool,q), rank={}; order.forEach(function(s,i){ rank[s.k]=i; });
+    var cand=order.filter(function(s){ return prev.indexOf(s.k)<0; }).sort(function(a,b){ var la=last[a.k]==null?-1e9:last[a.k], lb=last[b.k]==null?-1e9:last[b.k]; return la-lb || rank[a.k]-rank[b.k]; });
     pick=cand.slice(0,2); order.forEach(function(s){ if(pick.length<2 && pick.indexOf(s)<0) pick.push(s); });
-    pick.forEach(function(s){ last[s.id]=q; }); prev=pick.map(function(s){ return s.id; });
+    pick.forEach(function(s){ last[s.k]=q; }); prev=pick.map(function(s){ return s.k; });
   }
-  return { songs:pick, dia:(day%2)+1 };
+  return { songs:pick.map(function(x){ return x.s; }), dia:(day%2)+1 };
 }
 function cromSongsCard(cls){
   if(S.harp.type!=='crom') return null; var r=cromRotation();
@@ -2642,7 +2654,8 @@ function cromSongsCard(cls){
     el('div',{class:'row between'},[el('h3',{text:'Músicas da cromática'}), el('span',{class:'dim small',text:r.dia===1?'1º de 2 dias':'2º de 2 dias · trocam amanhã'})]),
     el('div',{class:'hj-songs'},r.songs.map(function(s){ return el('button',{class:'hj-song',type:'button',onclick:function(){ S.cur=s.id; S.songEdit=null; S.tab='musicas'; S.back='musicas'; save(); stopPlay(); render(); window.scrollTo(0,0); }},[
       el('span',{class:'ins-tag g',text:'Cromática'}), el('b',{text:s.title||'Sem título'}), el('small',{text:CJ_ST_LABEL[gSt(s)]||''}), el('i',{text:'›'})]); })),
-    el('p',{class:'dim small',text:'Toque cada uma do começo ao fim, devagar, pelo menos três vezes. As duas ficam por dois dias e depois a dupla troca.'}) ]);
+    el('p',{class:'dim small',text:'Toque cada uma do começo ao fim, devagar, pelo menos três vezes. As duas ficam por dois dias e depois a dupla troca.'}),
+    el('div',{class:'row'},[el('button',{class:'btn sm ghost',type:'button',id:'cromCopy',text:'Copiar lista para o gestor',onclick:function(ev){ var b=ev.currentTarget, t=rotPool().map(function(x){ return x.title; }).join('\n'); var done=function(){ b.textContent='Copiado: cole no gestor, em Repertório e opções'; }; if(navigator.clipboard) navigator.clipboard.writeText(t).then(done,function(){ prompt('Copie a lista:',t); }); else prompt('Copie a lista:',t); }})]) ]);
 }
 function exCard(e){
   var times=(S.exDone[e.id]||[]).length;
@@ -4514,7 +4527,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 31 (16/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 32 (16/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4990,7 +5003,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=31;
+var APP_VER=32;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
