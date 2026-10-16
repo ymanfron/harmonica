@@ -2627,12 +2627,13 @@ function rotPool(){
   return src.filter(function(x){ var k=rotKey(x.title); if(!k || seen[k]) return false; seen[k]=1; return true; });
 }
 /* se o plano de hoje veio do gestor com a dupla da cromática, ela manda */
+function focoGestorHoje(){ var f=S.foco; return f && f.src==='gestor' && f.text && rotDayIndex(new Date(f.u||0))===rotDayIndex() ? f : null; }
 function rotFromFoco(){
-  var f=S.foco; if(!f || f.src!=='gestor' || !f.text || rotDayIndex(new Date(f.u||0))!==rotDayIndex()) return null;
+  var f=focoGestorHoje(); if(!f) return null;
   var m=/M[ÚU]SICAS DA CROM[ÁA]TICA \(dia (\d) de 2\)\s*[—-]\s*(.+)/i.exec(f.text); if(!m) return null;
   var all=S.songs.filter(function(x){ return x.harp && x.harp.type==='crom'; }), songs=[];
-  m[2].split(' · ').forEach(function(n){ var k=rotKey(n), hit=all.filter(function(x){ return rotKey(x.title)===k; })[0]; if(hit && songs.indexOf(hit)<0) songs.push(hit); });
-  return songs.length ? { songs:songs, dia:+m[1]===2?2:1 } : null;
+  var notes={}; m[2].split(' · ').forEach(function(n){ var nm=/^(.*?)\s*\(([^()]*)\)\s*$/.exec(n), nota=nm&&/tocada|ainda/.test(nm[2])?nm[2]:''; if(nota) n=nm[1]; var k=rotKey(n), hit=all.filter(function(x){ return rotKey(x.title)===k; })[0]; if(hit && songs.indexOf(hit)<0){ songs.push(hit); notes[hit.id]=nota; } });
+  return songs.length ? { songs:songs, dia:+m[1]===2?2:1, notes:notes } : null;
 }
 /* rodízio: cada dupla evita a anterior e prefere as músicas que estão há mais tempo sem aparecer */
 function cromRotation(dayOpt){
@@ -2649,11 +2650,13 @@ function cromRotation(dayOpt){
 }
 function cromSongsCard(cls){
   if(S.harp.type!=='crom') return null; var r=cromRotation();
+  /* no Hoje, se o gestor mandou o plano de hoje com as músicas da igreja, o rodízio não aparece */
+  if(cls==='hj-sub' && focoGestorHoje() && !rotFromFoco()) return null;
   if(!r) return el('section',{class:cls||'sec'},[el('h3',{text:'Músicas da cromática'}), el('p',{class:'dim small',text:'Quando houver músicas da cromática com tablatura na sua lista, duas delas aparecem aqui a cada dois dias.'})]);
   return el('section',{class:cls||'sec'},[
     el('div',{class:'row between'},[el('h3',{text:'Músicas da cromática'}), el('span',{class:'dim small',text:r.dia===1?'1º de 2 dias':'2º de 2 dias · trocam amanhã'})]),
     el('div',{class:'hj-songs'},r.songs.map(function(s){ return el('button',{class:'hj-song',type:'button',onclick:function(){ S.cur=s.id; S.songEdit=null; S.tab='musicas'; S.back='musicas'; save(); stopPlay(); render(); window.scrollTo(0,0); }},[
-      el('span',{class:'ins-tag g',text:'Cromática'}), el('b',{text:s.title||'Sem título'}), el('small',{text:CJ_ST_LABEL[gSt(s)]||''}), el('i',{text:'›'})]); })),
+      el('span',{class:'ins-tag g',text:'Cromática'}), el('b',{text:s.title||'Sem título'}), el('small',{text:[CJ_ST_LABEL[gSt(s)]||'', r.notes&&r.notes[s.id]||''].filter(Boolean).join(' · ')}), el('i',{text:'›'})]); })),
     el('p',{class:'dim small',text:'Toque cada uma do começo ao fim, devagar, pelo menos três vezes. As duas ficam por dois dias e depois a dupla troca.'}),
     el('div',{class:'row'},[el('button',{class:'btn sm ghost',type:'button',id:'cromCopy',text:'Copiar lista para o gestor',onclick:function(ev){ var b=ev.currentTarget, t=rotPool().map(function(x){ return x.title; }).join('\n'); var done=function(){ b.textContent='Copiado: cole no gestor, em Repertório e opções'; }; if(navigator.clipboard) navigator.clipboard.writeText(t).then(done,function(){ prompt('Copie a lista:',t); }); else prompt('Copie a lista:',t); }})]) ]);
 }
@@ -4527,7 +4530,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 32 (16/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 33 (16/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5003,7 +5006,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=32;
+var APP_VER=33;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
