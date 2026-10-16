@@ -3,7 +3,7 @@
 <style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
 </head><body>
 <title>Caderno de Música</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
 <style>
 /* Material Design 3. Gaita: cinza e azul escuro. Cajon: marrom e areia.
    Layout: barra superior colorida (título, metrônomo, instrumento, gaitas), uma tela por vez;
@@ -25,9 +25,9 @@
   color-scheme:light;
 }
 /* cajon: argila */
-:root[data-skin="cajon"]{ --p:#A2593A; --pc:#F4E2D7; --on-pc:#5A2E18; --sc:#EFE4DA; --bar-line:#D6C2B2 }
+:root[data-th="linho"][data-skin="cajon"]{ --p:#A2593A; --pc:#F4E2D7; --on-pc:#5A2E18; --sc:#EFE4DA; --bar-line:#D6C2B2 }
 /* repertório: nogueira */
-:root[data-skin="rep"]{ --p:#6E5A45; --pc:#EDE4D8; --on-pc:#3F3022; --sc:#EAE2D6 }
+:root[data-th="linho"][data-skin="rep"]{ --p:#6E5A45; --pc:#EDE4D8; --on-pc:#3F3022; --sc:#EAE2D6 }
 
 *{box-sizing:border-box}
 body{background:var(--s0) radial-gradient(140% 520px at 50% -80px,var(--glow) 0%,transparent 100%) no-repeat;background-attachment:fixed;color:var(--on-s);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
@@ -528,7 +528,7 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 
 /* ---------- biblioteca de músicas da gaita (v15) ---------- */
 :root{ --wa:#7A4B00; --wac:#FCE7C2 }
-:root[data-theme="dark"]{ --wa:#F5C46F; --wac:#4A3305 }
+:root[data-dark]{ --wa:#F5C46F; --wac:#4A3305 }
 .mus{display:flex;flex-direction:column;gap:20px;min-width:0}
 .mus-main{display:flex;flex-direction:column;gap:28px;min-width:0}
 .lib{border:1px solid var(--olv);border-radius:16px;background:var(--s1);min-width:0;overflow:hidden}
@@ -722,6 +722,89 @@ button.hj-song-h{cursor:pointer;text-decoration:underline;text-underline-offset:
 .mm>button:first-child{background:var(--p);color:var(--on-p)}
 .mm{background:var(--s3)}
 .hj-tab .tk.grp{box-shadow:inset 0 0 0 1.5px color-mix(in srgb,currentColor 35%,transparent);opacity:1}
+
+/* ---------- temas escolhidos em Ajustes > Aparência (v29) ---------- */
+:root[data-dark]{ color-scheme:dark; --ok:#8FD3A0; --okc:#1E3A2B; --err:#F2A49A; --errc:#4A2026;
+  --e1:0 1px 2px rgba(0,0,0,.45),0 1px 3px 1px rgba(0,0,0,.25); --e2:0 2px 4px rgba(0,0,0,.5),0 4px 14px 2px rgba(0,0,0,.3); --bar-layer:rgba(255,255,255,.07) }
+/* Areia e mel */
+:root[data-th="areia"]{ --p:#8A5A3B; --on-p:#FFFFFF; --pc:#F2DDB8; --on-pc:#5A3B12; --sc:#E2D5C0; --on-sc:#33281F;
+  --s0:#E9E0D2; --s1:#F8F1E6; --s2:#F0E7DA; --s3:#E2D7C6; --s4:#D7CAB6; --on-s:#33281F; --on-sv:#6D5F51; --ol:#9A8B78; --olv:#D6C8B3;
+  --bar:#E9E0D2; --on-bar:#33281F; --on-bar-dim:#6D5F51; --bar-line:#C2AE93; --glow:#E9E0D2; --ig:#8A5A3B; --ic:#B5672F }
+:root[data-th="areia"][data-skin="cajon"]{ --p:#A2532A; --pc:#F3D9C6; --on-pc:#5A2A12 }
+:root[data-th="areia"][data-skin="rep"]{ --p:#5E6B3E; --pc:#E4E7D2; --on-pc:#33391E }
+/* Leite e azul-cinza */
+:root[data-th="leite"]{ --p:#4A6580; --on-p:#FFFFFF; --pc:#DCE5EE; --on-pc:#24394F; --sc:#DDD8D0; --on-sc:#283039;
+  --s0:#E7E3DD; --s1:#F8F6F2; --s2:#EFECE6; --s3:#E1DCD4; --s4:#D6D0C6; --on-s:#283039; --on-sv:#5F646C; --ol:#8F939A; --olv:#D4CEC5;
+  --bar:#E7E3DD; --on-bar:#283039; --on-bar-dim:#5F646C; --bar-line:#BDB6AB; --glow:#E7E3DD; --ig:#4A6580; --ic:#B9654A }
+:root[data-th="leite"][data-skin="cajon"]{ --p:#A85A3E; --pc:#F2DED3; --on-pc:#57281A }
+:root[data-th="leite"][data-skin="rep"]{ --p:#5D5A7A; --pc:#E3E1EE; --on-pc:#2E2B47 }
+/* Madeira e latão (escuro) */
+:root[data-th="madeira"]{ --p:#D4A95C; --on-p:#24190A; --pc:#4A3A22; --on-pc:#FBDDA6; --sc:#3A2F24; --on-sc:#F2E7D8;
+  --s0:#1C1611; --s1:#251E17; --s2:#2A221A; --s3:#33291F; --s4:#3D3226; --on-s:#F2E7D8; --on-sv:#B3A28C; --ol:#85755F; --olv:#3A2F24;
+  --bar:#16110C; --on-bar:#F2E7D8; --on-bar-dim:#B3A28C; --bar-line:rgba(212,169,92,.45); --glow:#2E2216; --ig:#D4A95C; --ic:#D97F55 }
+:root[data-th="madeira"][data-skin="cajon"]{ --p:#D97F55; --on-p:#2A140A; --pc:#4A2C1E; --on-pc:#FFD0B5 }
+:root[data-th="madeira"][data-skin="rep"]{ --p:#C9B68E; --on-p:#241D10; --pc:#3F3626; --on-pc:#F0E3C4 }
+/* Noite azul (escuro) */
+:root[data-th="noite"]{ --p:#5FD0BE; --on-p:#06201C; --pc:#1D4A47; --on-pc:#B9F1E7; --sc:#22323F; --on-sc:#E6EEF2;
+  --s0:#0F1A24; --s1:#16232F; --s2:#1B2935; --s3:#22323F; --s4:#2B3C4A; --on-s:#E6EEF2; --on-sv:#93A6B4; --ol:#6B7F8E; --olv:#263745;
+  --bar:#0B141C; --on-bar:#E6EEF2; --on-bar-dim:#93A6B4; --bar-line:rgba(95,208,190,.4); --glow:#15283A; --ig:#5FD0BE; --ic:#F2A65A }
+:root[data-th="noite"][data-skin="cajon"]{ --p:#F2A65A; --on-p:#2A1704; --pc:#4A3420; --on-pc:#FFD9B0 }
+:root[data-th="noite"][data-skin="rep"]{ --p:#A9B8F5; --on-p:#141C3D; --pc:#2A3358; --on-pc:#DDE3FF }
+/* Palco à noite (escuro) */
+:root[data-th="palco"]{ --p:#F0B44C; --on-p:#241A0B; --pc:#4E3C30; --on-pc:#FFDDA0; --sc:#3A2F4D; --on-sc:#F1E6D6;
+  --s0:#17121F; --s1:#221B2E; --s2:#2A2238; --s3:#332A43; --s4:#3D334F; --on-s:#F1E6D6; --on-sv:#B9AEC6; --ol:#7E7290; --olv:#3B3249;
+  --bar:#1B1526; --on-bar:#F1E6D6; --on-bar-dim:#B9AEC6; --bar-line:rgba(240,180,76,.35); --glow:#3E2C55; --ig:#F0B44C; --ic:#E8945A }
+:root[data-th="palco"][data-skin="cajon"]{ --p:#E8945A; --on-p:#2A140A; --pc:#4F3226; --on-pc:#FFD2B8 }
+:root[data-th="palco"][data-skin="rep"]{ --p:#CDB4F2; --on-p:#22173A; --pc:#3F3358; --on-pc:#E9DCFF }
+/* letra */
+:root[data-font="roboto"]{ --f-body:'Roboto',system-ui,-apple-system,'Segoe UI','Helvetica Neue',Arial,sans-serif }
+/* seletor de tema */
+.th-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.th-opt{border:1.5px solid var(--olv);border-radius:16px;background:var(--s1);padding:8px;text-align:left;display:flex;flex-direction:column;gap:8px;color:var(--on-s);font:inherit}
+.th-opt[aria-pressed="true"]{border-color:var(--p);box-shadow:0 0 0 2px var(--p)}
+.th-sw{height:58px;border-radius:10px;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.th-sw i{position:absolute;left:10px;right:10px;top:12px;height:22px;border-radius:7px}
+.th-sw b{position:absolute;left:18px;bottom:9px;width:40px;height:10px;border-radius:5px}
+.th-sw em{position:absolute;right:16px;bottom:8px;width:22px;height:12px;border-radius:6px}
+.th-opt span{font-weight:600;font-size:14px;line-height:1.2}
+.th-opt small{color:var(--on-sv);font-size:12px}
+/* ---------- temas das paletas enviadas + cinzas suaves (v30) ---------- */
+/* Rosa antigo (paleta "różowa skala") */
+:root[data-th="rosa"]{ --p:#7B5B6D; --on-p:#FFFFFF; --pc:#F1DCE8; --on-pc:#4A3342; --sc:#E3D2D8; --on-sc:#3A3438;
+  --s0:#E9DCE0; --s1:#F8F0F2; --s2:#F1E6E9; --s3:#E2D3D8; --s4:#D7C5CB; --on-s:#3A3438; --on-sv:#6C5E65; --ol:#9C8A92; --olv:#D9C9CF;
+  --bar:#E9DCE0; --on-bar:#3A3438; --on-bar-dim:#6C5E65; --bar-line:#C9B1BA; --glow:#E9DCE0; --ig:#7B5B6D; --ic:#9B6470 }
+:root[data-th="rosa"][data-skin="cajon"]{ --p:#9B6470; --pc:#F2DCDF; --on-pc:#4E2830 }
+:root[data-th="rosa"][data-skin="rep"]{ --p:#404040; --pc:#E4E0E2; --on-pc:#2A2A2A }
+/* Outono (paleta "fall-leaves") */
+:root[data-th="outono"]{ --p:#B02A06; --on-p:#FFFFFF; --pc:#F9E1C0; --on-pc:#5E2600; --sc:#EBDCC8; --on-sc:#3A2A1E;
+  --s0:#EFE4D6; --s1:#FBF4EA; --s2:#F4EBDF; --s3:#E8DCCB; --s4:#DDCFBC; --on-s:#3A2A1E; --on-sv:#6E5B4B; --ol:#9F8B78; --olv:#DECFBA;
+  --bar:#EFE4D6; --on-bar:#3A2A1E; --on-bar-dim:#6E5B4B; --bar-line:#D2B48C; --glow:#EFE4D6; --ig:#B02A06; --ic:#B8650A }
+:root[data-th="outono"][data-skin="cajon"]{ --p:#B8650A; --pc:#FBE5C4; --on-pc:#5A3200 }
+:root[data-th="outono"][data-skin="rep"]{ --p:#720503; --pc:#F2D9D4; --on-pc:#4A0402 }
+/* Côte azul (paleta "Coté Azul") */
+:root[data-th="cote"]{ --p:#00777A; --on-p:#FFFFFF; --pc:#D3ECEA; --on-pc:#03403F; --sc:#E0DFC8; --on-sc:#2E3A3B;
+  --s0:#E9E8D4; --s1:#F8F7EA; --s2:#F0EFDF; --s3:#E1E0CC; --s4:#D5D4BE; --on-s:#2E3A3B; --on-sv:#5C6766; --ol:#8C9493; --olv:#D6D5C0;
+  --bar:#E9E8D4; --on-bar:#2E3A3B; --on-bar-dim:#5C6766; --bar-line:#B8BBA6; --glow:#E9E8D4; --ig:#00777A; --ic:#D24A22 }
+:root[data-th="cote"][data-skin="cajon"]{ --p:#C9441D; --pc:#FBDDD2; --on-pc:#5A1D0A }
+:root[data-th="cote"][data-skin="rep"]{ --p:#04565D; --pc:#D2E4E5; --on-pc:#03363A }
+/* Inspiração (paleta "Inspiration", escuro) */
+:root[data-th="inspira"]{ --p:#98C0B7; --on-p:#0D1C23; --pc:#24464C; --on-pc:#D6EDE8; --sc:#1F343C; --on-sc:#F1EAD0;
+  --s0:#0D1C23; --s1:#14272F; --s2:#182D36; --s3:#1F3640; --s4:#28414B; --on-s:#F1EAD0; --on-sv:#A8B7B2; --ol:#6E8580; --olv:#22383F;
+  --bar:#0A161C; --on-bar:#F1EAD0; --on-bar-dim:#A8B7B2; --bar-line:rgba(152,192,183,.4); --glow:#173540; --ig:#98C0B7; --ic:#E3B58A }
+:root[data-th="inspira"][data-skin="cajon"]{ --p:#E3B58A; --on-p:#2A1A0A; --pc:#46362A; --on-pc:#FBE3C8 }
+:root[data-th="inspira"][data-skin="rep"]{ --p:#73A8A4; --on-p:#0D1C23; --pc:#1F4245; --on-pc:#CFEAE7 }
+/* Cinza suave (claro) */
+:root[data-th="cinza"]{ --p:#4A4A4A; --on-p:#F6F6F4; --pc:#DEDEDB; --on-pc:#262626; --sc:#DADAD7; --on-sc:#2E2E2E;
+  --s0:#E6E6E3; --s1:#F6F6F4; --s2:#EEEEEB; --s3:#DFDFDC; --s4:#D3D3D0; --on-s:#2E2E2E; --on-sv:#636363; --ol:#949494; --olv:#D0D0CD;
+  --bar:#E6E6E3; --on-bar:#2E2E2E; --on-bar-dim:#636363; --bar-line:#B9B9B5; --glow:#E6E6E3; --ig:#4A4A4A; --ic:#7D7268 }
+:root[data-th="cinza"][data-skin="cajon"]{ --p:#6B6158; --pc:#E4DFDA; --on-pc:#2E2721 }
+:root[data-th="cinza"][data-skin="rep"]{ --p:#5A5F66; --pc:#DFE1E4; --on-pc:#26292D }
+/* Carvão suave (escuro) */
+:root[data-th="carvao"]{ --p:#D9D9D6; --on-p:#1F1F1F; --pc:#3F3F3F; --on-pc:#F2F2F0; --sc:#363636; --on-sc:#E8E8E6;
+  --s0:#1F1F1F; --s1:#282828; --s2:#2D2D2D; --s3:#363636; --s4:#404040; --on-s:#E8E8E6; --on-sv:#A8A8A6; --ol:#7A7A7A; --olv:#383838;
+  --bar:#1A1A1A; --on-bar:#E8E8E6; --on-bar-dim:#A8A8A6; --bar-line:rgba(255,255,255,.25); --glow:#2A2A2A; --ig:#D9D9D6; --ic:#C9B9A8 }
+:root[data-th="carvao"][data-skin="cajon"]{ --p:#CFC2B4; --on-p:#22201C; --pc:#433D36; --on-pc:#F2EAE0 }
+:root[data-th="carvao"][data-skin="rep"]{ --p:#B9C0C8; --on-p:#1E2226; --pc:#3A3F45; --on-pc:#E6EBF0 }
 </style>
 <div class="app">
   <header class="top">
@@ -1143,7 +1226,11 @@ var S={
 };
 try { var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); Object.keys(o).forEach(function(k){ if(o[k]!==null && typeof o[k]==='object' && !Array.isArray(o[k]) && S[k] && typeof S[k]==='object') Object.assign(S[k],o[k]); else S[k]=o[k]; }); } } catch(e){}
 var saveT=0;
-function save(){ clearTimeout(saveT); saveT=setTimeout(function(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} },300); }
+var saveDirty=false;
+function save(){ saveDirty=true; clearTimeout(saveT); saveT=setTimeout(saveNow,300); }
+function saveNow(){ clearTimeout(saveT); saveDirty=false; try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function saveFlush(){ if(saveDirty) saveNow(); }
+try{ window.addEventListener('pagehide',saveFlush); document.addEventListener('visibilitychange',function(){ if(document.hidden) saveFlush(); }); }catch(e){}
 
 /* ---------- utilidades ---------- */
 function el(tag, attrs, kids){
@@ -4338,6 +4425,7 @@ function paintSync(){
 function viewAjustes(){
   var out=[], tokenIn=el('input',{type:'password',id:'syncToken',placeholder:'Cole o token aqui',autocomplete:'off',style:'flex:1;min-width:180px'});
   var state=el('div',{id:'syncState',class:'mtxt dim'});
+  out.push(themeSection());
   var syncSec;
   if(Sync.on()){
     syncSec=el('section',{class:'sec'},[el('h2',{text:'Sincronização'}),
@@ -4391,7 +4479,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 28 (15/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 30 (16/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4808,7 +4896,37 @@ function openAux(name){ if(S.tab===name){ S.tab=(S.back && S.back!==name)?S.back
 function goCajon(){ if(S.tab!=='cajon'){ if(!isAux(S.tab)) S.gback=S.tab; S.back='cajon'; S.tab='cajon'; save(); stopPlay(); render(); window.scrollTo(0,0); } }
 function goRep(){ if(S.tab!=='rep'){ if(!isAux(S.tab)) S.gback=S.tab; S.back='rep'; S.tab='rep'; save(); stopPlay(); render(); window.scrollTo(0,0); } }
 function goGaita(){ if(area()!=='gaita'){ S.tab=S.gback||'hoje'; S.back=S.tab; save(); stopPlay(); render(); window.scrollTo(0,0); } }
+/* temas (Ajustes > Aparência) */
+var THEMES=[
+  { id:'linho',   n:'Linho e sálvia',     k:'claro',  bg:'#E5DDCF', card:'#F7F2E9', a:'#4E6B52', b:'#B86E4B' },
+  { id:'areia',   n:'Areia e mel',        k:'claro',  bg:'#E9E0D2', card:'#F8F1E6', a:'#8A5A3B', b:'#E2B060' },
+  { id:'leite',   n:'Leite e azul-cinza', k:'claro',  bg:'#E7E3DD', card:'#F8F6F2', a:'#4A6580', b:'#C9785B' },
+  { id:'madeira', n:'Madeira e latão',    k:'escuro', bg:'#1C1611', card:'#251E17', a:'#D4A95C', b:'#D97F55' },
+  { id:'noite',   n:'Noite azul',         k:'escuro', bg:'#0F1A24', card:'#16232F', a:'#5FD0BE', b:'#F2A65A' },
+  { id:'palco',   n:'Palco à noite',      k:'escuro', bg:'#17121F', card:'#221B2E', a:'#F0B44C', b:'#CDB4F2' },
+  { id:'rosa',    n:'Rosa antigo',        k:'claro',  bg:'#E9DCE0', card:'#F8F0F2', a:'#7B5B6D', b:'#F2C3E7' },
+  { id:'outono',  n:'Outono',             k:'claro',  bg:'#EFE4D6', card:'#FBF4EA', a:'#C02901', b:'#F2B80C' },
+  { id:'cote',    n:'Côte azul',          k:'claro',  bg:'#E9E8D4', card:'#F8F7EA', a:'#009396', b:'#FF5A30' },
+  { id:'inspira', n:'Inspiração',         k:'escuro', bg:'#0D1C23', card:'#14272F', a:'#98C0B7', b:'#F1EAD0' },
+  { id:'cinza',   n:'Cinza suave',        k:'claro',  bg:'#E6E6E3', card:'#F6F6F4', a:'#4A4A4A', b:'#9A9A97' },
+  { id:'carvao',  n:'Carvão suave',       k:'escuro', bg:'#1F1F1F', card:'#282828', a:'#D9D9D6', b:'#7A7A7A' }];
+function themeById(id){ var r=THEMES[0]; THEMES.forEach(function(t){ if(t.id===id) r=t; }); return r; }
+function applyTheme(){ var t=themeById(S.theme), d=document.documentElement;
+  d.setAttribute('data-th',t.id); if(t.k==='escuro') d.setAttribute('data-dark',''); else d.removeAttribute('data-dark');
+  if(S.font==='roboto') d.setAttribute('data-font','roboto'); else d.removeAttribute('data-font');
+  var m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute('content', t.k==='escuro'?t.bg:t.bg); }
+function themeSection(){
+  return el('section',{class:'sec'},[el('h2',{text:'Aparência'}),
+    el('p',{class:'dim small',text:'Fica salvo neste aparelho. Cada aparelho pode ter o seu.'}),
+    el('div',{class:'th-grid',role:'group','aria-label':'Tema'},THEMES.map(function(t){
+      return el('button',{class:'th-opt',type:'button','aria-pressed':themeById(S.theme).id===t.id?'true':'false',onclick:function(){ S.theme=t.id; saveNow(); render(true); }},[
+        el('div',{class:'th-sw',style:'background:'+t.bg},[el('i',{style:'background:'+t.card}),el('b',{style:'background:'+t.a}),el('em',{style:'background:'+t.b})]),
+        el('span',{text:t.n}), el('small',{text:t.k}) ]); })),
+    field('Letra', el('div',{class:'segm',role:'group','aria-label':'Letra',style:'max-width:360px'},[['nunito','Arredondada'],['roboto','Roboto']].map(function(o){
+      return el('button',{type:'button','aria-pressed':(S.font==='roboto'?'roboto':'nunito')===o[0]?'true':'false',text:o[1],style:o[0]==='roboto'?"font-family:'Roboto',sans-serif":"font-family:'Nunito',sans-serif",onclick:function(){ S.font=o[0]; saveNow(); render(true); }}); }))) ]);
+}
 function render(keepFocus){
+  applyTheme();
   if(!keepFocus){ var sn=document.getElementById('snack'); if(sn) sn.remove(); }
   cleanup.forEach(function(f){ try{ f(); }catch(e){} }); cleanup=[];
   var act=document.activeElement, fid=act&&act.id, ss=act&&act.selectionStart, y=window.scrollY;
@@ -4837,7 +4955,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=28;
+var APP_VER=30;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
