@@ -810,6 +810,18 @@ button.hj-song-h{cursor:pointer;text-decoration:underline;text-underline-offset:
 :root[data-th="carvao"][data-skin="rep"]{ --p:#B9C0C8; --on-p:#1E2226; --pc:#3A3F45; --on-pc:#E6EBF0 }
 .hj-sub{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--olv)}
 .hj-sub h3{font-size:16px}
+/* Mapa › Posições e graus */
+.map-seg{margin-bottom:12px;max-width:420px}
+.pos-chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.pos-chips .chip.rare{opacity:.6}
+.pos-tbl td{vertical-align:middle}
+.pos-tbl tr.out td{opacity:.62}
+.pos-toks{display:flex;flex-wrap:wrap;gap:4px}
+.pos-toks .tk{font-family:var(--f-mono,monospace);font-size:13px;padding:3px 6px}
+.pos-toks .tk.k-bend{outline:1.5px dashed var(--ol);outline-offset:-2px}
+.pos-toks .tk.k-over{outline:1.5px dotted var(--p);outline-offset:-2px}
+.pos-all td,.pos-all th{text-align:center;white-space:nowrap}
+.pos-all tr.me td{background:var(--sc)}
 </style>
 <div class="app">
   <header class="top">
@@ -1517,11 +1529,50 @@ function practiceBox(seq, ctx, harp, onStep, opts){
 }
 
 /* ---------- tela: Gaita (mapa + afinador) ---------- */
+/* ---------- Mapa › Posições e graus: as 12 notas de cada posição e onde ficam na gaita ---------- */
+var POS_GRAUS=[['1',0,1],['b2',1,2],['2',2,2],['b3',3,3],['3',4,3],['4',5,4],['b5',6,5],['5',7,5],['b6',8,6],['6',9,6],['b7',10,7],['7',11,7]];
+var POS_INFO={1:['Jônio (maior)','melodias, hinos, folk'],2:['Mixolídio','blues e rock (cross harp)'],3:['Dórico','menor com sabor de blues'],4:['Eólio (menor natural)','menor'],5:['Frígio','menor escuro'],6:['Lócrio','raro, instável'],12:['Lídio','maior com a 4ª aumentada']};
+function posNames(k, pos){
+  var rp=C.positionRoot(k,pos), hctx=harpCtx({type:'diat',key:k}), inSc=hctx.idx[rp]!==undefined;
+  var root=inSc?C.pcName(rp,hctx):C.bestRoot(rp,'maior');
+  var nm=C.spellIv(root, POS_GRAUS.map(function(g){ return g[1]; }), POS_GRAUS.map(function(g){ return g[2]; }));
+  return nm.map(function(n,i){ var pc=mod(rp+POS_GRAUS[i][1],12); return (/##|bb|^(Cb|Fb|E#|B#)$/.test(n)) ? C.pcName(pc,hctx) : n; });
+}
+function viewPosicoes(){
+  var k=S.harp.key, harp=C.makeDiatonic(k), hctx=harpCtx(S.harp), pos=S.posSel||2, rp=C.positionRoot(k,pos), names=posNames(k,pos), info=POS_INFO[pos];
+  var out=[];
+  out.push(el('section',{class:'sec'},[
+    el('h2',{text:'Posições — '+harpName(S.harp)}),
+    el('div',{class:'chips pos-chips'},[1,2,3,4,5,6,7,8,9,10,11,12].map(function(p){ return chip(ORD(p)+' · '+NN(posNames(k,p)[0]), p===pos, function(){ S.posSel=p; save(); render(true); }, POS_INFO[p]?'':'rare'); })),
+    el('p',{},[el('b',{text:ORD(pos)+' posição: tônica '+NN(names[0])}), el('span',{class:'dim',text:info?' · '+info[0]+' · '+info[1]:' · posição rara: a tônica não é nota natural desta gaita'})]),
+    el('div',{class:'scroll'},[el('table',{class:'pos-tbl'},[
+      el('thead',{},[el('tr',{},[el('th',{text:'Grau'}),el('th',{text:'Nota'}),el('th',{text:'Onde tocar (do grave ao agudo)'})])]),
+      el('tbody',{},POS_GRAUS.map(function(g,i){
+        var pc=mod(rp+g[1],12), natural=hctx.idx[pc]!==undefined;
+        var ns=harp.notes.filter(function(n){ return mod(n.midi,12)===pc && (S.showOver || n.kind!=='over'); }).sort(function(a,b){ return a.midi-b.midi || noteRank(a)-noteRank(b); });
+        return el('tr',{class:natural?'in':'out'},[
+          el('td',{class:'mono'},[el('b',{text:g[0]})]),
+          el('td',{},[el('b',{text:NN(names[i])})]),
+          el('td',{},[el('div',{class:'pos-toks'},ns.length?ns.map(function(n){ return el('span',{class:'tk '+(n.dir>0?'b':'d')+' k-'+n.kind,title:describe(n,hctx),text:C.tok(n)}); }):[el('span',{class:'dim small',text:'só com overblow (ligue abaixo)'})])]) ]); })) ]) ]),
+    el('p',{class:'dim small',text:'Linhas claras: notas que a gaita tem sem bend (a escala natural da posição). Linhas apagadas: notas de fora, que saem com bend (\') ou overblow (o). Os graus b3, b5 e b7 são as blue notes.'}),
+    S.harp.type==='diat' ? el('label',{class:'row small'},[el('input',{type:'checkbox',checked:S.showOver,onchange:function(e){ S.showOver=e.target.checked; save(); render(true); }}),'mostrar overblows e overdraws']) : null ]));
+  /* resumo: todas as posições lado a lado */
+  out.push(el('details',{},[el('summary',{text:'Todas as posições — as 12 notas de cada uma'}),
+    el('div',{class:'scroll'},[el('table',{class:'pos-all'},[
+      el('thead',{},[el('tr',{},[el('th',{text:'Posição'})].concat(POS_GRAUS.map(function(g){ return el('th',{class:'mono',text:g[0]}); })))]),
+      el('tbody',{},[1,2,3,4,5,6,7,8,9,10,11,12].map(function(p){ var nm=posNames(k,p), r=C.positionRoot(k,p);
+        return el('tr',{class:p===pos?'me':''},[el('td',{},[el('b',{text:ORD(p)})])].concat(nm.map(function(n,i){ var pc=mod(r+POS_GRAUS[i][1],12); return el('td',{class:hctx.idx[pc]!==undefined?'':'dim',text:NN(n)}); }))); })) ]) ]),
+    el('p',{class:'dim small',text:'Em cinza, as notas que pedem bend ou overblow nesta gaita.'}) ]));
+  return out;
+}
+function noteRank(n){ return n.kind==='nat'?0:n.kind==='bend'?1:2; }
 function viewGaita(){
+  var seg=S.harp.type==='diat' ? el('div',{class:'segm map-seg',role:'group','aria-label':'Mapa'},[['mapa','Mapa de notas'],['pos','Posições e graus']].map(function(o){ return el('button',{type:'button','aria-pressed':(S.mapSeg||'mapa')===o[0]?'true':'false',text:o[1],onclick:function(){ S.mapSeg=o[0]; save(); render(true); }}); })) : null;
+  if(seg && S.mapSeg==='pos'){ return [seg].concat(viewPosicoes()); }
   var harp=harpObj(S.harp), ctx=harpCtx(S.harp), info=el('div',{class:'info dim',text:'Toque numa nota do mapa para ouvir e ver os detalhes.'});
   var hv=harpView(harp,{ctx:ctx,over:S.showOver,onTap:function(n){ info.textContent=describe(n,ctx); info.className='info'; }});
   liveCells(hv);
-  var out=[ el('section',{class:'sec'},[
+  var out=[ seg, el('section',{class:'sec'},[
     el('h2',{text:harpName(S.harp)+' — mapa de notas'}), hv, legend(harp), info,
     el('div',{class:'row'},[ micButton(render),
       S.harp.type==='diat' ? el('label',{class:'row small'},[el('input',{type:'checkbox',id:'chkOver',checked:S.showOver,onchange:function(e){ S.showOver=e.target.checked; save(); render(); }}),'mostrar overblows e overdraws']) : null ]),
@@ -4584,7 +4635,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 37 (16/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 38 (23/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5060,7 +5111,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=37;
+var APP_VER=38;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
