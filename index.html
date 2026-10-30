@@ -2,6 +2,14 @@
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#E5DDCF">
 <style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}.renan .renan-seg{margin:6px 0 10px}
 .renan .hj-blk{margin-top:4px}
+.lib-row.lib-row3{grid-template-columns:minmax(0,1fr) 40px 40px}
+.lib-flag{border:0;background:none;width:36px;height:36px;border-radius:18px;font-size:18px;color:var(--on-sv);opacity:.5;justify-self:center}
+.lib-flag:hover,.lib-flag:focus-visible{opacity:1;background:var(--s3)}
+.lib-flag.on{opacity:1;color:var(--p)}
+.lib-pick{display:flex;flex-direction:column;gap:6px;padding:8px 10px 12px;border-bottom:1px solid var(--olv);background:var(--s2);border-radius:0 0 10px 10px}
+.lib-wrap{display:flex;flex-direction:column}
+.lib-wrap>.lib-row{border-bottom:1px solid var(--olv)}
+.lib-wrap:last-child>.lib-row{border-bottom:0}
 </style>
 </head><body>
 <title>Caderno de Música</title>
@@ -3953,12 +3961,32 @@ function repParse(text){
   return blocks.filter(function(b){ return b.items.length; });
 }
 function repSetIns(text, lineIdx, ins){ var ls=String(text||'').split('\n'), sp=repSplitLine(ls[lineIdx]||''); ls[lineIdx]=sp.base+' '+repTagText(ins, ins==='c'?null:(sp.tag?sp.tag.harp:null)); return ls.join('\n'); }
-function repFindG(t){ var k=repNorm(t), r=null; if(k) S.songs.forEach(function(s){ if(!r && repNorm(s.title)===k) r=s; }); return r; }
-function repFindC(t){ var k=repNorm(t), r=null; if(k) S.cjSongs.forEach(function(s){ if(!r && repNorm(s.t)===k) r=s; }); return r; }
+/* v41: o repertório acha a música mesmo com nome um pouco diferente ("Ato" ~ "Ato — Senhor que sois o caminho"),
+   lembra qual música é de cada item (sid/cid, sobrevive a renomear) e, entre parecidas, prefere a que tem tablatura e progresso.
+   Antes: só nome idêntico → criava uma cópia vazia "a tirar", que aparecia duplicada e "zerava" a situação no repertório. */
+function repKeyMatch(k, title){ var t=repNorm(title); if(!k || !t) return 0; if(t===k) return 3; if(k.length>=3 && (t.indexOf(k+' ')===0 || k.indexOf(t+' ')===0)) return 2; return 0; }
+var REP_STRANK={ 'a tirar':0, 'praticando':1, 'pronta':2 };
+function repFindG(t, it){
+  if(it && it.sid){ var byId=null; S.songs.forEach(function(s){ if(s.id===it.sid) byId=s; }); if(byId) return byId; }
+  var k=repNorm(t), best=null, bs=-1e9, want=it && it.h ? it.h.type : null;
+  S.songs.forEach(function(s){ var m=repKeyMatch(k, s.title); if(!m) return;
+    var sc=m*10 + (String(s.text||'').trim()?5:0) + (REP_STRANK[gSt(s)]||0) + (want ? (s.harp && s.harp.type===want ? 4 : -4) : 0);
+    if(sc>bs){ bs=sc; best=s; } });
+  return best;
+}
+function repFindC(t, it){
+  if(it && it.cid){ var byId=null; S.cjSongs.forEach(function(s){ if(s.id===it.cid) byId=s; }); if(byId) return byId; }
+  var k=repNorm(t), best=null, bs=-1e9;
+  S.cjSongs.forEach(function(s){ var m=repKeyMatch(k, s.t); if(!m) return;
+    var sc=m*10 + (REP_STRANK[s.st]||0)*2 + (String(s.n||'').trim()?1:0) + (s.star?1:0);
+    if(sc>bs){ bs=sc; best=s; } });
+  return best;
+}
+
 function repById(id){ var r=null; (S.reps||[]).forEach(function(x){ if(x.id===id) r=x; }); return r; }
 function repHas(rep, kind){ return rep.items.some(function(it){ return it.ins.indexOf(kind)>=0; }); }
 /* músicas do repertório para um instrumento, na ordem do repertório */
-function repSongs(rep, kind){ var out=[]; rep.items.forEach(function(it){ if(it.ins.indexOf(kind)<0) return; var k=repNorm(it.t), ss=kind==='g'?S.songs.filter(function(x){ return k && repNorm(x.title)===k; }):[repFindC(it.t)]; ss.forEach(function(s){ if(s && out.indexOf(s)<0) out.push(s); }); }); return out; }
+function repSongs(rep, kind){ var out=[]; rep.items.forEach(function(it){ if(it.ins.indexOf(kind)<0) return; var ss=[kind==='g'?repFindG(it.t,it):repFindC(it.t,it)]; ss.forEach(function(s){ if(s && out.indexOf(s)<0) out.push(s); }); }); return out; }
 function repText(rep){ return [rep.name].concat(rep.items.map(function(it){ return it.t+(it.a?' - '+it.a:'')+' '+repTagText(it.ins, it.h||null); })).join('\n'); }
 var REP_KINDS=[['missa','Missa'],['banda','Banda ou canja'],['outro','Outra']];
 var REP_ST=['a tirar','praticando','pronta'], REP_DOW=['dom','seg','ter','qua','qui','sex','sáb'], REP_MON=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -3979,13 +4007,31 @@ function repGuessKind(name){ var n=cjNorm(name); return /\bmissa\b|celebrac|igre
 function repUpcoming(r){ var n=repDays(r); return n==null || n>=0; }
 function repSorted(up){ return (S.reps||[]).filter(function(r){ return repUpcoming(r)===up; }).sort(function(a,b){ var da=repDays(a), db=repDays(b); if(da==null&&db==null) return (b.u||0)-(a.u||0); if(da==null) return 1; if(db==null) return -1; return up?da-db:db-da; }); }
 /* cada música em cada instrumento, com a situação que está na lista do instrumento */
-function repPairs(r){ var out=[]; r.items.forEach(function(it){ ['g','c'].forEach(function(k){ if(it.ins.indexOf(k)<0) return; var s=k==='g'?repFindG(it.t):repFindC(it.t); out.push({ it:it, k:k, song:s, st:s?(k==='g'?gSt(s):(REP_ST.indexOf(s.st)>=0?s.st:'a tirar')):null }); }); }); return out; }
+function repPairs(r){ var out=[]; r.items.forEach(function(it){ ['g','c'].forEach(function(k){ if(it.ins.indexOf(k)<0) return; var s=k==='g'?repFindG(it.t,it):repFindC(it.t,it); out.push({ it:it, k:k, song:s, st:s?(k==='g'?gSt(s):(REP_ST.indexOf(s.st)>=0?s.st:'a tirar')):null }); }); }); return out; }
 function repProgress(r){ var p=repPairs(r); return { n:p.length, ok:p.filter(function(x){ return x.st==='pronta'; }).length }; }
 /* garante que a música existe na lista de cada instrumento marcado */
 function repEnsure(rep, it, res){
   var now=Date.now(), uid=now+'-'+Math.floor(Math.random()*1e5);
-  if(it.ins.indexOf('c')>=0){ if(repFindC(it.t)){ if(res) res.cOld++; } else { S.cjSongs.push({ id:'cj'+uid, u:now, t:it.t, a:it.a||'', g:rep.kind==='missa'?'Missa':(rep.name||'Apresentações'), st:'a tirar', star:false, n:'' }); if(res) res.c++; } }
-  if(it.ins.indexOf('g')>=0){ if(repFindG(it.t)){ if(res) res.gOld++; } else { S.songs.push({ id:'m'+uid, u:now, title:it.t+(it.a?' ('+it.a+')':''), key:null, harp:it.h||S.imp.harp||S.harp, bpm:80, text:'', st:'a tirar' }); if(res) res.g++; } }
+  if(it.ins.indexOf('c')>=0){ var fc=repFindC(it.t,it); if(fc){ it.cid=fc.id; if(res) res.cOld++; } else { it.cid='cj'+uid; S.cjSongs.push({ id:'cj'+uid, u:now, t:it.t, a:it.a||'', g:rep.kind==='missa'?'Missa':(rep.name||'Apresentações'), st:'a tirar', star:false, n:'' }); if(res) res.c++; } }
+  if(it.ins.indexOf('g')>=0){ var fg=repFindG(it.t,it); if(fg){ it.sid=fg.id; if(res) res.gOld++; } else { it.sid='m'+uid; S.songs.push({ id:'m'+uid, u:now, title:it.t+(it.a?' ('+it.a+')':''), key:null, harp:it.h||S.imp.harp||S.harp, bpm:80, text:'', st:'a tirar' }); if(res) res.g++; } }
+}
+/* limpeza (v41): cópias vazias criadas pelo repertório vão para "Músicas apagadas" (dá para recuperar) */
+function repDedup(){
+  var gone=[], keepIds={};
+  S.songs.forEach(function(s){ if(String(s.text||'').trim()) return;
+    var k=repNorm(s.title); if(!k) return;
+    var twin=null; S.songs.forEach(function(o){ if(twin || o===s || !String(o.text||'').trim()) return; if(repNorm(o.title)===k && (!s.harp || !o.harp || s.harp.type===o.harp.type)) twin=o; });
+    if(twin){ if(REP_STRANK[gSt(s)]>REP_STRANK[gSt(twin)]){ twin.st=s.st; twin.u=Date.now(); } gone.push(s); }
+  });
+  var now=Date.now(); gone.forEach(function(s){ S.del[s.id]=now; songTrash(s); }); if(gone.length) S.songs=S.songs.filter(function(s){ return gone.indexOf(s)<0; });
+  var cgone=[];
+  S.cjSongs.forEach(function(c){ if(cgone.indexOf(c)>=0) return; var k=repNorm(c.t); if(!k) return;
+    S.cjSongs.forEach(function(o){ if(o===c || cgone.indexOf(o)>=0 || cgone.indexOf(c)>=0 || repNorm(o.t)!==k) return;
+      var a=c, b=o; if((REP_STRANK[b.st]||0)>(REP_STRANK[a.st]||0) || (String(b.n||'').trim() && !String(a.n||'').trim())){ a=o; b=c; }
+      if(String(b.n||'').trim()) return; if((REP_STRANK[b.st]||0)>(REP_STRANK[a.st]||0)) a.st=b.st; if(b.star) a.star=true; if(!a.bpm && b.bpm) a.bpm=b.bpm; a.u=Date.now(); cgone.push(b); }); });
+  if(cgone.length){ cgone.forEach(function(c){ S.del[c.id]=now; }); S.cjSongs=S.cjSongs.filter(function(c){ return cgone.indexOf(c)<0; }); }
+  (S.reps||[]).forEach(function(r){ r.items.forEach(function(it){ if(it.sid && !S.songs.some(function(s){ return s.id===it.sid; })) delete it.sid; if(it.cid && !S.cjSongs.some(function(s){ return s.id===it.cid; })) delete it.cid; }); });
+  return gone.length+cgone.length;
 }
 function repTouch(r){ r.u=Date.now(); saveData(); }
 function repDoImport(blocks){
@@ -3994,7 +4040,8 @@ function repDoImport(blocks){
     var key=repNorm(b.name), rep=null; S.reps.forEach(function(r){ if(!rep && cjNorm(r.name).trim()===cjNorm(b.name).trim()) rep=r; });
     if(!rep){ rep={ id:'rp'+now+'-'+bi, u:now, name:b.name, date:repGuessDate(b.name), time:'', kind:repGuessKind(b.name), place:'', note:'', items:[] }; S.reps.push(rep); }
     rep.name=b.name; rep.u=now; res.reps++; res.last=rep;
-    rep.items=b.items.map(function(it){ var ins=it.ins||def, o={ t:it.t, a:it.a, ins:ins }; if(it.harp && ins!=='c') o.h=it.harp; return o; });
+    var oldIt={}; (rep.items||[]).forEach(function(x){ oldIt[repNorm(x.t)]=x; });
+    rep.items=b.items.map(function(it){ var ins=it.ins||def, o={ t:it.t, a:it.a, ins:ins }, ox=oldIt[repNorm(it.t)]; if(it.harp && ins!=='c') o.h=it.harp; if(ox){ if(ox.sid) o.sid=ox.sid; if(ox.cid) o.cid=ox.cid; } return o; });
     rep.items.forEach(function(it){ repEnsure(rep,it,res); });
   });
   saveData(); return res;
@@ -4049,11 +4096,11 @@ function repItemRow(rep, it, idx){
   var setIns=function(k){ var has=it.ins.indexOf(k)>=0, nv=has?(it.ins==='gc'?(k==='g'?'c':'g'):it.ins):'gc'; if(nv===it.ins) return; it.ins=nv; if(nv==='c') delete it.h; repEnsure(rep,it); repTouch(rep); render(true); };
   var move=function(d){ var j=idx+d; if(j<0||j>=rep.items.length) return; var x=rep.items[idx]; rep.items[idx]=rep.items[j]; rep.items[j]=x; S.repRow=j; repTouch(rep); render(true); };
   var blocks=pairs.map(function(p){
-    var setSt=function(st){ if(!p.song){ repEnsure(rep,it); p.song=p.k==='g'?repFindG(it.t):repFindC(it.t); } if(!p.song) return; p.song.st=st; p.song.u=Date.now(); saveData(); render(true); };
+    var setSt=function(st){ if(!p.song){ repEnsure(rep,it); p.song=p.k==='g'?repFindG(it.t,it):repFindC(it.t,it); } if(!p.song) return; p.song.st=st; p.song.u=Date.now(); saveData(); render(true); };
     return el('div',{class:'rp-inst'},[
       el('span',{class:'ins-tag '+p.k,text:p.k==='g'?'Gaita':'Cajon'}),
       el('div',{class:'segm three',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':p.st===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ setSt(st); }}); })),
-      el('button',{class:'btn sm ghost',type:'button',text:p.k==='g'?'Abrir na gaita ›':'Abrir no cajon ›',onclick:function(){ if(!p.song){ repEnsure(rep,it); saveData(); } repOpenSong(rep,p.k,p.k==='g'?repFindG(it.t):repFindC(it.t)); }}) ]); });
+      el('button',{class:'btn sm ghost',type:'button',text:p.k==='g'?'Abrir na gaita ›':'Abrir no cajon ›',onclick:function(){ if(!p.song){ repEnsure(rep,it); saveData(); } repOpenSong(rep,p.k,p.k==='g'?repFindG(it.t,it):repFindC(it.t,it)); }}) ]); });
   var del=el('button',{class:'btn sm danger',type:'button',text:'Tirar da apresentação',onclick:function(){ rep.items.splice(idx,1); S.repRow=null; repTouch(rep); render(true); }});
   return el('div',{class:'cj-card rp-item'},[
     el('div',{class:'cj-card-h rp-item-h'},[el('span',{class:'imp-n',text:String(idx+1)}), el('div',{class:'imp-t'},[el('h3',{text:it.t}), it.a?el('small',{text:it.a}):null]), el('button',{class:'btn sm ghost',type:'button',text:'Fechar',onclick:function(){ S.repRow=null; save(); render(true); }})]),
@@ -4129,8 +4176,8 @@ function viewImportar(){
         el('div',{class:'cj-gh'},[el('b',{text:b.name}), el('span',{class:'dim small',text:[b.items.length+(b.items.length===1?' música':' músicas'), dt?'data '+repDm(dt)+'/'+dt.getFullYear():'sem data', old?'atualiza a que já existe':''].filter(Boolean).join(' · ')})]),
         el('div',{class:'imp-list'},b.items.map(function(it,ii){
           var ins=it.ins||dflt, st=[];
-          if(ins.indexOf('g')>=0) st.push(repFindG(it.t)?'já está na gaita':'nova na gaita'+(it.harp?' ('+(it.harp.type==='crom'?'cromática':'gaita '+NN(HARP_KEYS[it.harp.key]))+')':''));
-          if(ins.indexOf('c')>=0) st.push(repFindC(it.t)?'já está no cajon':'nova no cajon');
+          if(ins.indexOf('g')>=0) st.push(repFindG(it.t,it)?'já está na gaita':'nova na gaita'+(it.harp?' ('+(it.harp.type==='crom'?'cromática':'gaita '+NN(HARP_KEYS[it.harp.key]))+')':''));
+          if(ins.indexOf('c')>=0) st.push(repFindC(it.t,it)?'já está no cajon':'nova no cajon');
           var tog=function(k){ var has=ins.indexOf(k)>=0, nv=has ? (ins==='gc'?(k==='g'?'c':'g'):ins) : 'gc'; if(nv===ins && it.ins) return; setText(repSetIns(ta.value,it.line,nv)); };
           return el('div',{class:'imp-row'},[
             el('span',{class:'imp-n',text:String(ii+1)}),
@@ -4309,7 +4356,7 @@ function viewPalco(){
   var sub=[bpm?bpm+' bpm':'', fcBeatsLabel(f.beats||4), fcKeyLabel(f)?'tom '+fcKeyLabel(f):''].filter(Boolean).join(' · ');
   var parts=fcForm(f.form), fc=fcFormChips(parts, f.beats||4, bpm);
   var cnt=fcCountBox(f, function(k){ var cs=fc.row.querySelectorAll('.fc-part'); for(var j=0;j<cs.length;j++) cs[j].classList.toggle('on', j===k); });
-  var g=it.ins.indexOf('g')>=0?repFindG(it.t):null, c=it.ins.indexOf('c')>=0?repFindC(it.t):null;
+  var g=it.ins.indexOf('g')>=0?repFindG(it.t,it):null, c=it.ins.indexOf('c')>=0?repFindC(it.t,it):null;
   var body=[], entry=fcEntryText(f);
   if(S.plEdit) body.push(fcPanel(it.t,'pl',{open:true,flat:true}));
   body.push(el('div',{class:'pl-list'},rep.items.map(function(x,j){ return el('button',{type:'button',class:'pl-chip','aria-current':j===i?'true':'false',onclick:function(){ go(j); }},[el('span',{text:String(j+1)}), x.t]); })));
@@ -4685,7 +4732,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 40 (30/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 42 (30/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4773,6 +4820,23 @@ function musHead(){ var fileIn=fileImportInput('songFile','songMsg');
       el('div',{class:'row'},[el('button',{class:'btn tonal',type:'button',text:'+ Nova música',onclick:addSong})])]),
     el('div',{class:'mtxt dim',id:'songMsg'})]));
   return out[0]; }
+/* v42: bandeirinha na lista de músicas — põe ou tira a música de um repertório sem sair da lista */
+function repItemIsSong(it, s){ if(it.ins.indexOf('g')<0) return false; if(it.sid) return it.sid===s.id; return repFindG(it.t,it)===s; }
+function repsWithSong(s){ return repSorted(true).filter(function(r){ return r.items.some(function(it){ return repItemIsSong(it,s); }); }); }
+function repFlagPicker(s, done){
+  var reps=repSorted(true), base=String(s.title||'').split(/\s+[—–-]\s+/)[0].replace(/\s*\([^)]*\)\s*$/,'').trim()||s.title||'Sem título';
+  var toggle=function(r){
+    var has=r.items.filter(function(it){ return repItemIsSong(it,s); });
+    if(has.length){ r.items=r.items.filter(function(it){ return has.indexOf(it)<0; }); toast('“'+base+'” saiu de '+(r.name||'apresentação')+'.'); }
+    else { var it={ t:base, a:'', ins:'g', sid:s.id }; if(s.harp) it.h={ type:s.harp.type, key:s.harp.key }; r.items.push(it); toast('“'+base+'” entrou em '+(r.name||'apresentação')+' (música '+r.items.length+').'); }
+    repTouch(r); done();
+  };
+  return el('div',{class:'lib-pick'},[
+    reps.length ? el('span',{class:'dim small',text:'Repertório:'}) : el('span',{class:'dim small',text:'Nenhuma apresentação marcada.'}),
+    el('div',{class:'row'},reps.slice(0,6).map(function(r){ var n=repDays(r), on=r.items.some(function(it){ return repItemIsSong(it,s); });
+      return chip((on?'✓ ':'+ ')+(r.name||'Apresentação')+(n!=null?' · '+repWhen(n):''), on, function(){ toggle(r); }, 'sm'); }).concat([
+      el('button',{class:'btn sm ghost',type:'button',text:'Nova apresentação',onclick:function(){ var r={ id:'rp'+Date.now(), u:Date.now(), name:'', date:'', time:'', kind:'', place:'', note:'', items:[{ t:base, a:'', ins:'g', sid:s.id, h:s.harp?{type:s.harp.type,key:s.harp.key}:undefined }] }; S.reps.push(r); S.repSel=r.id; S.repRow=null; S.repNewId=r.id; S.libFlag=null; saveData(); S.tab='rep'; S.back='rep'; render(); window.scrollTo(0,0); var f=document.getElementById('rpName'); if(f) f.focus(); }}) ])) ]);
+}
 function libPanel(song, pick){
   var dups=songDupGroups(), dupIds={}; dups.forEach(function(g){ g.forEach(function(s){ dupIds[s.id]=g; }); });
   var rep=S.gRep?repById(S.gRep):null; if(rep && !repHas(rep,'g')) rep=null;
@@ -4784,10 +4848,12 @@ function libPanel(song, pick){
     var meta=[s.harp&&s.harp.type==='crom'?'Cromática':'Diatônica '+NN(HARP_KEYS[(s.harp||{}).key||0]), CJ_ST_LABEL[gSt(s)], hasT?'':'sem tablatura', songDate(s.u)?'editada '+songDate(s.u):''].filter(Boolean).join(' · ');
     var tags=(extra||[]).slice(); if(g && !extra) tags.push(['repetida','warn']);
     var del=el('button',{class:'lib-del',type:'button',title:'Excluir',  'aria-label':'Excluir '+(s.title||'música sem título'),text:'🗑',onclick:function(){ songRemove([s],'“'+(s.title||'Sem título')+'” foi excluída.'); }});
-    return el('div',{class:'lib-row'+(cur?' on':''),role:'listitem'},[
+    var inReps=repsWithSong(s), fl=el('button',{class:'lib-flag'+(inReps.length?' on':''),type:'button',title:inReps.length?'No repertório: '+inReps.map(function(r){ return r.name||'Apresentação'; }).join(', '):'Colocar num repertório','aria-label':'Repertório de '+(s.title||'música sem título'),'aria-expanded':S.libFlag===s.id?'true':'false',text:inReps.length?'⚑':'⚐',onclick:function(){ S.libFlag=S.libFlag===s.id?null:s.id; save(); paint(); }});
+    var pickRow=S.libFlag===s.id ? repFlagPicker(s, function(){ paint(); }) : null;
+    return el('div',{class:'lib-wrap'},[el('div',{class:'lib-row lib-row3'+(cur?' on':''),role:'listitem'},[
       el('button',{class:'lib-main',type:'button','aria-current':cur?'true':'false',onclick:function(){ S.libOpen=false; pick(s.id); }},[
         el('b',{},[(num?num+'. ':'')+(s.title||'Sem título')].concat(tags.map(function(t){ return el('span',{class:'lib-tag '+t[1],text:t[0]}); }))),
-        el('small',{text:meta}) ]), del ]);
+        el('small',{text:meta}) ]), fl, del ]), pickRow]);
   };
   var paint=function(){
     listHost.textContent=''; var q=cjNorm(S.libQ||'').trim(), kids=[];
@@ -5167,7 +5233,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=40;
+var APP_VER=42;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
@@ -5188,6 +5254,7 @@ function init(){
   mm.querySelector('button').addEventListener('click',function(){ Metro.toggle(); if(S.tab==='metronomo') render(); });
   mm.querySelector('.mm-open').addEventListener('click',function(){ openAux('metronomo'); });
   if(!S.cjSongs) S.cjSongs=cjSeedSongs(); if(!S.cjEx) S.cjEx=cjSeedEx();
+  if(!S.repDedup1){ var nd=repDedup(); S.repDedup1=Date.now(); saveData(); if(nd) setTimeout(function(){ toast(nd+(nd===1?' cópia vazia criada pelo repertório foi apagada':' cópias vazias criadas pelo repertório foram apagadas')+' (estão em Músicas apagadas).'); },800); }
   var cfg=document.getElementById('cfgBtn'); cfg.appendChild(icon('ajustes')); cfg.addEventListener('click',function(){ openAux('ajustes'); });
   var sb=document.getElementById('syncBtn'); sb.appendChild(icon('nuvem')); sb.addEventListener('click',function(){ if(Sync.on()) Sync.run(true); else openAux('ajustes'); });
   S.songEdit=null; S.metro.ladder=false; if(S.metro.mode==='1') S.metro.mode='all'; if(!Array.isArray(S.reps)) S.reps=[]; if(!Array.isArray(S.fichas)) S.fichas=[]; if(S.tab==='palco' && !(S.palco && repById(S.palco.rep))) S.tab='rep'; if(S.tab==='ficha' && !S.fcT) S.tab='rep'; S.repRow=null; S.repNewId=null; if(!Array.isArray(S.gEx)) S.gEx=[]; S.gExOpen=null; S.gExEdit=null; S.cjRhEdit=null; S.gExImp=false; S.gExLog=[]; S.cjAdd=false; S.cjQ=''; if(!CJ_TABS.some(function(t){ return t[0]===S.cjTab; })) S.cjTab='musicas';
@@ -5198,7 +5265,7 @@ function init(){
   setTimeout(checkUpdate,1500); document.addEventListener('visibilitychange',function(){ if(!document.hidden) checkUpdate(); });
   document.addEventListener('visibilitychange',function(){ if(!document.hidden && Sync.on() && Date.now()-(S.sync.last||0)>30000) Sync.run(); });
 }
-window.__gaita={ cromRotation:cromRotation, S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno, repParse:repParse, repTag:repTag, repSetIns:repSetIns, importCurso:importCurso, gParseSheet:gParseSheet, pdfLines:pdfLines };
+window.__gaita={ repEnsure:repEnsure, repDoImport:repDoImport, repPairs:repPairs, cromRotation:cromRotation, S:S, Mic:Mic, Metro:Metro, Sync:Sync, render:render, mergeDoc:mergeDoc, syncDoc:syncDoc, importCaderno:importCaderno, repParse:repParse, repTag:repTag, repSetIns:repSetIns, importCurso:importCurso, gParseSheet:gParseSheet, pdfLines:pdfLines };
 init();
 })();
 </script>
