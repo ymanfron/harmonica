@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#E5DDCF">
-<style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}.renan .renan-seg{margin:6px 0 10px}
+.renan .hj-blk{margin-top:4px}
+</style>
 </head><body>
 <title>Caderno de Música</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
@@ -2731,6 +2733,50 @@ function exCard(e){
     el('span',{class:'ext'},[el('b',{text:e.t}),el('small',{text:e.obj})]),
     el('span',{class:'exm'},[el('span',{class:'dim small',text:e.min+' min'})]) ]);
 }
+var RENAN_TXT = {
+    1: 'BLOCO 1 — BENDS + JUKE (aula do Renan, 30/10)\n'+
+       "5min EX. 1 · SCOOPS (country bends)\nFuro 2: (-2 -2'') (-2'' -2)\nFuro 1: (-1 -1') (-1' -1)\nFuro 3: (-3 -3') (-3' -3)\nFuro 4: (-4 -4') (-4' -4)\nFuro 6: (-6 -6') (-6' -6)\n"+
+       "5min EX. 2 · DESCER DE MEIO EM MEIO TOM\nFuro 2: -2 -2' -2'' | -2'' -2' -2\nFuro 1: -1 -1' +1 | +1 -1' -1\nFuro 4: -4 -4' +4 | +4 -4' -4\nFuro 6: -6 -6' +6 | +6 -6' -6\n"+
+       "5min EX. 3 · ARTICULAÇÃO COM NOTAS VIZINHAS\nFuros 1 e 2: -1 -2'' -1 -2' -1 -2 | -1 -2 -1 -2' -1 -2''\nFuros 3 e 4: -3 -4 -3 -4' -3 +4 | -3 +4 -3 -4' -3 -4\nSaindo do -3': -3' -4 -3' -4' -3' +4 | -3' +4 -3' -4' -3' -4\n"+
+       '15min MÚSICA · JUKE — tab do Renan no app (Músicas › Juke)\n'+
+       'Bends devagar, conferindo a altura no afinador do Mapa da gaita. Na Juke, metrônomo lento; só sobe quando a parte sair limpa 3 vezes seguidas.',
+    2: 'BLOCO 2 — ESCALAS + ROADHOUSE BLUES (aula do Renan, 30/10)\n'+
+       '15min EX. ESCALAS — subindo e descendo, depois a versão com saltos\n'+
+       'Maior: +4 -4 +5 -5 +6 -6 -7 +7 | +7 -7 -6 +6 -5 +5 -4 +4\n'+
+       'Maior com saltos: +4 -4 +4 +5 +4 -5 +4 +6 +4 -6 +4 -7 +4 +7 | +7 -7 +7 -6 +7 +6 +7 -5 +7 +5 +7 -4 +7 +4\n'+
+       "Blues, 2ª posição: -2 -3' +4 -4' -4 -5 +6 | +6 -5 -4 -4' +4 -3' -2\n"+
+       "Blues 2ª com saltos: -2 -3' -2 +4 -2 -4' -2 -4 -2 -5 -2 +6 | +6 -5 +6 -4 +6 -4' +6 +4 +6 -3' +6 -2\n"+
+       "Penta maior, 2ª posição: -2 -3'' -3 -4 +5 +6 | +6 +5 -4 -3 -3'' -2\n"+
+       "Penta maior 2ª com saltos: -2 -3'' -2 -3 -2 -4 -2 +5 -2 +6 | +6 +5 +6 -4 +6 -3'' +6 -3 +6 -2\n"+
+       "Blues, 3ª posição: -4 -5 +6 -6' -6 +7 -8 | -8 +7 -6 -6' +6 -5 -4\n"+
+       "Blues 3ª com saltos: -4 -5 -4 +6 -4 -6' -4 -6 -4 +7 -4 -8 | -8 +7 -8 -6 -8 -6' -8 +6 -8 -5 -8 -4\n"+
+       "Menor natural, 4ª posição: -3'' -3 +4 -4 +5 -5 +6 -6 | -6 +6 -5 +5 -4 +4 -3 -3''\n"+
+       "Menor natural 4ª com saltos: -3'' -3 -3'' +4 -3'' -4 -3'' +5 -3'' -5 -3'' +6 -3'' -6 | -6 +6 -6 -5 -6 +5 -6 -4 -6 +4 -6 -3 -6 -3''\n"+
+       '15min MÚSICA · ROADHOUSE BLUES — tab no app (Músicas › Roadhouse Blues)\n'+
+       'Escalas com metrônomo, nota por tempo; cada escala 2 vezes antes de passar para a próxima.'
+  };
+/* aula do Renan (30/10): um bloco por dia, alternando. O gestor de tempo diz qual é o de hoje; sem ele, alterna dia útil a dia útil */
+function renanDoGestor(){ var f=typeof focoGestorHoje==='function'?focoGestorHoje():null; var m=f&&/BLOCO ([12]) — /.exec(f.text); return m?+m[1]:null; }
+function renanHoje(){ var g=renanDoGestor(); if(g) return { n:g, src:'gestor' };
+  var c=new Date(2026,10,2), t=new Date(), k=0; t.setHours(0,0,0,0); while(c<t){ c.setDate(c.getDate()+1); var dd=c.getDay(); if(dd>=1&&dd<=5) k++; }
+  return { n:k%2?2:1, src:'alterna' }; }
+function renanSong(n){ var re=n===1?/juke/:/roadhouse/; var hit=null; S.songs.forEach(function(s){ if(!hit && s.harp && s.harp.type!=='crom' && re.test(rotKey(s.title))) hit=s; }); return hit; }
+function renanCard(cls){
+  if(S.harp.type!=='diat') return null;
+  var h=renanHoje(), ver=S.renanVer && S.renanVer.d===rotDayIndex() ? S.renanVer.n : h.n, song=renanSong(ver);
+  var pick=function(n){ S.renanVer={ d:rotDayIndex(), n:n }; save(); render(true); };
+  return el('section',{class:(cls||'sec')+' renan'},[
+    el('div',{class:'hj-h'},[el('h3',{text:'Aula do Renan'}), el('span',{class:'dim small',text:'hoje: Bloco '+h.n+(h.src==='gestor'?' (pelo gestor)':'')})]),
+    el('div',{class:'segm renan-seg',role:'group','aria-label':'Bloco'},[[1,'Bloco 1 · Bends + Juke'],[2,'Bloco 2 · Escalas + Roadhouse']].map(function(o){ return el('button',{type:'button','aria-pressed':ver===o[0]?'true':'false',text:o[1]+(h.n===o[0]?' · hoje':''),onclick:function(){ pick(o[0]); }}); })),
+    hjBlock('Gaita — '+RENAN_TXT[ver].split('\n')[0]+' (30min)\n'+RENAN_TXT[ver].split('\n').slice(1).join('\n'), []),
+    el('div',{class:'row'},[ song ? el('button',{class:'btn tonal',type:'button',text:'Abrir '+(song.title||''),onclick:function(){ openSongFrom('g',song); }}) : el('span',{class:'dim small',text:'Cole a tab da '+(ver===1?'Juke':'Roadhouse Blues')+' em Músicas para abrir daqui.'}) ]),
+    el('p',{class:'dim small',text:'Um bloco por dia, alternando. No gestor, ao marcar o bloco 1 da gaita como feito, o dia seguinte já vem com o outro bloco.'}) ]);
+}
+function renanMini(){
+  if(S.harp.type!=='diat') return null; var h=renanHoje();
+  return el('button',{class:'hj-song two',type:'button',onclick:function(){ S.tab='exercicios'; S.exSeg='dia'; S.back='exercicios'; S.ex=null; S.renanVer=null; save(); render(); window.scrollTo(0,0); }},[
+    el('span',{class:'ins-tag g',text:'Renan'}), el('span',{class:'two-t'},[el('b',{text:'Aula do Renan: Bloco '+h.n}), el('small',{text:h.n===1?'bends + Juke':'escalas + Roadhouse Blues'})]), el('i',{text:'›'})]);
+}
 function viewExercicios(){
   var gx=S.gExSel?gExById(S.gExSel):null; if(gx) return gExDetail(gx);
   var harp=harpObj(S.harp), out=[], cur=null; EXS.forEach(function(e){ if(e.id===S.ex && e.h===S.harp.type) cur=e; });
@@ -2758,7 +2804,9 @@ function viewExercicios(){
     el('h2',{text:'Exercícios · '+harpLc(S.harp)}),
     el('div',{class:'segm four ex-seg',role:'tablist'},[['dia','Do dia'],['escalas','Escalas'],['aulas','Aulas'],['todos','Todos']].map(function(o){ return el('button',{type:'button',role:'tab','aria-pressed':seg===o[0]?'true':'false',text:o[1],onclick:function(){ S.exSeg=o[0]; save(); render(); window.scrollTo(0,0); }}); })) ]));
   if(seg==='dia'){
+    var rc=renanCard(); if(rc) out.push(rc);
     out.push(el('section',{class:'sec routine'},[
+      rc?el('h3',{text:'Extras (opcional)'}):null,
       el('div',{class:'row between'},[el('span',{class:'dim small',text:'cerca de '+mins+' min'}),
         el('div',{class:'row'},[[1,'Iniciante'],[2,'Intermediário'],[3,'Avançado']].map(function(l){ return chip(l[1],S.exLevel===l[0],function(){ S.exLevel=l[0]; save(); render(true); },'sm'); }))]),
       el('div',{class:'exgrid'},rot.map(exCard)),
@@ -4442,6 +4490,7 @@ function hojeEx(){
   var cur=null; gExSorted().forEach(function(x){ if(!cur && x.st==='praticando') cur=x; });
   return el('section',{class:'hj-card'},[
     el('div',{class:'hj-h'},[el('h3',{text:'Sugestões do dia'}), el('span',{class:'dim small',text:harpLc(S.harp)})]),
+    renanMini(),
     el('div',{class:'exgrid'},rot.map(exCard)),
     el('div',{class:'row'},[
       el('button',{class:'btn sm',type:'button',text:'Escalas',onclick:function(){ S.tab='exercicios'; S.exSeg='escalas'; S.back='exercicios'; S.ex=null; save(); render(); window.scrollTo(0,0); }}),
@@ -4636,7 +4685,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 39 (23/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 40 (30/10/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5118,7 +5167,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=39;
+var APP_VER=40;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
