@@ -14,6 +14,10 @@
 .song-img{margin:0;background:#fff;border-radius:12px;padding:6px;box-shadow:var(--e1)}
 .song-img img{display:block;width:100%;height:auto;border-radius:8px;cursor:zoom-in}
 .song-img-ctl{gap:10px}
+.song-img-box{display:flex;flex-direction:column;gap:6px}
+.paste-zone{border:1.5px dashed var(--ol);border-radius:10px;min-height:44px;padding:10px 12px;color:transparent;caret-color:transparent;cursor:text;position:relative;outline:0;overflow:hidden;max-height:60px}
+.paste-zone:empty::before{content:attr(data-ph);color:var(--on-sv);font-size:13px}
+.paste-zone:focus{border-color:var(--p);background:var(--s2)}
 .img-ov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.86);display:flex;flex-direction:column;align-items:flex-end;padding:10px}
 .img-ov-in{flex:1;width:100%;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pinch-zoom pan-x pan-y}
 .img-ov-in img{display:block;width:100%;height:auto;background:#fff}
@@ -4752,7 +4756,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 47 (04/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 49 (04/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4969,7 +4973,19 @@ function songImgControls(song){
   var add=function(files){ msg.textContent='Guardando…'; imgAdd(song.id, files).then(function(n){ msg.textContent=n?(n===1?'Imagem adicionada.':n+' imagens adicionadas.')+(Sync.on()?' Enviando para a sincronização…':''):'Nenhuma imagem nesse arquivo.'; var h=document.getElementById('songImgs'); if(h) fillSongImgs(song.id,h); if(n) ImgSync.run().then(function(){ var m=document.getElementById('imgMsg'); if(m && Sync.on()) m.textContent=ImgSync.msg; }); }).catch(function(){ msg.textContent='Não deu para guardar a imagem neste navegador.'; }); };
   SONG_PASTE=function(files){ add(files); };
   var inp=el('input',{type:'file',accept:'image/*',multiple:true,hidden:true,onchange:function(){ add(inp.files); inp.value=''; }});
-  return el('div',{class:'row song-img-ctl'},[el('label',{class:'btn sm filebtn'},['Adicionar imagem', inp]), el('span',{class:'dim small',text:Sync.on()?'ou cole um print (Ctrl+V). Sincroniza pelo GitHub.':'ou cole um print (Ctrl+V). Fica neste aparelho (ligue a sincronização em Ajustes para levar aos outros).'}), msg]);
+  /* botão "Colar print": lê a área de transferência (Chrome, Edge, Safari, Android); se o navegador não deixar, a caixa abaixo aceita colar com o toque longo */
+  var pasteBtn=el('button',{class:'btn sm',type:'button',text:'Colar print',onclick:function(){
+    if(!navigator.clipboard || !navigator.clipboard.read){ msg.textContent='Este navegador não deixa ler a área de transferência por botão: toque e segure na caixa abaixo e escolha Colar, ou use Ctrl+V.'; zone.focus(); return; }
+    navigator.clipboard.read().then(function(items){ var ps=[];
+      items.forEach(function(it){ var t=(it.types||[]).filter(function(x){ return /^image\//.test(x); })[0]; if(t) ps.push(it.getType(t).then(function(b){ return new File([b],'print.png',{type:b.type||t}); })); });
+      if(!ps.length){ msg.textContent='Não há imagem copiada agora. Tire o print (ou copie a imagem) e toque de novo.'; return; }
+      return Promise.all(ps).then(add); }).catch(function(){ msg.textContent='O navegador não liberou a área de transferência. Toque e segure na caixa abaixo e escolha Colar, ou use Ctrl+V.'; zone.focus(); });
+  }});
+  var zone=el('div',{class:'paste-zone',contenteditable:'true',role:'textbox','aria-label':'Cole o print aqui',inputmode:'none','data-ph':'Toque e segure aqui e escolha Colar (ou Ctrl+V)',
+    onpaste:function(e){ var fs=[]; Array.prototype.forEach.call((e.clipboardData&&e.clipboardData.items)||[],function(it){ if(it.kind==='file' && /^image\//.test(it.type)){ var f=it.getAsFile(); if(f) fs.push(f); } }); e.preventDefault(); e.stopPropagation(); if(fs.length) add(fs); else msg.textContent='O que foi colado não é uma imagem. Copie o print e cole de novo.'; zone.textContent=''; },
+    oninput:function(){ zone.textContent=''; }, ondrop:function(e){ e.preventDefault(); var fs=Array.prototype.slice.call((e.dataTransfer&&e.dataTransfer.files)||[]); if(fs.length) add(fs); }, ondragover:function(e){ e.preventDefault(); }});
+  return el('div',{class:'song-img-box'},[ el('div',{class:'row song-img-ctl'},[el('label',{class:'btn sm filebtn'},['Adicionar imagem', inp]), pasteBtn, msg]), zone,
+    el('p',{class:'dim small',text:Sync.on()?'As imagens sincronizam pelo GitHub.':'As imagens ficam neste aparelho (ligue a sincronização em Ajustes para levar aos outros).'}) ]);
 }
 var SONG_PASTE=null;
 document.addEventListener('paste',function(e){ if(S.tab!=='musicas' || !SONG_PASTE || S.songEdit) return; var t=e.target; if(t && (t.tagName==='TEXTAREA' || t.tagName==='INPUT')) return;
@@ -5097,11 +5113,11 @@ function viewMusicasMain(song){
       el('div',{class:'row'},[ (hasText||IMG_COUNT[song.id])?el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}):null,
         el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}), songPdfInput(song,'pdfMsg') ])]),
     el('div',{class:'mtxt dim',id:'pdfMsg'}),
+    songImgControls(song),
     el('div',{class:'segm three song-st',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':gSt(song)===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ song.st=st; song.u=Date.now(); saveData(); render(true); }}); })),
     I.bad?el('div',{class:'note bad',text:I.bad+' marcação(ões) não existem na '+harpLc(song.harp)+' (sublinhadas). Toque em Editar e confira a gaita escolhida.'}):null,
     hasText ? el('div',{class:'sheet'},[te]) : (IMG_COUNT[song.id] ? null : el('div',{class:'note',text:'Esta música ainda não tem tablatura. Toque em Editar e cole a notação, ou adicione um print da folha abaixo.'})),
     (function(){ var h=el('div',{class:'song-imgs',id:'songImgs',hidden:true}); setTimeout(function(){ if(h.isConnected) fillSongImgs(song.id,h); },0); return h; })(),
-    songImgControls(song),
     I.seq.length ? el('div',{class:'row'},[bPlay,
       el('button',{class:'btn',type:'button',text:'Transpor',onclick:function(){ S.tr.text=song.text; S.tr.from=song.harp; if(I.k){ S.tr.songKey=I.k.pc; S.tr.songMode=I.k.mode; } S.tab='transpor'; S.back='transpor'; save(); render(); window.scrollTo(0,0); }}),
       el('button',{class:'btn',type:'button',text:'Metrônomo a '+(song.bpm||80)+' bpm',onclick:function(){ S.metro.bpm=song.bpm||80; save(); if(!Metro.on) Metro.start(); paintMini(); }}) ]) : null,
@@ -5401,7 +5417,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=47;
+var APP_VER=49;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
