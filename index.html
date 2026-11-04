@@ -2844,7 +2844,7 @@ function gExRow(it){
     el('button',{class:'cj-main',type:'button',title:'Abrir a aula',onclick:function(){ S.gExSel=it.id; S.gExOpen=null; S.gExEdit=null; save(); stopPlay(); render(); window.scrollTo(0,0); }},[el('b',{text:it.t||'Sem nome'}), el('small',{text:[n+(n===1?' exercício':' exercícios'), tema].filter(Boolean).join(' · ')})]),
     el('span',{class:'tag st'+si,text:CJ_ST_LABEL[CJ_ST_EX[si]]}) ]);
 }
-function gExOrd(x){ var rom={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8}, m=/m[óo]dulo\s+([ivx]+|\d+)/i.exec(x.m||''), n=/(\d+)/.exec(x.t||''), mi=m?(rom[m[1].toUpperCase()]||parseInt(m[1],10)||50):90; return mi*1000+(n?parseInt(n[1],10):999); }
+function gExOrd(x){ if(x.src) return 100000+(x.o||0); var rom={I:1,II:2,III:3,IV:4,V:5,VI:6,VII:7,VIII:8}, m=/m[óo]dulo\s+([ivx]+|\d+)/i.exec(x.m||''), n=/(\d+)/.exec(x.t||''), mi=m?(rom[m[1].toUpperCase()]||parseInt(m[1],10)||50):90; return mi*1000+(n?parseInt(n[1],10):999); }
 function gExSorted(){ return (S.gEx||[]).slice().sort(function(a,b){ return gExOrd(a)-gExOrd(b) || String(a.t).localeCompare(String(b.t),'pt',{numeric:true}); }); }
 /* ----- leitura das folhas do curso no próprio aparelho (PDF com texto ou texto colado) ----- */
 var PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', PDFJS_WORKER='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js', pdfjsP=null;
@@ -2960,6 +2960,7 @@ function gExDetail(it){
       var ta=el('textarea',{id:'gxText',rows:'5',spellcheck:'false',autocapitalize:'off',oninput:function(){ ex.text=ta.value; gExTouch(it); }}); ta.value=ex.text||''; growArea(ta);
       return el('div',{class:'gx'},[head, field('Tablatura', ta), el('div',{class:'row'},[el('button',{class:'btn pri sm',type:'button',text:'Concluir',onclick:function(){ S.gExEdit=null; save(); render(true); }})])]);
     }
+    if(!String(ex.text||'').trim()) return el('div',{class:'gx'},[head, ex.d?el('p',{class:'dim small',text:ex.d}):null]);
     var parsed=C.parseTab(ex.text||'',harp), seq=C.tabSequence(parsed), te=tabElement(parsed,ctx), playing=false, bad=0;
     parsed.forEach(function(l){ l.items.forEach(function(x){ if(x.type==='note' && !x.valid) bad++; }); });
     var hl=function(i){ Object.keys(te.els).forEach(function(k){ te.els[k].classList.remove('cur'); }); if(i>=0 && seq[i]){ var b=te.els[seq[i].line+':'+seq[i].item]; if(b) b.classList.add('cur'); } };
@@ -2979,6 +2980,8 @@ function gExDetail(it){
     el('div',{class:'row'},[el('button',{class:'btn ghost',type:'button',text:'‹ Todos os exercícios',onclick:function(){ S.gExSel=null; S.gExOpen=null; S.gExEdit=null; save(); stopPlay(); render(); }})]),
     el('p',{class:'dim small',text:'Aulas do curso · '+(it.m||'Curso')+' · '+harpName(gh)+(S.harp.type==='diat'?'':' (as aulas são para diatônica; escolha outra no topo se quiser)')}),
     el('div',{class:'row'},[el('button',{class:'cj-star',type:'button','aria-pressed':it.star?'true':'false','aria-label':it.star?'Tirar das prioridades':'Marcar como prioridade',text:it.star?'★':'☆',onclick:function(){ it.star=!it.star; gExTouch(it); render(true); }}), el('h2',{text:it.t||'Sem nome'})]),
+    it.desc?el('p',{class:'lead',text:it.desc}):null,
+    it.harp?el('p',{class:'dim small',text:'Folha escrita para gaita em '+NN(it.harp)+(it.pos?' · '+it.pos+' posição':'')+(HARP_KEYS[S.harp.key]!==it.harp || S.harp.type!=='diat' ? '. Os furos valem para qualquer gaita; os nomes das notas abaixo seguem a gaita escolhida no topo.' : '.')}):null,
     el('div',{class:'segm three',role:'group','aria-label':'Situação'},CJ_ST_EX.map(function(st){ return el('button',{type:'button','aria-pressed':it.st===st?'true':'false',text:st==='dominado'?'Concluída':CJ_ST_LABEL[st],onclick:function(){ it.st=st; gExTouch(it); render(true); }}); })),
     el('div',{class:'row'},[el('button',{class:'btn',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}), el('button',{class:'btn',type:'button',text:'Metrônomo a '+(it.bpm||80)+' bpm',onclick:function(){ S.metro.bpm=it.bpm||80; save(); if(!Metro.on) Metro.start(); paintMini(); }})]) ]
     .concat(blocks).concat([
@@ -4704,7 +4707,7 @@ function viewAjustes(){
     el('div',{class:'imp-hub'},[
       el('div',{class:'imp-hub-i'},[el('b',{text:'Aulas do curso de gaita'}), el('small',{text:'Os PDFs das folhas de exercícios. A leitura é feita neste aparelho.'}),
         el('button',{class:'btn sm',type:'button',id:'hubGaita',text:'Escolher PDFs',onclick:function(){ S.tab='exercicios'; S.back='exercicios'; S.gback='exercicios'; S.gExSel=null; S.ex=null; S.gExImp=true; save(); stopPlay(); render(); window.scrollTo(0,0); }})]),
-      el('div',{class:'imp-hub-i'},[el('b',{text:'Curso de cajon'}), el('small',{text:'O arquivo caderno-de-musica-cajon-curso.json, com as levadas e os exercícios.'}),
+      el('div',{class:'imp-hub-i'},[el('b',{text:'Arquivo de curso'}), el('small',{text:'O .json de um curso: as levadas do cajon ou as aulas de gaita (por exemplo, o curso-tomlin.json).'}),
         el('label',{class:'btn sm filebtn'},['Escolher arquivo',fileImportInput('hubFile','hubMsg')])]),
       el('div',{class:'imp-hub-i'},[el('b',{text:'Repertório em texto'}), el('small',{text:'Lista de músicas de uma apresentação, com o instrumento de cada uma.'}),
         el('button',{class:'btn sm',type:'button',id:'hubRep',text:'Abrir',onclick:function(){ openImport(); }})]),
@@ -4732,7 +4735,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 42 (30/10/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 43 (04/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5233,7 +5236,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=42;
+var APP_VER=43;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
