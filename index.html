@@ -10,6 +10,14 @@
 .lib-wrap{display:flex;flex-direction:column}
 .lib-wrap>.lib-row{border-bottom:1px solid var(--olv)}
 .lib-wrap:last-child>.lib-row{border-bottom:0}
+.song-imgs{display:flex;flex-direction:column;gap:12px}
+.song-img{margin:0;background:#fff;border-radius:12px;padding:6px;box-shadow:var(--e1)}
+.song-img img{display:block;width:100%;height:auto;border-radius:8px;cursor:zoom-in}
+.song-img-ctl{gap:10px}
+.img-ov{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.86);display:flex;flex-direction:column;align-items:flex-end;padding:10px}
+.img-ov-in{flex:1;width:100%;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pinch-zoom pan-x pan-y}
+.img-ov-in img{display:block;width:100%;height:auto;background:#fff}
+.reader-body .song-imgs{margin-top:14px}
 </style>
 </head><body>
 <title>Caderno de Música</title>
@@ -581,7 +589,7 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 }
 .lib-row{flex:none}
 .mus-main>.sec:first-child{margin-top:0}
-#songMsg:empty{display:none}
+#songMsg:empty,#pdfMsg:empty{display:none}
 .lib-toggle small{white-space:nowrap}
 .metro-gap{min-height:1.4em;margin:0;text-align:center;font-size:14px;color:var(--on-sv)}
 .dots.mute i{opacity:.35}
@@ -3007,8 +3015,16 @@ function importCurso(d){
     var cur=gExById(x.id);
     if(cur){ ['m','t','exs','bpm'].forEach(function(k){ if(x[k]!==undefined) cur[k]=JSON.parse(JSON.stringify(x[k])); }); cur.u=now; ug++; }
     else { var n=JSON.parse(JSON.stringify(x)); n.u=now; n.st=n.st||'a fazer'; n.star=!!n.star; n.n=n.n||''; delete S.del[n.id]; S.gEx.push(n); ng++; } });
+  /* músicas do curso (só nome, artista e onde está a tab): não duplica o que já existe, nem volta o que você apagou */
+  var nsg=0, jaTem=[], antes=S.songs.slice();
+  (Array.isArray(d.songs)?d.songs:[]).forEach(function(x){ if(!x || !x.id || !x.title) return;
+    if(S.songs.some(function(s){ return s.id===x.id; }) || S.del[x.id]) return;
+    var k=repNorm(String(x.base||x.title).replace(/[()]/g,' ')), dup=null; antes.forEach(function(s){ if(!dup && repKeyMatch(k, s.title)) dup=s; });
+    if(dup){ jaTem.push((x.base||x.title)+' → '+dup.title); return; }
+    S.songs.push({ id:x.id, u:now, title:x.title, key:null, harp:x.harp||{type:'diat',key:0}, bpm:x.bpm||80, text:x.text||'', st:x.st||'a tirar' }); nsg++; });
+  if(jaTem.length) S.cursoDup=jaTem;
   saveData();
-  var parts=[]; if(nc||uc) parts.push('cajon: '+nc+' novos, '+uc+' atualizados'); if(ng||ug) parts.push('gaita: '+ng+' aulas novas, '+ug+' atualizadas');
+  var parts=[]; if(nc||uc) parts.push('cajon: '+nc+' novos, '+uc+' atualizados'); if(ng||ug) parts.push('gaita: '+ng+' aulas novas, '+ug+' atualizadas'); if(nsg||jaTem.length) parts.push(nsg+' músicas novas na lista'+(jaTem.length?' ('+jaTem.length+' você já tinha: '+jaTem.map(function(t){ return t.split(' → ')[0]; }).join(', ')+')':''));
   return parts.length ? 'Curso importado ('+parts.join('; ')+'). Situação, estrela e observações que você já tinha foram mantidas.' : 'O arquivo de curso não trouxe nada.';
 }
 
@@ -4565,9 +4581,9 @@ function viewHoje(){
 
 /* ---------- sincronização entre aparelhos (gist secreto na conta do GitHub) ---------- */
 var SYNC_FILE='estudo-de-gaita.json';
-var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps','gEx','fichas'];
-function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], gEx:S.gEx||[], fichas:S.fichas||[], foco:S.foco||null, del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
-function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[],d.gEx||[],d.fichas||[],d.foco||null]); }
+var SYNC_LISTS=['songs','notes','cjSongs','cjEx','reps','gEx','fichas','imgs'];
+function syncDoc(){ return { v:1, at:Date.now(), songs:S.songs, notes:S.notes, cjSongs:S.cjSongs, cjEx:S.cjEx, reps:S.reps||[], gEx:S.gEx||[], fichas:S.fichas||[], imgs:S.imgs||[], foco:S.foco||null, del:S.del, exDone:S.exDone, course:S.course, mine:S.mine, mineAt:S.mineAt||0 }; }
+function syncSig(d){ return JSON.stringify([d.songs,d.notes,d.cjSongs,d.cjEx,d.del,d.exDone,d.course,d.mine,d.reps||[],d.gEx||[],d.fichas||[],d.foco||null,d.imgs||[]]); }
 /* junta os dados de outro aparelho com os daqui; devolve true se algo mudou aqui */
 function mergeDoc(r){
   if(!r || typeof r!=='object') return false;
@@ -4610,8 +4626,8 @@ var Sync={ st:'off', msg:'', busy:false, again:false, timer:0,
   },
   connect:function(token){
     var self=this; S.sync={ token:String(token||'').trim(), gist:'', last:0 }; this.set('sync','Conectando…');
-    return this.api('/gists?per_page=100').then(function(list){
-      var g=(list||[]).filter(function(x){ return x.files && x.files[SYNC_FILE]; })[0];
+    var find=function(page){ return self.api('/gists?per_page=100&page='+page).then(function(list){ var g=(list||[]).filter(function(x){ return x.files && x.files[SYNC_FILE]; })[0]; if(g || !list || list.length<100 || page>=15) return g||null; return find(page+1); }); };
+    return find(1).then(function(g){
       if(g){ S.sync.gist=g.id; save(); return self.run(); }
       var files={}; files[SYNC_FILE]={ content:JSON.stringify(syncDoc()) };
       return self.api('/gists','POST',{ description:'Caderno de Música: músicas, anotações e progresso', public:false, files:files }).then(function(ng){ S.sync.gist=ng.id; S.sync.last=Date.now(); save(); self.set('ok'); });
@@ -4629,7 +4645,7 @@ var Sync={ st:'off', msg:'', busy:false, again:false, timer:0,
       if(same && !pushAlways) return null;
       var files={}; files[SYNC_FILE]={ content:JSON.stringify(mine) };
       return self.api('/gists/'+S.sync.gist,'PATCH',{ files:files });
-    }).then(function(){ S.sync.last=Date.now(); save(); self.busy=false; self.set('ok'); if(self.again){ self.again=false; return self.run(); } })
+    }).then(function(){ S.sync.last=Date.now(); save(); self.busy=false; self.set('ok'); ImgSync.run(); if(self.again){ self.again=false; return self.run(); } })
       .catch(function(e){ self.busy=false; self.again=false; self.fail(e); });
   },
   touch:function(){ if(!this.on()) return; var self=this; clearTimeout(this.timer); this.set('wait'); this.timer=setTimeout(function(){ self.run(); },2500); },
@@ -4702,6 +4718,7 @@ function viewAjustes(){
       el('p',{class:'dim small',text:'O token fica guardado só neste navegador e só dá acesso aos seus gists, não aos repositórios.'}) ]);
   }
   out.push(syncSec);
+  out.push(imgSettings());
   out.push(el('section',{class:'sec'},[el('h2',{text:'Importar'}),
     el('p',{class:'dim',text:'Tudo o que entra no app por arquivo, num lugar só.'}),
     el('div',{class:'imp-hub'},[
@@ -4735,7 +4752,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 43 (04/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 47 (04/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4812,6 +4829,151 @@ var LIB_SCROLL=0;
 function musTopScroll(){ var m=document.querySelector('.mus-main'), lib=document.querySelector('.lib'); if(!m) return; var wide=lib && m.getBoundingClientRect().left>lib.getBoundingClientRect().left+50;
   /* lado a lado (tela larga): só sobe se o começo da música ficou acima da tela; empilhado (celular): vai para o começo da música */
   var top=m.getBoundingClientRect().top+window.scrollY-90; if(!wide || window.scrollY>top) window.scrollTo(0,Math.max(0,top)); }
+/* conversor de folhas do Tomlin: recebe os itens de texto do pdf.js (todas as páginas) e devolve a tab no formato do app */
+function tomlinConvert(pages){
+  var out=[], nb=0, nn=0, BEND_D={1:"'",2:"''",3:"'",4:"'",5:"'",6:"'",7:"'",8:"'",9:"'",10:"'"}, BEND_B={7:"'",8:"'",9:"'",10:"''"};
+  var LABEL=/^(Lick|Licks|Exercise|Exerc[ií]cio|Ex\.?|Riff|Intro|Verse|Chorus|Solo|Pattern|Part|Bar|Vamp|Hook|Turnaround|Ending|Start|Ascending|Descending|Triplets|Hole|Bassline|Melody)\b/i;
+  pages.forEach(function(items){
+    items=items.filter(function(i){ return String(i.str||'').trim(); }).map(function(i){ return { x:i.transform[4], y:i.transform[5], w:i.width||0, h:Math.abs(i.transform[3])||10, s:String(i.str).trim(), f:i.fontName }; });
+    var digs=items.filter(function(i){ return /^\d{1,3}$/.test(i.s) && +i.s>=1 && (+i.s<=10 || /^[1-9]{2,3}$/.test(i.s)) && i.h<20; });
+    var arrows=items.filter(function(i){ return /^[IFA]$/.test(i.s); });
+    var notes=[];
+    digs.forEach(function(d){
+      var cx=d.x+d.w/2, best=null;
+      arrows.forEach(function(g){ var gx=g.x+g.w/2, dy=g.y-d.y; if(Math.abs(gx-cx)<13 && dy>2 && dy<34 && (!best || dy<best.dy)) best={ g:g, dy:dy }; });
+      if(!best) return;
+      var holes=+d.s<=10 ? [+d.s] : d.s.split('').map(Number), c=best.g.s, dy=best.dy, dir, bend=0;
+      if(c==='I') dir='-'; else if(c==='F' && dy<=16) dir='+'; else if(c==='A' && dy<=15) { dir='+'; bend=1; } else { dir='-'; bend=1; }
+      notes.push({ x:d.x, y:d.y, holes:holes, dir:dir, bend:bend });
+    });
+    if(!notes.length) return;
+    // linhas: notas com y parecido
+    notes.sort(function(a,b){ return Math.abs(a.y-b.y)>8 ? b.y-a.y : a.x-b.x; });
+    var rows=[]; notes.forEach(function(n){ var r=rows.length?rows[rows.length-1]:null; if(r && Math.abs(r.y-n.y)<=8) r.ns.push(n); else rows.push({ y:n.y, ns:[n] }); });
+    rows.forEach(function(r){ r.ns.sort(function(a,b){ return a.x-b.x; }); });
+    // rótulos (Lick 1, Exercise 2...) entram antes da linha de tab logo abaixo deles
+    var labels=items.filter(function(i){ return LABEL.test(i.s) && i.h>=12; }).map(function(i){ var same=items.filter(function(j){ return Math.abs(j.y-i.y)<2 && j.x>=i.x && j.x<i.x+160 && !/^[œ&bn#ŒÓ‰™jJ~]$/.test(j.s); }).sort(function(a,b){ return a.x-b.x; }); return { y:i.y, t:same.map(function(j){ return j.s; }).join(' ').replace(/\s+/g,' ').trim() }; });
+    var used={};
+    rows.forEach(function(r){
+      labels.forEach(function(l,li){ if(!used[li] && l.y>r.y && l.y-r.y<140){ var nextAbove=rows.some(function(o){ return o!==r && o.y>r.y && o.y<l.y; }); if(!nextAbove){ out.push(l.t); used[li]=1; } } });
+      out.push(r.ns.map(function(n){ nn++; if(n.bend) nb++;
+        if(n.holes.length>1) return n.dir+'('+n.holes.join('')+')'+(n.bend?"'":'');
+        var h=n.holes[0], b=n.bend ? (n.dir==='-'?BEND_D[h]:BEND_B[h]||"'") : '';
+        return n.dir+h+b; }).join(' '));
+    });
+  });
+  return { text:out.join('\n'), notas:nn, bends:nb };
+}
+/* v45: converte, no próprio aparelho, um PDF de tab no estilo do Tomlin (setas + furos embaixo da pauta) para a tab do app */
+function songPdfInput(song, msgId){
+  var inp=el('input',{type:'file',accept:'.pdf,application/pdf',hidden:true,onchange:function(){ var f=inp.files && inp.files[0]; if(!f) return; var m=document.getElementById(msgId); if(m){ m.textContent='Lendo o PDF…'; m.className='mtxt dim'; }
+    var buf=f.arrayBuffer ? f.arrayBuffer() : new Promise(function(res,rej){ var rd=new FileReader(); rd.onload=function(){ res(rd.result); }; rd.onerror=rej; rd.readAsArrayBuffer(f); });
+    Promise.all([buf, loadPdfJs()]).then(function(r){ return r[1].getDocument({ data:new Uint8Array(r[0]) }).promise; }).then(function(doc){
+      var pages=[], chain=Promise.resolve();
+      for(var p=1;p<=doc.numPages;p++){ (function(p){ chain=chain.then(function(){ return doc.getPage(p); }).then(function(pg){ return pg.getTextContent(); }).then(function(tc){ pages.push(tc.items); }); })(p); }
+      return chain.then(function(){ return pages; });
+    }).then(function(pages){
+      var r=tomlinConvert(pages), m2=document.getElementById(msgId);
+      if(!r.notas){ if(m2){ m2.textContent='Não achei setas de tab neste PDF: ele deve ser uma imagem. Esse não dá para converter; digite a tab olhando o PDF.'; m2.className='mtxt bad'; } return; }
+      var old=String(song.text||''), info=/^Tab no PDF do curso/.test(old.trim());
+      song.text = (info || !old.trim()) ? r.text : old.replace(/\s+$/,'')+'\n\n'+r.text;
+      song.u=Date.now(); saveData(); render(true);
+      var m3=document.getElementById(msgId); if(m3){ m3.textContent='Convertido: '+r.notas+' notas'+(r.bends?', '+r.bends+' com bend':'')+'. '+(r.bends?'O PDF não diz o tamanho do bend: confira cada bend com a folha e ajuste em Editar (\' meio tom, \'\' um tom). ':'')+'Ligaduras, slides e ritmo não vêm na conversão.'; m3.className='mtxt ok'; }
+    }).catch(function(){ var m4=document.getElementById(msgId); if(m4){ m4.textContent='Não consegui ler o PDF. Confira a internet (o leitor de PDF é baixado na primeira vez) e tente de novo.'; m4.className='mtxt bad'; } });
+  }});
+  return el('label',{class:'btn filebtn',title:'Lê um PDF de tab no estilo do Tomlin e escreve a tab nesta música'},['Converter PDF', inp]);
+}
+/* v46: imagens dentro da música (print da folha). Ficam no aparelho (IndexedDB), não vão para o gist. */
+var IMGDB=null, IMG_URLS={}, IMG_COUNT={};
+function imgDb(){ if(IMGDB) return IMGDB; IMGDB=new Promise(function(res,rej){ if(!window.indexedDB) return rej(new Error('sem IndexedDB')); var r=indexedDB.open('caderno_imagens',1);
+  r.onupgradeneeded=function(){ var st=r.result.createObjectStore('imgs',{keyPath:'id'}); st.createIndex('song','song'); }; r.onsuccess=function(){ res(r.result); }; r.onerror=function(){ IMGDB=null; rej(r.error); }; }); return IMGDB; }
+function imgTx(mode, fn){ return imgDb().then(function(db){ return new Promise(function(res,rej){ var tx=db.transaction('imgs',mode), out=fn(tx.objectStore('imgs')); tx.oncomplete=function(){ res(out && out.result!==undefined ? out.result : out); }; tx.onerror=function(){ rej(tx.error); }; }); }); }
+function imgList(songId){ return imgTx('readonly',function(st){ return st.index('song').getAll(songId); }).then(function(a){ a=(a||[]).sort(function(x,y){ return x.n-y.n; }); IMG_COUNT[songId]=a.length; return a; }); }
+function imgShrink(file){ return new Promise(function(res){ var u=URL.createObjectURL(file), im=new Image(); im.onload=function(){ var W=1600, sc=Math.min(1, W/im.naturalWidth), c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*sc); c.height=Math.round(im.naturalHeight*sc);
+    var g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(u); c.toBlob(function(b){ res(b||file); },'image/jpeg',0.86); };
+  im.onerror=function(){ URL.revokeObjectURL(u); res(file); }; im.src=u; }); }
+function imgAdd(songId, files){
+  var list=Array.prototype.slice.call(files||[]).filter(function(f){ return /^image\//.test(f.type); }); if(!list.length) return Promise.resolve(0);
+  return imgList(songId).then(function(cur){ var n0=cur.length?cur[cur.length-1].n+1:0, chain=Promise.resolve();
+    list.forEach(function(f,i){ chain=chain.then(function(){ return imgShrink(f); }).then(function(b){ return imgTx('readwrite',function(st){ st.put({ id:songId+':'+Date.now()+':'+i, song:songId, n:n0+i, blob:b, u:Date.now() }); }); }); });
+    return chain.then(function(){ return list.length; }); });
+}
+function imgDelLocal(id){ if(IMG_URLS[id]){ URL.revokeObjectURL(IMG_URLS[id]); delete IMG_URLS[id]; } return imgTx('readwrite',function(st){ st.delete(id); }); }
+function imgDel(id){
+  var m=null; (S.imgs||[]).forEach(function(x){ if(x.id===id) m=x; });
+  S.del[id]=Date.now(); S.imgs=(S.imgs||[]).filter(function(x){ return x.id!==id; }); saveData();
+  if(m && m.gist && Sync.on()) Sync.api('/gists/'+m.gist,'DELETE').catch(function(){});
+  return imgDelLocal(id);
+}
+function imgAll(){ return imgTx('readonly',function(st){ return st.getAll(); }).then(function(a){ return a||[]; }); }
+function imgPut(rec){ return imgTx('readwrite',function(st){ st.put(rec); }); }
+function blobB64(b){ return new Promise(function(res,rej){ var rd=new FileReader(); rd.onload=function(){ res(String(rd.result).replace(/^data:[^,]*,/,'')); }; rd.onerror=rej; rd.readAsDataURL(b); }); }
+function b64Blob(t){ var bin=atob(String(t).trim()), a=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return new Blob([a],{type:'image/jpeg'}); }
+/* sincronia das imagens: cada imagem vira um gist secreto pequeno; a lista (S.imgs) viaja no gist principal */
+var ImgSync={ busy:false, again:false, msg:'',
+  refresh:function(){ var h=document.getElementById('songImgs'), s=curSong(); if(h && s) fillSongImgs(s.id,h); if(S.tab==='ajustes') render(true); },
+  run:function(){
+    var self=this; if(!Sync.on() || !window.indexedDB) return Promise.resolve(); if(this.busy){ this.again=true; return Promise.resolve(); }
+    this.busy=true; if(!Array.isArray(S.imgs)) S.imgs=[];
+    return imgAll().then(function(local){
+      var have={}, man={}, chain=Promise.resolve(), up=0, down=0, rm=0, fail=0;
+      local.forEach(function(l){ have[l.id]=l; }); S.imgs.forEach(function(m){ man[m.id]=m; });
+      local.forEach(function(l){ if(S.del[l.id] && !man[l.id]) chain=chain.then(function(){ return imgDelLocal(l.id); }).then(function(){ rm++; }); });
+      local.forEach(function(l){ if(man[l.id] || S.del[l.id]) return;
+        chain=chain.then(function(){ return blobB64(l.blob); }).then(function(b64){ var files={}; files[String(l.id).replace(/[^a-zA-Z0-9_-]/g,'_')+'.txt']={ content:b64 };
+          return Sync.api('/gists','POST',{ description:'Caderno de Música · imagem da tab', public:false, files:files }); })
+          .then(function(g){ var k=Object.keys(g.files||{})[0], f=k&&g.files[k]; if(!f) throw new Error('sem arquivo'); S.imgs.push({ id:l.id, u:Date.now(), song:l.song, n:l.n, gist:g.id, raw:f.raw_url }); up++; })
+          .catch(function(){ fail++; }); });
+      S.imgs.forEach(function(m){ if(have[m.id] || S.del[m.id] || !m.raw) return;
+        chain=chain.then(function(){ return fetch(m.raw,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('raw'); return r.text(); }); })
+          .then(function(t){ return imgPut({ id:m.id, song:m.song, n:m.n, blob:b64Blob(t), u:m.u }); }).then(function(){ down++; })
+          .catch(function(){ fail++; }); });
+      return chain.then(function(){ self.msg=(up||down||rm)?('Imagens: '+[up?up+' enviada(s)':'', down?down+' recebida(s)':'', rm?rm+' removida(s)':''].filter(Boolean).join(', ')+'.'):(fail?'Algumas imagens não sincronizaram; tento de novo na próxima vez.':'Imagens em dia.');
+        if(up) saveData(); if(down||rm) self.refresh(); });
+    }).then(function(){ self.busy=false; if(self.again){ self.again=false; return self.run(); } }).catch(function(){ self.busy=false; });
+  }
+};
+/* cópia das imagens em arquivo (para guardar ou passar para outro aparelho sem o GitHub) */
+function imgExport(){
+  return imgAll().then(function(all){ var chain=Promise.resolve(), out=[];
+    all.forEach(function(r){ chain=chain.then(function(){ return blobB64(r.blob); }).then(function(b){ out.push({ id:r.id, song:r.song, n:r.n, u:r.u, b64:b }); }); });
+    return chain.then(function(){ var blob=new Blob([JSON.stringify({ caderno_imagens:1, at:Date.now(), imgs:out })],{type:'application/json'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='caderno-imagens-'+new Date().toISOString().slice(0,10)+'.json'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },2000); return out.length; }); });
+}
+function imgImport(file){
+  return file.text().then(function(t){ var d=JSON.parse(t); if(!d || !Array.isArray(d.imgs)) throw new Error('formato');
+    return imgAll().then(function(all){ var have={}, n=0, chain=Promise.resolve(); all.forEach(function(r){ have[r.id]=1; });
+      d.imgs.forEach(function(r){ if(have[r.id] || S.del[r.id] || !r.b64) return; chain=chain.then(function(){ n++; return imgPut({ id:r.id, song:r.song, n:r.n||0, blob:b64Blob(r.b64), u:r.u||Date.now() }); }); });
+      return chain.then(function(){ return n; }); }); });
+}
+function imgSettings(){
+  var msg=el('div',{class:'mtxt dim',id:'imgSetMsg',text:ImgSync.msg||''}), cnt=el('span',{class:'dim',text:'…'});
+  imgAll().then(function(a){ cnt.textContent=a.length+(a.length===1?' imagem neste aparelho':' imagens neste aparelho'); }).catch(function(){ cnt.textContent='Este navegador não guarda imagens.'; });
+  var inp=el('input',{type:'file',accept:'.json,application/json',hidden:true,onchange:function(){ var f=inp.files&&inp.files[0]; if(!f) return; msg.textContent='Importando…';
+    imgImport(f).then(function(n){ msg.textContent=n?n+' imagem(ns) nova(s) importada(s).':'Nada de novo: este aparelho já tinha essas imagens.'; ImgSync.run(); render(true); }).catch(function(){ msg.textContent='Esse arquivo não é uma cópia de imagens do app.'; }); inp.value=''; }});
+  return el('section',{class:'sec'},[el('h2',{text:'Imagens das músicas'}),
+    el('p',{class:'dim',text:Sync.on()?'Sincronizam sozinhas pelo GitHub: cada imagem vai num gist secreto pequeno, e o outro aparelho baixa na próxima sincronização.':'Ligue a sincronização acima para as imagens irem para os outros aparelhos. Sem ela, use a cópia em arquivo.'}),
+    el('div',{class:'row'},[cnt]),
+    el('div',{class:'row'},[ Sync.on()?el('button',{class:'btn sm',type:'button',text:'Sincronizar imagens agora',onclick:function(){ msg.textContent='Sincronizando…'; ImgSync.run().then(function(){ msg.textContent=ImgSync.msg; }); }}):null,
+      el('button',{class:'btn sm',type:'button',text:'Exportar imagens',onclick:function(){ msg.textContent='Preparando o arquivo…'; imgExport().then(function(n){ msg.textContent=n?'Arquivo com '+n+' imagem(ns) baixado.':'Não há imagens neste aparelho.'; }); }}),
+      el('label',{class:'btn sm filebtn'},['Importar imagens', inp]) ]), msg ]);
+}
+function imgView(url){ var ov=el('div',{class:'img-ov',role:'dialog','aria-label':'Imagem da tab',onclick:function(e){ if(e.target===ov || e.target.tagName==='BUTTON') ov.remove(); }},[el('button',{class:'tool close',type:'button',text:'✕','aria-label':'Fechar'}), el('div',{class:'img-ov-in'},[el('img',{src:url,alt:'Imagem da tab'})])]); document.body.appendChild(ov); }
+function fillSongImgs(songId, host, readOnly){
+  imgList(songId).then(function(a){ host.innerHTML=''; if(!a.length){ host.hidden=true; return; } host.hidden=false;
+    a.forEach(function(it){ var url=IMG_URLS[it.id]||(IMG_URLS[it.id]=URL.createObjectURL(it.blob));
+      var del=readOnly?null:el('button',{class:'btn sm ghost danger',type:'button',text:'Remover',onclick:function(){ if(del.dataset.sure){ imgDel(it.id).then(function(){ fillSongImgs(songId, host); }); } else { del.dataset.sure='1'; del.textContent='Toque de novo para remover'; } }});
+      host.appendChild(el('figure',{class:'song-img'},[el('img',{src:url,alt:'Tab (imagem)',loading:'lazy',onclick:function(){ imgView(url); }}), del?el('div',{class:'row end'},[del]):null])); }); }).catch(function(){ host.hidden=true; });
+}
+function songImgControls(song){
+  var msg=el('span',{class:'dim small',id:'imgMsg'});
+  var add=function(files){ msg.textContent='Guardando…'; imgAdd(song.id, files).then(function(n){ msg.textContent=n?(n===1?'Imagem adicionada.':n+' imagens adicionadas.')+(Sync.on()?' Enviando para a sincronização…':''):'Nenhuma imagem nesse arquivo.'; var h=document.getElementById('songImgs'); if(h) fillSongImgs(song.id,h); if(n) ImgSync.run().then(function(){ var m=document.getElementById('imgMsg'); if(m && Sync.on()) m.textContent=ImgSync.msg; }); }).catch(function(){ msg.textContent='Não deu para guardar a imagem neste navegador.'; }); };
+  SONG_PASTE=function(files){ add(files); };
+  var inp=el('input',{type:'file',accept:'image/*',multiple:true,hidden:true,onchange:function(){ add(inp.files); inp.value=''; }});
+  return el('div',{class:'row song-img-ctl'},[el('label',{class:'btn sm filebtn'},['Adicionar imagem', inp]), el('span',{class:'dim small',text:Sync.on()?'ou cole um print (Ctrl+V). Sincroniza pelo GitHub.':'ou cole um print (Ctrl+V). Fica neste aparelho (ligue a sincronização em Ajustes para levar aos outros).'}), msg]);
+}
+var SONG_PASTE=null;
+document.addEventListener('paste',function(e){ if(S.tab!=='musicas' || !SONG_PASTE || S.songEdit) return; var t=e.target; if(t && (t.tagName==='TEXTAREA' || t.tagName==='INPUT')) return;
+  var fs=[]; Array.prototype.forEach.call((e.clipboardData&&e.clipboardData.items)||[],function(it){ if(it.kind==='file' && /^image\//.test(it.type)){ var f=it.getAsFile(); if(f) fs.push(f); } }); if(fs.length){ e.preventDefault(); SONG_PASTE(fs); } });
 function viewMusicas(){ var song=curSong(), pick=function(id){ S.cur=id; S.songEdit=null; save(); stopPlay(); render(); musTopScroll(); };
   return [musHead(), el('div',{class:'mus'},[libPanel(song,pick), el('div',{class:'mus-main'},viewMusicasMain(song))])]; }
 function musHead(){ var fileIn=fileImportInput('songFile','songMsg');
@@ -4932,11 +5094,14 @@ function viewMusicasMain(song){
   out.push(el('section',{class:'sec song-view'},[
     el('div',{class:'song-head'},[
       el('div',{class:'song-id'},[el('h3',{class:'song-title',text:song.title||'Sem título'}),el('p',{class:'small dim',text:I.meta})]),
-      el('div',{class:'row'},[ hasText?el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}):null,
-        el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}) ])]),
+      el('div',{class:'row'},[ (hasText||IMG_COUNT[song.id])?el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}):null,
+        el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}), songPdfInput(song,'pdfMsg') ])]),
+    el('div',{class:'mtxt dim',id:'pdfMsg'}),
     el('div',{class:'segm three song-st',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':gSt(song)===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ song.st=st; song.u=Date.now(); saveData(); render(true); }}); })),
     I.bad?el('div',{class:'note bad',text:I.bad+' marcação(ões) não existem na '+harpLc(song.harp)+' (sublinhadas). Toque em Editar e confira a gaita escolhida.'}):null,
-    hasText ? el('div',{class:'sheet'},[te]) : el('div',{class:'note',text:'Esta música ainda não tem tablatura. Toque em Editar e cole a notação.'}),
+    hasText ? el('div',{class:'sheet'},[te]) : (IMG_COUNT[song.id] ? null : el('div',{class:'note',text:'Esta música ainda não tem tablatura. Toque em Editar e cole a notação, ou adicione um print da folha abaixo.'})),
+    (function(){ var h=el('div',{class:'song-imgs',id:'songImgs',hidden:true}); setTimeout(function(){ if(h.isConnected) fillSongImgs(song.id,h); },0); return h; })(),
+    songImgControls(song),
     I.seq.length ? el('div',{class:'row'},[bPlay,
       el('button',{class:'btn',type:'button',text:'Transpor',onclick:function(){ S.tr.text=song.text; S.tr.from=song.harp; if(I.k){ S.tr.songKey=I.k.pc; S.tr.songMode=I.k.mode; } S.tab='transpor'; S.back='transpor'; save(); render(); window.scrollTo(0,0); }}),
       el('button',{class:'btn',type:'button',text:'Metrônomo a '+(song.bpm||80)+' bpm',onclick:function(){ S.metro.bpm=song.bpm||80; save(); if(!Metro.on) Metro.start(); paintMini(); }}) ]) : null,
@@ -4960,8 +5125,8 @@ function viewMusicasMain(song){
 var mqLand = window.matchMedia ? window.matchMedia('(orientation: landscape) and (max-height: 540px)') : { matches:false };
 var READER=false, readerDismissed=false, wakeRd=null;
 function readerSource(){
-  if(S.tab==='musicas'){ var s=curSong(); if(!s || S.songEdit===s.id || !String(s.text||'').trim()) return null; var I=songInfo(s);
-    return { title:s.title||'Sem título', sub:I.meta, body:function(){ return tabElement(I.parsed,I.ctx); }, seq:I.seq, bpm:s.bpm||80 }; }
+  if(S.tab==='musicas'){ var s=curSong(); if(!s || S.songEdit===s.id || (!String(s.text||'').trim() && !IMG_COUNT[s.id])) return null; var I=songInfo(s);
+    return { title:s.title||'Sem título', sub:I.meta, body:function(){ var h=el('div',{class:'song-imgs',hidden:true}); setTimeout(function(){ fillSongImgs(s.id,h,true); },0); return el('div',{},[String(s.text||'').trim()?tabElement(I.parsed,I.ctx):null, h]); }, seq:I.seq, bpm:s.bpm||80 }; }
   if(S.tab==='caderno'){ var n=curNote(); if(!n || S.noteEdit || !String(n.text||'').trim()) return null;
     return { title:n.title||'Sem título', sub:(n.sec||'Outros')+(n.harp?', '+harpLc(n.harp):''), body:function(){ return noteBody(n); } }; }
   if(S.tab==='exercicios' && S.gExSel && gExById(S.gExSel) && !S.gExEdit){ var gx=gExById(S.gExSel), gh=harpObj(gExHarp()), gc=harpCtx(gExHarp());
@@ -5236,7 +5401,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=43;
+var APP_VER=47;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
