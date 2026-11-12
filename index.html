@@ -2781,7 +2781,25 @@ function renanHoje(){ var g=renanDoGestor(); if(g) return { n:g, src:'gestor' };
   var c=new Date(2026,10,2), t=new Date(), k=0; t.setHours(0,0,0,0); while(c<t){ c.setDate(c.getDate()+1); var dd=c.getDay(); if(dd>=1&&dd<=5) k++; }
   return { n:k%2?2:1, src:'alterna' }; }
 function renanSong(n){ var re=n===1?/juke/:/roadhouse/; var hit=null; S.songs.forEach(function(s){ if(!hit && s.harp && s.harp.type!=='crom' && re.test(rotKey(s.title))) hit=s; }); return hit; }
+/* 12/11: troca de professor — o card do Renan sai; os exercícios novos entram quando vierem as aulas */
+var RENAN_FIM='2026-11-12';
+/* 12/11: enquanto escolhe o professor, o exercício da diatônica é a Blue Hop (prof. Bene) — a folha fica na própria música, como imagem */
+var BENE_TXT='Gaita — Blue Hop (exercício do prof. Bene) · gaita em Dó (30min)\n5min aquecimento de bend no 3, conferindo no Mapa da gaita\n10min ouvir a gravação acompanhando a folha; depois as frases do dia, devagar\n10min trecho do dia: uma linha da folha por vez, metrônomo lento; só avança quando sair limpa 3 vezes seguidas\n5min tudo o que já sai, do começo, junto com a gravação\nTercinas com articulação leve, sem acelerar.';
+function beneSong(){ var hit=null; S.songs.forEach(function(s){ if(!hit && s.harp && s.harp.type!=='crom' && /blue ?hop/.test(rotKey(s.title))) hit=s; }); return hit; }
+function beneCard(cls){
+  if(S.harp.type!=='diat') return null; var song=beneSong();
+  return el('section',{class:(cls||'sec')+' renan'},[
+    el('div',{class:'hj-h'},[el('h3',{text:'Exercício do prof. Bene'}), el('span',{class:'dim small',text:'Blue Hop'})]),
+    hjBlock(BENE_TXT, []),
+    el('div',{class:'row'},[ song ? el('button',{class:'btn tonal',type:'button',text:'Abrir a folha da Blue Hop',onclick:function(){ openSongFrom('g',song); }}) : el('span',{class:'dim small',text:'Não achei a Blue Hop em Músicas.'}) ]) ]);
+}
+function beneMini(){
+  if(S.harp.type!=='diat') return null;
+  return el('button',{class:'hj-song two',type:'button',onclick:function(){ S.tab='exercicios'; S.exSeg='dia'; S.back='exercicios'; S.ex=null; save(); render(); window.scrollTo(0,0); }},[
+    el('span',{class:'ins-tag g',text:'Bene'}), el('span',{class:'two-t'},[el('b',{text:'Exercício do dia: Blue Hop'}), el('small',{text:'30min com a folha e a gravação'})]), el('i',{text:'›'})]);
+}
 function renanCard(cls){
+  if(today()>=RENAN_FIM) return beneCard(cls);
   if(S.harp.type!=='diat') return null;
   var h=renanHoje(), ver=S.renanVer && S.renanVer.d===rotDayIndex() ? S.renanVer.n : h.n, song=renanSong(ver);
   var pick=function(n){ S.renanVer={ d:rotDayIndex(), n:n }; save(); render(true); };
@@ -2793,6 +2811,7 @@ function renanCard(cls){
     el('p',{class:'dim small',text:'Um bloco por dia, alternando. No gestor, ao marcar o bloco 1 da gaita como feito, o dia seguinte já vem com o outro bloco.'}) ]);
 }
 function renanMini(){
+  if(today()>=RENAN_FIM) return beneMini();
   if(S.harp.type!=='diat') return null; var h=renanHoje();
   return el('button',{class:'hj-song two',type:'button',onclick:function(){ S.tab='exercicios'; S.exSeg='dia'; S.back='exercicios'; S.ex=null; S.renanVer=null; save(); render(); window.scrollTo(0,0); }},[
     el('span',{class:'ins-tag g',text:'Renan'}), el('span',{class:'two-t'},[el('b',{text:'Aula do Renan: Bloco '+h.n}), el('small',{text:h.n===1?'bends + Juke':'escalas + Roadhouse Blues'})]), el('i',{text:'›'})]);
@@ -4756,7 +4775,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 49 (04/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 51 (12/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5417,7 +5436,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=49;
+var APP_VER=51;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
