@@ -1053,7 +1053,9 @@ function parseToken(s, maxHole){
     var ch=s[k];
     if(QUOTES.indexOf(ch)>=0) bend++;
     else if(ch==='"'||ch==='”') bend+=2;
-    else if(ch==='<'||ch==='*') slide=true;
+    else if(ch==='/') bend++; /* legenda em inglês: -3/ meio tom, -3// um tom */
+    else if(ch==='*'){ if(maxHole===10) ob=true; else slide=true; } /* diatônica: 4* overblow, -8* overdraw; cromática: botão */
+    else if(ch==='<') slide=true;
     else if(ch==='o'||ch==='O'){ ob=true; if(/[bd]/i.test(s[k+1]||'')) k++; }
     else if(ch==='b' && sign) bend++;
     else return null;
@@ -1076,12 +1078,24 @@ function courseToken(ch, maxHole){
   var specs=[]; for(var i=0;i<parts.length;i++){ var sp=parseToken(sign+parts[i], maxHole); if(!sp) return null; specs=specs.concat(sp); }
   return { specs:specs, pre:lead+(dip?'/':''), post:(fall?'\\':'')+sus, dip:dip, fall:fall, gliss:!!(lead||sus), trill:inner!=null && inner.indexOf('=')>=0 };
 }
-var DECOR=/^(?:[-–—_~|\/\\.,;:=>]+|x\d+|\d+x|\(x\d+\)|\[.*\]|\d+:\d+.*)$/i;
+var DECOR=/^(?:[-–—_~|\/\\.,;:=>→]+|x\d+|\d+x|\(x\d+\)|\[.*\]|\d+:\d+.*|\((?:sl|fl|tr|vib)\.?\))$/i;
+/* legenda de tab em inglês: ←→ / ↔ / <-> = warble (vira o trinado -(4=5)); → / -> / --> = slide, rip;
+   (sl.) (fl.) (tr.) (vib.) = técnica; ---- depois da nota = segurar. Tudo vira marcação que não atrapalha a leitura das notas. */
+function tabLineNorm(line){
+  var W='(?:←\\s*→|↔|⟷|<-+>)', sgn=function(a,b){ return (a||b||'+').replace(/[−–]/,'-'); };
+  line=line.replace(new RegExp('([+\\-−–]?)(\\d)(\\d)\\s*'+W+'(?![+\\-−–]?\\d)','g'), function(all,sa,a,b){ return sgn(sa)+'('+a+'='+b+')'; });
+  line=line.replace(new RegExp('([+\\-−–]?)(\\d+)\\s*'+W+'\\s*([+\\-−–]?)(\\d+)','g'), function(all,sa,da,sb,db){ return sgn(sa,sb)+'('+da+'='+db+')'; });
+  line=line.replace(new RegExp('\\s*'+W,'g'),' ↔');
+  line=line.replace(/\s*(?:-+>|→|⟶|➔|➜|⇒)\s*/g,' → ');
+  line=line.replace(/\((?:sl|fl|tr|vib)\.?\)/gi,' $& ');
+  line=line.replace(/(\d[^\s-]*?)(-{2,})(?=\s|$)/g,'$1 $2');
+  return line;
+}
 function parseTab(text, harp){
   /* caracteres invisíveis que vêm colados de WhatsApp, sites e PDFs (espaço de largura zero, marcas de direção) grudavam na 1ª nota da linha */
   var maxHole=harp.holes, lines=String(text||'').replace(/\r/g,'').replace(/[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF]/g,'').replace(/[\u00A0\u2007\u202F]/g,' ').split('\n'), out=[];
   lines.forEach(function(line){
-    var chunks=line.split(/\s+/).filter(Boolean), items=[], nNotes=0, nWords=0;
+    var chunks=tabLineNorm(line).split(/\s+/).filter(Boolean), items=[], nNotes=0, nWords=0;
     chunks.forEach(function(ch){
       var ct=courseToken(ch, maxHole);
       if(ct){ var cns=ct.specs.map(function(sp){ return findNote(harp, sp); });
@@ -2449,7 +2463,7 @@ var WID={
       var g=mk('ellipse',{cx:x,cy:y,rx:8.5,ry:6,class:'pt-n',transform:'rotate(-18 '+x+' '+y+')',tabindex:0}); g.addEventListener('click',function(){ tone([60+[0,2,4,5,7,9,11,12,14,16,17,19,21][i]],AC().currentTime+0.01,0.6); });
       mk('text',{x:x,y:140,class:'pt-t'},NN(n)); });
     return el('div',{class:'ex scroll'},[svg, el('p',{class:'small dim',text:'Do Dó central (C4) ao Lá (A5). Toque numa nota para ouvir.'})]); },
-  tabLegenda:function(){ return tbl(['Escrita','Significa'], [['+4  ou  4','soprar o furo 4'],['-4','aspirar o furo 4'],["-4'",'aspirar com bend de meio tom'],["-3''",'bend de um tom'],["-3'''",'bend de um tom e meio'],["+8'",'bend soprado (furos 8 a 10)'],['+6o','overblow'],["(-4' -4)",'notas ligadas, sem interromper o ar'],['-123  ou  -34','vários furos juntos (acorde)'],['-(45)  ou  (123)','notas dentro dos parênteses tocadas juntas'],['/-4','bend de passagem: a nota é atacada já com um bend'],['-4\\','a nota termina com um bend de passagem'],['-(4=5)','trinado: alterna rápido entre as duas casas'],['…6  ou  -8…','glissando: desliza por algumas casas antes ou depois da nota'],['+5<','cromática: soprar o furo 5 com o botão apertado'],['4s 4a  ou  4b 4d','soprar e aspirar, em outras notações']].map(function(r){ return [el('td',{class:'mono',text:r[0]}), r[1]]; })); },
+  tabLegenda:function(){ return tbl(['Escrita','Significa'], [['+4  ou  4','soprar o furo 4'],['-4','aspirar o furo 4'],["-4'",'aspirar com bend de meio tom'],["-3''",'bend de um tom'],["-3'''",'bend de um tom e meio'],["+8'",'bend soprado (furos 8 a 10)'],['+6o  ou  6*','overblow (soprado); -8o  ou  -8* é o overdraw'],["-3/  e  -3//",'bend de meio tom e de um tom (mesmo que -3\' e -3\'\')'],['-45','dois furos juntos (double stop)'],['(-123)','notas de enfeite / preenchimento rítmico'],['----','segurar a nota (cada traço, um tempo)'],['→  ou  -->','slide / glissando / rip entre as notas'],['←→  ou  -4↔-5','warble: alterna rápido entre as casas, como o -(4=5)'],['(sl.) (fl.) (tr.) (vib.)','tongue slap, flutter, tremolo e vibrato'],["(-4' -4)",'notas ligadas, sem interromper o ar'],['-123  ou  -34','vários furos juntos (acorde)'],['-(45)  ou  (123)','notas dentro dos parênteses tocadas juntas'],['/-4','bend de passagem: a nota é atacada já com um bend'],['-4\\','a nota termina com um bend de passagem'],['-(4=5)','trinado: alterna rápido entre as duas casas'],['…6  ou  -8…','glissando: desliza por algumas casas antes ou depois da nota'],['+5<','cromática: soprar o furo 5 com o botão apertado'],['4s 4a  ou  4b 4d','soprar e aspirar, em outras notações']].map(function(r){ return [el('td',{class:'mono',text:r[0]}), r[1]]; })); },
   figuras:function(){ return el('div',{class:'ex figs'},[['Semibreve',4],['Mínima',2],['Semínima',1],['Colcheia',0.5],['Semicolcheia',0.25]].map(function(f){
     var bar=el('div',{class:'fig-bar'}); for(var i=0;i<4/f[1];i++) bar.appendChild(el('i'));
     return el('div',{class:'fig'},[el('div',{class:'fig-n'},[el('b',{text:f[0]}),el('small',{text:f[1]>=1?f[1]+(f[1]>1?' tempos':' tempo'):(f[1]===0.5?'meio tempo':'um quarto de tempo')})]),bar]); })); },
@@ -4775,7 +4789,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 51 (12/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 52 (16/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5436,7 +5450,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=51;
+var APP_VER=52;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
