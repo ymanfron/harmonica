@@ -688,6 +688,8 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .hj-top{display:flex;align-items:baseline;gap:12px}
 .hj-top h2{margin:0}
 .hj-card{border:1px solid var(--olv);border-radius:16px;background:var(--s1);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.aula-imp>*{border-left:4px solid #c9962e!important;background:rgba(201,150,46,.10)!important}
+.aula-rot{margin-top:14px;opacity:.82}
 .hj-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .hj-h h3{margin:0}
 .hj-h .row{margin-left:auto}
@@ -2799,7 +2801,8 @@ function renanSong(n){ var re=n===1?/juke/:/roadhouse/; var hit=null; S.songs.fo
 var RENAN_FIM='2026-11-12';
 /* 12/11: enquanto escolhe o professor, o exercício da diatônica é a Blue Hop (prof. Bene) — a folha fica na própria música, como imagem */
 /* 16/11: aulas novas — tongue block na escala maior (4 tempos por nota) + tirar Born in Chicago e Work Song (Paul Butterfield) */
-var AULA_TXT='Gaita — Tongue block (exercício da semana) · gaita em Dó (30min)\n5min aquecimento de bend (o mesmo de antes)\n15min escala maior em tongue block, 4 tempos em cada nota, metrônomo em 60 (subir e descer)\n10min tirar de ouvido: Born in Chicago (seg, qua, sex) · Work Song (ter, qui), uma frase por vez\nBoca cobrindo 3 a 4 furos, língua tapando os da esquerda: só o furo da direita soa, limpo nos 4 tempos.';
+var AULA_TXT='★ Exercício da semana do Luciano · gaita em Dó (25min)\n15min escala maior em tongue block, 4 tempos em cada nota, metrônomo em 60 (subir e descer)\n10min tirar de ouvido: Born in Chicago (seg, qua, sex) · Work Song (ter, qui), uma frase por vez\nBoca cobrindo 3 a 4 furos, língua tapando os da esquerda; só o furo da direita soa, limpo nos 4 tempos. Se o tempo apertar, este vem primeiro.';
+var ROTINA_TXT='Rotina diária · fundamentos (20min, antes do exercício)\n5min respiração diafragmática: mão na barriga, o ar enche a barriga e não o peito; ombros parados, soltar devagar\n5min embocadura de bico: queixo baixo, controlar o timbre; usar as fitas para definir o timbre\n5min cabeça apoiada numa superfície plana (trava os movimentos involuntários) e, com a embocadura correta, passar entre os furos sem perder o timbre\n5min aquecimento de bend (o mesmo de antes)';
 var AULA_ESCALA='+4---- -4---- +5---- -5---- +6---- -6---- -7---- +7----\n+7---- -7---- -6---- +6---- -5---- +5---- -4---- +4----';
 var AULA_SONGS=['Born in Chicago','Work Song'];
 function aulaSong(t){ var k=rotKey(t), hit=null; S.songs.forEach(function(s){ if(!hit && (!s.harp || s.harp.type!=='crom') && rotKey(s.title).indexOf(k)>=0) hit=s; }); return hit; }
@@ -2807,18 +2810,19 @@ function beneCard(cls){
   if(S.harp.type!=='diat') return null;
   var harp=C.makeDiatonic(0), ctx=harpCtx({type:'diat',key:0});
   return el('section',{class:(cls||'sec')+' renan'},[
-    el('div',{class:'hj-h'},[el('h3',{text:'Aula: tongue block'}), el('span',{class:'dim small',text:'exercício da semana'})]),
-    hjBlock(AULA_TXT, []),
+    el('div',{class:'hj-h'},[el('h3',{text:'Aula do Luciano'}), el('span',{class:'dim small',text:'fundamentos todo dia + exercício da semana'})]),
+    el('div',{class:'aula-imp'},[hjBlock(AULA_TXT, [])]),
     el('p',{class:'dim small',text:'Escala maior (gaita em Dó, furos 4 a 7); os traços marcam os 4 tempos de cada nota:'}),
     tabElement(C.parseTab(AULA_ESCALA,harp),ctx),
     el('div',{class:'row'},AULA_SONGS.map(function(t){ var sg=aulaSong(t);
       return sg ? el('button',{class:'btn tonal',type:'button',text:t,onclick:function(){ openSongFrom('g',sg); }})
-        : el('button',{class:'btn',type:'button',text:'+ '+t,title:'Adicionar à lista de músicas, em A tirar',onclick:function(){ S.songs.push({id:'m'+Date.now(),u:Date.now(),title:t+' - Paul Butterfield',key:null,harp:{type:'diat',key:S.harp.key||0},bpm:80,text:''}); saveData(); render(); }}); })) ]);
+        : el('button',{class:'btn',type:'button',text:'+ '+t,title:'Adicionar à lista de músicas, em A tirar',onclick:function(){ S.songs.push({id:'m'+Date.now(),u:Date.now(),title:t+' - Paul Butterfield',key:null,harp:{type:'diat',key:S.harp.key||0},bpm:80,text:''}); saveData(); render(); }}); })),
+    el('div',{class:'aula-rot'},[hjBlock(ROTINA_TXT, [])]) ]);
 }
 function beneMini(){
   if(S.harp.type!=='diat') return null;
   return el('button',{class:'hj-song two',type:'button',onclick:function(){ S.tab='exercicios'; S.exSeg='dia'; S.back='exercicios'; S.ex=null; save(); render(); window.scrollTo(0,0); }},[
-    el('span',{class:'ins-tag g',text:'Aula'}), el('span',{class:'two-t'},[el('b',{text:'Tongue block na escala maior'}), el('small',{text:'4 tempos por nota · Born in Chicago e Work Song'})]), el('i',{text:'›'})]);
+    el('span',{class:'ins-tag g',text:'Aula'}), el('span',{class:'two-t'},[el('b',{text:'★ Tongue block na escala maior'}), el('small',{text:'exercício do Luciano · + rotina de fundamentos'})]), el('i',{text:'›'})]);
 }
 function renanCard(cls){
   if(today()>=RENAN_FIM) return beneCard(cls);
@@ -4797,7 +4801,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 53 (16/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 55 (18/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5458,7 +5462,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=53;
+var APP_VER=55;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
