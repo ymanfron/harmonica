@@ -2801,28 +2801,50 @@ function renanSong(n){ var re=n===1?/juke/:/roadhouse/; var hit=null; S.songs.fo
 var RENAN_FIM='2026-11-12';
 /* 12/11: enquanto escolhe o professor, o exercício da diatônica é a Blue Hop (prof. Bene) — a folha fica na própria música, como imagem */
 /* 16/11: aulas novas — tongue block na escala maior (4 tempos por nota) + tirar Born in Chicago e Work Song (Paul Butterfield) */
-var AULA_TXT='★ Exercício da semana do Luciano · gaita em Dó (25min)\n15min escala maior em tongue block, 4 tempos em cada nota, metrônomo em 60 (subir e descer)\n10min tirar de ouvido: Born in Chicago (seg, qua, sex) · Work Song (ter, qui), uma frase por vez\nBoca cobrindo 3 a 4 furos, língua tapando os da esquerda; só o furo da direita soa, limpo nos 4 tempos. Se o tempo apertar, este vem primeiro.';
 var ROTINA_TXT='Rotina diária · fundamentos (20min, antes do exercício)\n5min respiração diafragmática: mão na barriga, o ar enche a barriga e não o peito; ombros parados, soltar devagar\n5min embocadura de bico: queixo baixo, controlar o timbre; usar as fitas para definir o timbre\n5min cabeça apoiada numa superfície plana (trava os movimentos involuntários) e, com a embocadura correta, passar entre os furos sem perder o timbre\n5min aquecimento de bend (o mesmo de antes)';
-var AULA_ESCALA='+4---- -4---- +5---- -5---- +6---- -6---- -7---- +7----\n+7---- -7---- -6---- +6---- -5---- +5---- -4---- +4----';
-var AULA_SONGS=['Born in Chicago','Work Song'];
+/* 21/11: exercícios do Luciano (Tongue Blocking — acompanhamento), foco até 28/11.
+   Acompanhamento = levantar a língua no tempo: o acorde -(1234) é a nota da melodia (furo da direita) com os furos que a língua tapava. */
+var LUC={"EX": {"a": {"t": "(a) Escala natural, 1 nota por compasso, acompanhamento em cada tempo: 5min em 4/4, 5min em 3/4, 5min em 2/4", "min": 15, "tab": [["4/4", "+(1234) +(1234) +(1234) +(1234) | -(1234) -(1234) -(1234) -(1234) | +(2345) +(2345) +(2345) +(2345) | -(2345) -(2345) -(2345) -(2345) | +(3456) +(3456) +(3456) +(3456) | -(3456) -(3456) -(3456) -(3456) | -(4567) -(4567) -(4567) -(4567) | +(4567) +(4567) +(4567) +(4567)"], ["3/4", "+(1234) +(1234) +(1234) | -(1234) -(1234) -(1234) | +(2345) +(2345) +(2345) | -(2345) -(2345) -(2345) | +(3456) +(3456) +(3456) | -(3456) -(3456) -(3456) | -(4567) -(4567) -(4567) | +(4567) +(4567) +(4567)"], ["2/4", "+(1234) +(1234) | -(1234) -(1234) | +(2345) +(2345) | -(2345) -(2345) | +(3456) +(3456) | -(3456) -(3456) | -(4567) -(4567) | +(4567) +(4567)"]]}, "b": {"t": "(b) Escala natural em 3/4, 1 nota por compasso, SEM acompanhamento no 1º tempo (acorde só no 2 e no 3)", "min": 7, "tab": [["3/4", "+4 +(1234) +(1234) | -4 -(1234) -(1234) | +5 +(2345) +(2345) | -5 -(2345) -(2345) | +6 +(3456) +(3456) | -6 -(3456) -(3456) | -7 -(4567) -(4567) | +7 +(4567) +(4567)"]]}, "c": {"t": "(c) Escala natural em 4/4, 1 nota por tempo, acompanhamento no 1º e no 3º tempos", "min": 8, "tab": [["sobe", "+(1234) -4 +(2345) -5 | +(3456) -6 -(4567) +7"], ["desce", "+(4567) -7 -(3456) +6 | -(2345) +5 -(1234) +4"]]}, "d": {"t": "(d) Escala natural em 4/4, 1 nota por tempo, acompanhamento no 2º e no 4º tempos", "min": 7, "tab": [["sobe", "+4 -(1234) +5 -(2345) | +6 -(3456) -7 +(4567)"], ["desce", "+7 -(4567) -6 +(3456) | -5 +(2345) -4 +(1234)"]]}, "e": {"t": "(e) Escala natural em 4/4, 1 nota por tempo, acompanhamento no 1º e no 4º tempos", "min": 8, "tab": [["sobe", "+(1234) -4 +5 -(2345) | +(3456) -6 -7 +(4567)"], ["desce", "+(4567) -7 -6 +(3456) | -(2345) +5 -4 +(1234)"]]}}, "SONG": {"f": {"t": "(f) Oh, Susanna! com acompanhamento em cada tempo: melodia no canto direito, acorde levantando a língua em cada tempo", "song": "Oh, Susanna"}, "g": {"t": "(g) Asa Branca com acompanhamento ad libitum: crie um ritmo (o baião encaixa bem) e sustente até o fim", "song": "Asa Branca"}}, "PLAN": {"2026-11-23": ["a", "f"], "2026-11-24": ["bc", "g"], "2026-11-25": ["de", "f"], "2026-11-26": ["bd", "g"], "2026-11-27": ["ce", "f"], "2026-11-28": ["rev", "fg"]}, "SUS": "Oh, Susanna! (Stephen Foster, 1848, domínio público) — melodia simplificada na gaita em Dó, 1ª posição\nEstrofe\n+4 -4 | +5 +6 +6 -6 | +6 +5 +4 -4 | +5 +5 -4 +4 | -4\n+4 -4 | +5 +6 +6 -6 | +6 +5 +4 -4 | +5 +5 -4 -4 | +4\nRefrão\n-5 -5 | -6 -6 | +6 +6 +5 +4 | -4\n+4 -4 | +5 +6 +6 -6 | +6 +5 +4 -4 | +5 +5 -4 -4 | +4\nExercício (f): em cada tempo, levante a língua e deixe soar o acorde junto com a nota da melodia."};
+var LUC_DIAS=[['2026-11-23','seg'],['2026-11-24','ter'],['2026-11-25','qua'],['2026-11-26','qui'],['2026-11-27','sex'],['2026-11-28','sáb']];
+function lucPlano(d){ d=d||today(); return LUC.PLAN[d] || (d < '2026-11-23' ? ['a','f'] : ['rev','fg']); }
+function lucTxt(p){
+  var L=['★ Exercícios do Luciano · Tongue Blocking com acompanhamento (25min, foco até 28/11)'];
+  if(p[0]==='rev') L.push('15min revisão dos exercícios (a) a (e): 3min cada; o que estiver mais fraco ganha mais tempo');
+  else p[0].split('').forEach(function(c){ var e=LUC.EX[c]; L.push(e.min+'min '+e.t); });
+  if(p[1]==='fg'){ L.push('5min '+LUC.SONG.f.t); L.push('5min '+LUC.SONG.g.t); } else L.push('10min '+LUC.SONG[p[1]].t);
+  L.push('Embocadura: a boca cobre 4 furos, a língua tapa os 3 da esquerda e só o da direita soa. No tempo do acompanhamento, levante a língua: soa o acorde. Metrônomo em 60. Se o tempo apertar, este vem primeiro.');
+  return L.join('\n');
+}
+function lucSemana(){ return 'Semana: '+LUC_DIAS.map(function(x){ var p=LUC.PLAN[x[0]]; return x[1]+' '+(p[0]==='rev'?'revisão':p[0].split('').join('+'))+' · '+(p[1]==='fg'?'f+g':p[1]); }).join('  ·  '); }
 function aulaSong(t){ var k=rotKey(t), hit=null; S.songs.forEach(function(s){ if(!hit && (!s.harp || s.harp.type!=='crom') && rotKey(s.title).indexOf(k)>=0) hit=s; }); return hit; }
+function lucAddSong(t){
+  var tab = /susanna/i.test(t) ? LUC.SUS : '';
+  S.songs.push({id:'m'+Date.now(),u:Date.now(),title:/susanna/i.test(t)?'Oh, Susanna!':'Asa Branca - Luiz Gonzaga',key:null,harp:{type:'diat',key:0},bpm:80,text:tab});
+  saveData(); render();
+}
 function beneCard(cls){
   if(S.harp.type!=='diat') return null;
-  var harp=C.makeDiatonic(0), ctx=harpCtx({type:'diat',key:0});
+  var harp=C.makeDiatonic(0), ctx=harpCtx({type:'diat',key:0}), p=lucPlano(), exs=p[0]==='rev'?['b','c','d','e']:p[0].split(''), kids=[];
+  exs.forEach(function(c){ var e=LUC.EX[c];
+    e.tab.forEach(function(tb){ kids.push(el('p',{class:'dim small',text:'('+c+') '+tb[0]+':'})); kids.push(tabElement(C.parseTab(tb[1],harp),ctx)); }); });
+  var songs = p[1]==='fg' ? ['Oh, Susanna','Asa Branca'] : [LUC.SONG[p[1]].song];
   return el('section',{class:(cls||'sec')+' renan'},[
-    el('div',{class:'hj-h'},[el('h3',{text:'Aula do Luciano'}), el('span',{class:'dim small',text:'fundamentos todo dia + exercício da semana'})]),
-    el('div',{class:'aula-imp'},[hjBlock(AULA_TXT, [])]),
-    el('p',{class:'dim small',text:'Escala maior (gaita em Dó, furos 4 a 7); os traços marcam os 4 tempos de cada nota:'}),
-    tabElement(C.parseTab(AULA_ESCALA,harp),ctx),
-    el('div',{class:'row'},AULA_SONGS.map(function(t){ var sg=aulaSong(t);
+    el('div',{class:'hj-h'},[el('h3',{text:'Aula do Luciano'}), el('span',{class:'dim small',text:'Tongue Blocking · acompanhamento · até 28/11'})]),
+    el('div',{class:'aula-imp'},[hjBlock(lucTxt(p), [])]),
+    el('p',{class:'dim small',text:'Gaita em Dó, escala natural nos furos 4 a 7. Acorde entre parênteses = tempo com acompanhamento (língua levantada); nota sozinha = língua tapando.'})
+  ].concat(kids, [
+    el('div',{class:'row'},songs.map(function(t){ var sg=aulaSong(t);
       return sg ? el('button',{class:'btn tonal',type:'button',text:t,onclick:function(){ openSongFrom('g',sg); }})
-        : el('button',{class:'btn',type:'button',text:'+ '+t,title:'Adicionar à lista de músicas, em A tirar',onclick:function(){ S.songs.push({id:'m'+Date.now(),u:Date.now(),title:t+' - Paul Butterfield',key:null,harp:{type:'diat',key:S.harp.key||0},bpm:80,text:''}); saveData(); render(); }}); })),
-    el('div',{class:'aula-rot'},[hjBlock(ROTINA_TXT, [])]) ]);
+        : el('button',{class:'btn',type:'button',text:'+ '+t,title:'Adicionar à lista de músicas',onclick:function(){ lucAddSong(t); }}); })),
+    el('p',{class:'dim small',text:lucSemana()}),
+    el('div',{class:'aula-rot'},[hjBlock(ROTINA_TXT, [])]) ]));
 }
 function beneMini(){
-  if(S.harp.type!=='diat') return null;
+  if(S.harp.type!=='diat') return null; var p=lucPlano();
+  var ex = p[0]==='rev' ? 'revisão (a)–(e)' : p[0].split('').map(function(c){ return '('+c+')'; }).join(' + ');
+  var sg = p[1]==='fg' ? 'Oh, Susanna + Asa Branca' : LUC.SONG[p[1]].song;
   return el('button',{class:'hj-song two',type:'button',onclick:function(){ S.tab='exercicios'; S.exSeg='dia'; S.back='exercicios'; S.ex=null; save(); render(); window.scrollTo(0,0); }},[
-    el('span',{class:'ins-tag g',text:'Aula'}), el('span',{class:'two-t'},[el('b',{text:'★ Tongue block na escala maior'}), el('small',{text:'exercício do Luciano · + rotina de fundamentos'})]), el('i',{text:'›'})]);
+    el('span',{class:'ins-tag g',text:'Aula'}), el('span',{class:'two-t'},[el('b',{text:'★ Tongue block com acompanhamento'}), el('small',{text:'hoje: '+ex+' · '+sg})]), el('i',{text:'›'})]);
 }
 function renanCard(cls){
   if(today()>=RENAN_FIM) return beneCard(cls);
@@ -4801,7 +4823,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 55 (18/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 56 (21/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5462,7 +5484,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=55;
+var APP_VER=56;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
