@@ -1265,11 +1265,60 @@ function yin(buf, sr, minF, maxF, thr){
   return { freq:sr/(t+off), rms:rms, clarity:1-b };
 }
 
+/* ---------- notas → tab (24/11): converte nomes de notas (Dó Ré Mi… ou C D E…, com # e b, oitava opcional) em tab de gaita ---------- */
+var NOTA_SOLF={'do':0,'re':2,'mi':4,'fa':5,'sol':7,'la':9,'si':11};
+function notaToken(raw){
+  var s=String(raw).replace(/[.,;:!?()\[\]"]+$/,'').replace(/^[(\["]+/,''), t=s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  var m=/^(do|re|mi|fa|sol|la|si)([#♯b♭]*)(-?\d)?$/.exec(t) || /^([A-G])([#♯b♭]*)([1-6])?$/.exec(s);
+  if(!m) return null;
+  var pc = m[1].length===1 && /[A-G]/.test(m[1]) ? LET_PC[m[1]] : NOTA_SOLF[m[1]];
+  if(pc==null) return null;
+  String(m[2]||'').split('').forEach(function(a){ pc += (a==='#'||a==='♯') ? 1 : -1; });
+  return { pc:mod(pc,12), oct: m[3]!=null && m[3]!=='' ? parseInt(m[3],10) : null };
+}
+function notasParse(text){
+  var prev=null;
+  return String(text||'').replace(/[​-‏﻿]/g,'').split('\n').map(function(line){
+    var items=[];
+    line.split(/[\s,;\/]+|\s*[-–—]\s*/).filter(Boolean).forEach(function(w){
+      if(/^\|+$/.test(w)){ items.push({ type:'bar', raw:'|' }); return; }
+      var n=notaToken(w);
+      if(!n){ items.push({ type:'text', raw:w }); return; }
+      var midi;
+      if(n.oct!=null) midi=12*(n.oct+1)+n.pc;
+      else if(prev==null) midi=60+n.pc;
+      else { midi=prev-mod(prev,12)+n.pc; if(midi-prev>6) midi-=12; else if(prev-midi>6) midi+=12; }
+      prev=midi; items.push({ type:'note', raw:w, midi:midi });
+    });
+    return items;
+  });
+}
+function notasToTab(text, harp, octMode, allowOver){
+  var lines=notasParse(text), flat=[];
+  lines.forEach(function(l){ l.forEach(function(it){ if(it.type==='note') flat.push(it.midi); }); });
+  var tryO=function(o){ var a=assign(harp, flat.map(function(m){ return m+o; }), allowOver), miss=0, bends=0, over=0;
+    a.forEach(function(n){ if(!n) miss++; else if(n.kind==='bend') bends++; else if(n.kind==='over') over++; });
+    return { o:o, a:a, miss:miss, bends:bends, over:over, score:miss*100+bends*2+over*4+Math.abs(o)/12*0.5 }; };
+  var best;
+  if(octMode==null || octMode==='auto'){ [0,-12,12,-24,24,-36,36].forEach(function(o){ var r=tryO(o); if(!best || r.score<best.score) best=r; }); }
+  else best=tryO(12*parseInt(octMode,10));
+  var k=0, out=lines.map(function(l){ return l.map(function(it){
+    if(it.type==='bar') return '|';
+    if(it.type==='text') return it.raw;
+    var n=best.a[k++]; return n ? tok(n) : '?'+it.raw; }).join(' '); }).join('\n');
+  return { text:out, notes:flat.length, miss:best.miss, bends:best.bends, over:best.over, oct:best.o/12, score:best.score };
+}
+function notasSugereGaita(text, allowOver){
+  var res=[];
+  for(var k=0;k<12;k++){ var r=notasToTab(text, makeDiatonic(k), 'auto', allowOver); res.push({ key:k, r:r }); }
+  return res.sort(function(a,b){ return a.r.score-b.r.score; });
+}
+
 root.Core={ mod:mod, SHARP:SHARP, FLAT:FLAT, LET:LET, SCALES:SCALES, INTERVALOS:INTERVALOS, NOME_GRAU:NOME_GRAU, ROMAN:ROMAN,
   parseNoteName:parseNoteName, spell:spell, spellIv:spellIv, bestRoot:bestRoot, scaleNotes:scaleNotes, pcName:pcName, midiOct:midiOct, midiFreq:midiFreq, freqMidi:freqMidi,
   harmonicField:harmonicField, keySignature:keySignature, harpPosition:harpPosition, positionRoot:positionRoot,
   makeDiatonic:makeDiatonic, makeChromatic:makeChromatic, tok:tok, findNote:findNote, candidates:candidates, assign:assign,
-  parseToken:parseToken, parseTab:parseTab, tabSequence:tabSequence, transposeTab:transposeTab, bestOctave:bestOctave,
+  parseToken:parseToken, parseTab:parseTab, tabSequence:tabSequence, transposeTab:transposeTab, bestOctave:bestOctave, notasParse:notasParse, notasToTab:notasToTab, notasSugereGaita:notasSugereGaita,
   parseChord:parseChord, extractChords:extractChords, detectKeyFromChords:detectKeyFromChords, detectKeyFromNotes:detectKeyFromNotes, transposeChordText:transposeChordText, yin:yin };
 })(typeof window!=='undefined' ? window : globalThis);
 
@@ -4860,7 +4909,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 58 (24/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 60 (24/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -4990,6 +5039,37 @@ function songPdfInput(song, msgId){
     }).catch(function(){ var m4=document.getElementById(msgId); if(m4){ m4.textContent='Não consegui ler o PDF. Confira a internet (o leitor de PDF é baixado na primeira vez) e tente de novo.'; m4.className='mtxt bad'; } });
   }});
   return el('label',{class:'btn filebtn',title:'Lê um PDF de tab no estilo do Tomlin e escreve a tab nesta música'},['Converter PDF', inp]);
+}
+
+/* 24/11: conversor notas → tab, dentro da música */
+function notasPanel(song){
+  if(!S.nt) S.nt={ text:'', oct:'auto', over:false };
+  var harp=harpObj(song.harp), msg=el('div',{class:'mtxt'}), prev=el('div',{class:'sheet nt-prev'}), sug=el('div',{class:'row nt-sug'});
+  var ta=growArea(el('textarea',{rows:4,spellcheck:'false',placeholder:'Cole ou digite as notas: Dó Ré Mi Fá Sol… ou C D E F G…\nAceita # e b (Fá#, Sib, Bb), número de oitava (C5, Dó4), | para compasso e uma linha por frase.',oninput:function(){ S.nt.text=ta.value; save(); clearTimeout(ta._t); ta._t=setTimeout(paint,250); }})); ta.value=S.nt.text||'';
+  var octSel=select([['auto','Oitava automática'],['-1','Uma oitava abaixo'],['0','Como escrito'],['1','Uma oitava acima']], S.nt.oct||'auto', function(v){ S.nt.oct=v; save(); paint(); });
+  var ob=el('label',{class:'chk'},[el('input',{type:'checkbox',checked:!!S.nt.over,onchange:function(e){ S.nt.over=e.target.checked; save(); paint(); }}),' usar overblow']);
+  var last=null;
+  function paint(){
+    var t=ta.value; prev.textContent=''; sug.textContent=''; msg.textContent=''; last=null;
+    if(!t.trim()) return;
+    var r=C.notasToTab(t, harp, S.nt.oct, !!S.nt.over); last=r;
+    if(!r.notes){ msg.textContent='Não reconheci nenhuma nota. Use Dó Ré Mi… ou C D E…'; msg.className='mtxt bad'; return; }
+    prev.appendChild(tabElement(C.parseTab(r.text, harp), harpCtx(song.harp)));
+    msg.textContent=r.notes+' notas na '+harpLc(song.harp)+(r.bends?' · '+r.bends+' com bend':' · nenhuma com bend')+(r.over?' · '+r.over+' com overblow':'')+(r.miss?' · '+r.miss+' fora da gaita (marcadas com ?)':'')+(S.nt.oct==='auto'&&r.oct?' · '+(r.oct>0?'subi ':'desci ')+Math.abs(r.oct)+' oitava'+(Math.abs(r.oct)>1?'s':'')+' para caber melhor':'');
+    msg.className='mtxt'+(r.miss?' bad':' ok');
+    if(song.harp.type!=='crom' && (r.miss || r.bends)){
+      var top=C.notasSugereGaita(t, !!S.nt.over).slice(0,3).filter(function(x){ return x.r.score < r.score; });
+      if(top.length){ sug.appendChild(el('span',{class:'small dim',text:'Fica mais fácil em:'}));
+        top.forEach(function(x){ sug.appendChild(el('button',{class:'btn sm',type:'button',text:'gaita em '+NN(HARP_KEYS[x.key])+(x.r.miss?' ('+x.r.miss+' fora)':x.r.bends?' ('+x.r.bends+' bend'+(x.r.bends>1?'s':'')+')':' (sem bend)'),onclick:function(){ song.harp={type:'diat',key:x.key}; song.u=Date.now(); saveData(); render(true); }})); }); }
+    }
+  }
+  var put=el('button',{class:'btn pri',type:'button',text:'Colocar na música',onclick:function(){ if(!last || !last.notes) return; var old=String(song.text||''); song.text = old.trim() ? old.replace(/\s+$/,'')+'\n\n'+last.text : last.text; song.u=Date.now(); saveData(); S.ntOpen=false; save(); render(true); toast('Tab colocada na música'+(old.trim()?' (embaixo da que já existia)':'')+'.'); }});
+  var copy=el('button',{class:'btn',type:'button',text:'Copiar tab',onclick:function(){ if(!last) return; try{ navigator.clipboard.writeText(last.text); toast('Tab copiada.'); }catch(e){} }});
+  setTimeout(paint,0);
+  return el('div',{class:'panel nt-panel'},[
+    el('div',{class:'row between'},[el('h3',{text:'Notas → tab'}), el('button',{class:'btn sm ghost',type:'button',text:'Fechar',onclick:function(){ S.ntOpen=false; save(); render(true); }})]),
+    el('p',{class:'small dim',text:'Para partituras e tabs de flauta, teclado ou violão: escreva os nomes das notas e o app escolhe os furos na '+harpLc(song.harp)+' (menos bends e menos saltos).'}),
+    ta, el('div',{class:'row'},[octSel, ob]), msg, prev, sug, el('div',{class:'row'},[put, copy]) ]);
 }
 /* v46: imagens dentro da música (print da folha). Ficam no aparelho (IndexedDB), não vão para o gist. */
 var IMGDB=null, IMG_URLS={}, IMG_COUNT={};
@@ -5215,8 +5295,10 @@ function viewMusicasMain(song){
     el('div',{class:'song-head'},[
       el('div',{class:'song-id'},[el('h3',{class:'song-title',text:song.title||'Sem título'}),el('p',{class:'small dim',text:I.meta})]),
       el('div',{class:'row'},[ (hasText||IMG_COUNT[song.id])?el('button',{class:'btn pri',type:'button',text:'Modo leitura',onclick:function(){ openReader(); }}):null,
-        el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}), songPdfInput(song,'pdfMsg') ])]),
+        el('button',{class:'btn'+(hasText?'':' pri'),type:'button',text:'Editar',onclick:function(){ S.songEdit=song.id; save(); stopPlay(); render(); window.scrollTo(0,0); }}), songPdfInput(song,'pdfMsg'),
+        el('button',{class:'btn'+(S.ntOpen?' tonal':''),type:'button',text:'Notas → tab',title:'Converte nomes de notas (de flauta, teclado, partitura) em tab de gaita',onclick:function(){ S.ntOpen=!S.ntOpen; save(); render(true); }}) ])]),
     el('div',{class:'mtxt dim',id:'pdfMsg'}),
+    S.ntOpen ? notasPanel(song) : null,
     songImgControls(song),
     el('div',{class:'segm three song-st',role:'group','aria-label':'Situação'},REP_ST.map(function(st){ return el('button',{type:'button','aria-pressed':gSt(song)===st?'true':'false',text:CJ_ST_LABEL[st],onclick:function(){ song.st=st; song.u=Date.now(); saveData(); render(true); }}); })),
     I.bad?el('div',{class:'note bad',text:I.bad+' marcação(ões) não existem na '+harpLc(song.harp)+' (sublinhadas). Toque em Editar e confira a gaita escolhida.'}):null,
@@ -5521,7 +5603,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=58;
+var APP_VER=60;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
