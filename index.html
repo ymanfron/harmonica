@@ -460,6 +460,14 @@ input[type=checkbox]{accent-color:var(--p);width:18px;height:18px}
 .rp-name{font-size:17px;font-weight:500;line-height:1.3;overflow-wrap:anywhere}
 .rp-prog{display:grid;grid-template-columns:minmax(60px,1fr) auto;gap:10px;align-items:center;max-width:420px;margin-top:2px}
 .rp-ins{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.fp-pair{display:grid;grid-template-columns:minmax(140px,1fr) 2fr;gap:12px;align-items:start}
+.fp-cell{display:flex;flex-direction:column;gap:4px}
+.fp-cell .fp-est,.fp-obs{width:100%;max-width:none;box-sizing:border-box}
+.fp-mais{margin-top:10px;border-top:1px solid var(--olv);padding-top:8px}
+.fp-mais>summary{cursor:pointer;font-size:13px;color:var(--on-sv);padding:4px 0}
+.rp-obs{display:block;color:var(--on-sv)}
+.pl-obs{margin:0;font-size:calc(17px*var(--rz,1));font-weight:600;line-height:1.35;white-space:pre-line}
+@media (max-width:520px){.fp-pair{grid-template-columns:1fr}}
 .est-tag{display:inline-block;margin-left:8px;vertical-align:middle;border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;background:color-mix(in srgb,#c9962e 22%,transparent);color:color-mix(in srgb,#c9962e 60%,var(--on-sv));border:1px solid color-mix(in srgb,#c9962e 55%,transparent)}
 .est-tag.big{margin-left:0;font-size:22px;padding:4px 18px;letter-spacing:.06em}
 .pl-est{display:flex;align-items:center;gap:12px;margin:4px 0 10px}
@@ -4190,7 +4198,7 @@ function repItemRow(rep, it, idx){
   var pairs=repPairs({items:[it]});
   if(S.repRow!==idx) return el('button',{class:'rp-row',type:'button',onclick:function(){ S.repRow=idx; save(); render(true); }},[
     el('span',{class:'imp-n',text:String(idx+1)}),
-    el('span',{class:'imp-t'},[el('b',{},[it.t, estTag(it.t)]), it.a?el('small',{text:it.a}):null, el('span',{class:'rp-ins'},pairs.map(repStTag).concat([repFcTag(it)]))]) ]);
+    el('span',{class:'imp-t'},[el('b',{},[it.t, estTag(it.t)]), it.a?el('small',{text:it.a}):null, fcObs(it.t)?el('small',{class:'rp-obs',text:'📝 '+fcObs(it.t)}):null, el('span',{class:'rp-ins'},pairs.map(repStTag).concat([repFcTag(it)]))]) ]);
   var setIns=function(k){ var has=it.ins.indexOf(k)>=0, nv=has?(it.ins==='gc'?(k==='g'?'c':'g'):it.ins):'gc'; if(nv===it.ins) return; it.ins=nv; if(nv==='c') delete it.h; repEnsure(rep,it); repTouch(rep); render(true); };
   var move=function(d){ var j=idx+d; if(j<0||j>=rep.items.length) return; var x=rep.items[idx]; rep.items[idx]=rep.items[j]; rep.items[j]=x; S.repRow=j; repTouch(rep); render(true); };
   var blocks=pairs.map(function(p){
@@ -4401,8 +4409,10 @@ function fcEntryText(f){ var q=''; FC_QUEM.forEach(function(x){ if(x[0]===f.quem
 /* 24/11: estilo da música (pop, xote, guarânia…) — fica na ficha da música e aparece no repertório e no modo palco */
 var FC_ESTILOS=['Pop','Rock','Balada','MPB','Sertanejo','Xote','Baião','Forró','Guarânia','Samba','Bossa nova','Valsa','Marcha','Toada','Reggae','Blues','Country','Louvor'];
 function fcEst(t){ var f=fcFind(t); return f && String(f.est||'').trim() ? String(f.est).trim() : ''; }
+function fcObs(t){ var f=fcFind(t); return f && String(f.nt||'').trim() ? String(f.nt).trim() : ''; }
 function estTag(t, big){ var e=fcEst(t); return e ? el('span',{class:'est-tag'+(big?' big':''),text:e}) : null; }
 function fcSummary(f){ var a=[], b=fcBpm(f), bars=fcBars(fcForm(f.form)); if(b) a.push(b+' bpm'); if(f.quem) a.push(f.quem==='eu'?'eu conto':f.quem==='outro'?'outro conta':'pela intro'); if(bars) a.push(bars+' comp.'); if(String(f.cifra||'').trim()) a.push('cifra'+(fcKeyLabel(f)?' em '+fcKeyLabel(f):''));
+  if(String(f.nt||'').trim()) a.unshift(String(f.nt).trim().split('\n')[0]);
   if(String(f.est||'').trim()) a.unshift(String(f.est).trim());
   return a.length?a.join(' · '):'estilo, andamento, quem conta, forma e cifra'; }
 function fcTrainLine(f){ var a=[]; a.push(f.met?(f.met===fcToday()?'✓ com clique hoje':'com clique '+fcAgo(f.met)):'ainda sem treino com clique'); a.push(f.gap?(f.gap===fcToday()?'✓ sem clique hoje':'sem clique '+fcAgo(f.gap)):'ainda sem treino sem clique'); return a.join(' · '); }
@@ -4415,7 +4425,7 @@ function fcPanel(t, key, opts){
   var sumTx=el('span',{class:'fp-sum',text:fcSummary(f)});
   var touch=function(){ fcTouch(f); sumTx.textContent=fcSummary(f); };
   var body=el('div',{class:'fp-body'});
-  var d=el('details',{class:'fp'+(opts.flat?' flat':'')},[el('summary',{},[el('b',{text:'Preparo e cifra'}), sumTx]), body]); d.open=open;
+  var d=el('details',{class:'fp'+(opts.flat?' flat':'')},[el('summary',{},[el('b',{text:'Preparo'}), sumTx]), body]); d.open=open;
   var built=false, build=function(){ if(built) return; built=true;
     var formRow=el('div',{}), formTot=el('span',{class:'small dim'});
     var paintForm=function(){ var c=fcFormChips(fcForm(f.form), f.beats||4, fcBpm(f)); fill(formRow,[c.row]); formTot.textContent=c.total; };
@@ -4439,12 +4449,21 @@ function fcPanel(t, key, opts){
     var estIn=el('input',{type:'text',class:'fp-est',list:'fcEstList',value:f.est||'',placeholder:'pop, xote, guarânia…','aria-label':'Estilo da música',oninput:function(e){ f.est=e.target.value.trim(); touch(); paintEst(); }});
     var estChips=el('div',{class:'row est-chips'}), paintEst=function(){ fill(estChips, FC_ESTILOS.map(function(x){ return el('button',{type:'button',class:'est-chip','aria-pressed':String(f.est||'').toLowerCase()===x.toLowerCase()?'true':'false',text:x,onclick:function(){ f.est=(String(f.est||'').toLowerCase()===x.toLowerCase())?'':x; estIn.value=f.est; touch(); paintEst(); }}); })); };
     paintEst();
-    fill(body,[
-      el('div',{class:'fp-line'},[el('span',{class:'fp-k',text:'Estilo'}), el('div',{class:'fp-v'},[estIn, el('datalist',{id:'fcEstList'},FC_ESTILOS.map(function(x){ return el('option',{value:x}); })), estChips])]),
-      el('div',{class:'fp-line'},[el('span',{class:'fp-k',text:'Tempo'}), el('div',{class:'fp-v'},[el('div',{class:'row'},[bpmIn, tap, beats, count])])]),
+    /* 24/11: preparo simplificado — estilo + observação no topo, tempo logo abaixo; entrada, forma e cifra ficam em "Mais" */
+    var obsIn=el('textarea',{class:'fp-obs',rows:'2',placeholder:'ex.: chocalho, entra depois do coro, tom combinado','aria-label':'Observação',oninput:function(e){ f.nt=e.target.value; touch(); }}); obsIn.value=f.nt||''; growArea(obsIn);
+    var mais=String(f.cifra||'').trim()||String(f.form||'').trim()||f.quem;
+    var maisD=el('details',{class:'fp-mais'},[el('summary',{text:'Mais: entrada, forma e cifra'}),
       el('div',{class:'fp-line'},[el('span',{class:'fp-k',text:'Entrada'}), el('div',{class:'fp-v'},[quem])]),
       el('div',{class:'fp-line'},[el('span',{class:'fp-k',text:'Forma'}), el('div',{class:'fp-v'},[form, formRow, formTot])]),
       el('div',{class:'fp-line'},[el('span',{class:'fp-k',text:'Cifra'}), el('div',{class:'fp-v'},[trRow, sheet, cifD])]) ]);
+    if(mais) maisD.open=true;
+    fill(body,[
+      el('div',{class:'fp-pair'},[
+        el('label',{class:'fp-cell'},[el('span',{class:'fp-k',text:'Estilo'}), estIn]),
+        el('label',{class:'fp-cell'},[el('span',{class:'fp-k',text:'Observação'}), obsIn]) ]),
+      el('datalist',{id:'fcEstList'},FC_ESTILOS.map(function(x){ return el('option',{value:x}); })), estChips,
+      el('div',{class:'fp-line'},[el('span',{class:'fp-k',text:'Tempo'}), el('div',{class:'fp-v'},[el('div',{class:'row'},[bpmIn, tap, beats, count])])]),
+      maisD ]);
   };
   d.addEventListener('toggle',function(){ S.fpOpen[key]=d.open; save(); if(d.open) build(); });
   if(open) build();
@@ -4468,12 +4487,12 @@ function viewPalco(){
   if(S.plEdit) body.push(fcPanel(it.t,'pl',{open:true,flat:true}));
   body.push(el('div',{class:'pl-list'},rep.items.map(function(x,j){ return el('button',{type:'button',class:'pl-chip','aria-current':j===i?'true':'false',onclick:function(){ go(j); }},[el('span',{text:String(j+1)}), x.t, fcEst(x.t)?el('em',{class:'pl-chip-est',text:fcEst(x.t)}):null]); })));
   body.push(el('div',{class:'pl-head'},[
-    fcEst(it.t)?el('div',{class:'pl-est'},[el('span',{class:'lbl',text:'Estilo'}), estTag(it.t,true)]):null,
+    (fcEst(it.t)||f.nt)?el('div',{class:'pl-est'},[fcEst(it.t)?estTag(it.t,true):null, f.nt?el('p',{class:'pl-obs',text:f.nt}):null]):null,
     el('div',{class:'pl-ins'},[it.ins.indexOf('g')>=0?el('span',{class:'ins-tag g',text:g&&g.harp?(g.harp.type==='crom'?'Cromática':'Gaita '+NN(HARP_KEYS[g.harp.key])):'Gaita'}):null, it.ins.indexOf('c')>=0?el('span',{class:'ins-tag c',text:'Cajon'}):null]),
     entry?el('p',{class:'pl-entry'},[el('b',{text:'Entrada: '}),entry]):null,
     parts.length?fc.row:null,
     c&&c.lv?el('p',{class:'pl-entry'},[el('b',{text:'Levada: '}),c.lv]):null,
-    f.nt?el('p',{class:'pl-nt',text:f.nt}):null ]));
+    null ]));
   var sheet=String(f.cifra||'').trim()?fcSheet(f):null;
   if(sheet) body.push(sheet);
   if(g && String(g.text||'').trim()){ var I=songInfo(g); body.push(el('div',{class:'pl-tab'},[el('p',{class:'lbl',text:'Gaita · '+harpName(g.harp)}), tabElement(I.parsed,I.ctx)])); }
@@ -4841,7 +4860,7 @@ function viewAjustes(){
   if(oldNotes.length) out.push(el('section',{class:'sec'},[el('h2',{text:'Anotações antigas'}),
     el('p',{class:'dim small',text:'A aba Anotações saiu do app. Suas '+oldNotes.length+' anotações continuam guardadas: copie o texto para levar a outro lugar.'}),
     el('div',{class:'row'},[copyBtn(function(){ return oldNotes.map(function(n){ return '## '+(n.title||'Sem título')+'\n'+(n.text||''); }).join('\n\n'); })]) ]));
-  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 57 (24/11/2026).'}));
+  out.push(el('p',{class:'dim small',text:'Caderno de Música, versão 58 (24/11/2026).'}));
   setTimeout(paintSync,0);
   return out;
 }
@@ -5502,7 +5521,7 @@ function render(keepFocus){
   paintMini(); paintSync();
   if(keepFocus){ if(fid){ var f=document.getElementById(fid); if(f){ f.focus(); try{ if(ss!=null && f.setSelectionRange) f.setSelectionRange(ss,ss); }catch(e){} } } window.scrollTo(0,y); }
 }
-var APP_VER=57;
+var APP_VER=58;
 /* confere se o GitHub já tem versão mais nova que a aberta (o navegador guarda cópia antiga por alguns minutos) */
 function checkUpdate(){
   if(!/^https?:$/.test(location.protocol) || /claude\.ai|claudeusercontent/.test(location.host)) return;
@@ -5523,6 +5542,8 @@ function init(){
   mm.querySelector('button').addEventListener('click',function(){ Metro.toggle(); if(S.tab==='metronomo') render(); });
   mm.querySelector('.mm-open').addEventListener('click',function(){ openAux('metronomo'); });
   if(!S.cjSongs) S.cjSongs=cjSeedSongs(); if(!S.cjEx) S.cjEx=cjSeedEx();
+  /* 24/11: anotações que estavam no campo Forma (sem números, ex.: "Chocalho") passam para Observação */
+  if(!S.fcObsMig){ var nm=0; fcAll().forEach(function(f){ var fm=String(f.form||'').trim(); if(fm && !/\d/.test(fm) && !String(f.nt||'').trim()){ f.nt=fm; f.form=''; f.u=Date.now(); nm++; } }); S.fcObsMig=Date.now(); saveData(); if(nm) setTimeout(function(){ toast(nm+(nm===1?' anotação do campo Forma foi para Observação.':' anotações do campo Forma foram para Observação.')); },900); }
   if(!S.repDedup1){ var nd=repDedup(); S.repDedup1=Date.now(); saveData(); if(nd) setTimeout(function(){ toast(nd+(nd===1?' cópia vazia criada pelo repertório foi apagada':' cópias vazias criadas pelo repertório foram apagadas')+' (estão em Músicas apagadas).'); },800); }
   var cfg=document.getElementById('cfgBtn'); cfg.appendChild(icon('ajustes')); cfg.addEventListener('click',function(){ openAux('ajustes'); });
   var sb=document.getElementById('syncBtn'); sb.appendChild(icon('nuvem')); sb.addEventListener('click',function(){ if(Sync.on()) Sync.run(true); else openAux('ajustes'); });
